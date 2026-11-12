@@ -1,0 +1,3101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Natural Denims Limited — NDL Unit-02 Production Report (RMG)</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body {
+      font-family: var(--font-sans);
+      background-color: #F8FAFC;
+      color: #0F172A;
+    }
+    .mono-num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    /* Custom Scrollbar for Wide ERP Grid */
+    .erp-scroll::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+    }
+    .erp-scroll::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 6px;
+    }
+    .erp-scroll::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 6px;
+      border: 2px solid #F1F5F9;
+    }
+    .erp-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    /* Sticky Columns for Master Production Grid */
+    .sticky-col-1 { position: sticky; left: 0; z-index: 20; }
+    .sticky-col-2 { position: sticky; left: 48px; z-index: 20; }
+    .sticky-col-3 { position: sticky; left: 168px; z-index: 20; }
+    .sticky-col-4 { position: sticky; left: 288px; z-index: 20; border-right: 2px solid #CBD5E1 !important; }
+    thead .sticky-col-1, thead .sticky-col-2, thead .sticky-col-3, thead .sticky-col-4,
+    tfoot .sticky-col-1, tfoot .sticky-col-2, tfoot .sticky-col-3, tfoot .sticky-col-4 {
+      z-index: 30;
+    }
+    .cell-input {
+      width: 82px;
+      text-align: right;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.75);
+      transition: all 0.12s ease;
+    }
+    .cell-input:hover {
+      border-color: #CBD5E1;
+      background: #FFFFFF;
+    }
+    .cell-input:focus {
+      outline: none;
+      border-color: #2563EB;
+      background: #FFFFFF;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+    .cell-calc {
+      background-color: #F8FAFC;
+      font-weight: 600;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #FFFFFF; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+
+  <!-- Top Corporate Header -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center font-extrabold text-lg tracking-tight shadow-inner">
+          NDL
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white">Natural Denims Limited</h1>
+            <span class="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full">Unit-02 RMG</span>
+          </div>
+          <p class="text-xs text-slate-400">Tongabari, Ashulia, Savar, Dhaka • Cut-to-Ship &amp; Production Reporting System</p>
+        </div>
+      </div>
+
+      <!-- Report Month & Quick Actions -->
+      <div class="flex flex-wrap items-center gap-2.5 no-print">
+        <div class="flex items-center bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs">
+          <span class="text-slate-400 mr-2 font-medium">Report Month:</span>
+          <input id="reportMonthInput" type="text" value="July'2026 (Unit-02 Active)" onchange="updateReportMonth(this.value)"
+            class="bg-transparent text-white font-semibold focus:outline-none w-44" aria-label="Report Month" />
+        </div>
+
+        <button type="button" onclick="openEntryModal()"
+          class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Add / Input PO Row
+        </button>
+
+        <button type="button" onclick="openGithubModal()"
+          class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+          <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub Push Guide
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 flex items-center justify-between border-t border-slate-800/80 bg-slate-900/95 no-print overflow-x-auto">
+      <nav class="flex items-center space-x-1" aria-label="Primary Views">
+        <button type="button" id="tabBtn-grid" onclick="switchMainTab('grid')"
+          class="px-4 py-2.5 text-xs font-semibold border-b-2 border-blue-500 text-white flex items-center gap-2 whitespace-nowrap">
+          <span>1. Unit-02 Live Production Grid</span>
+          <span id="navRowCountBadge" class="px-1.5 py-0.5 text-[10px] rounded bg-blue-500/20 text-blue-300 mono-num">2</span>
+        </button>
+        <button type="button" id="tabBtn-form" onclick="switchMainTab('form')"
+          class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+          <span>2. Guided Production Input Form</span>
+        </button>
+        <button type="button" id="tabBtn-analytics" onclick="switchMainTab('analytics')"
+          class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+          <span>3. Analytics &amp; Workbook Archive (Nov'25 – Jul'26)</span>
+        </button>
+        <button type="button" id="tabBtn-bonus" onclick="switchMainTab('bonus')"
+          class="px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+          <span>4. Bonus Policy (Sheet3) &amp; Formula Reference</span>
+        </button>
+      </nav>
+
+      <div class="hidden lg:flex items-center gap-2 py-1.5 text-[11px] text-slate-400">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Excel Formula Engine Active (35 Auto-Calculated Columns)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-5 space-y-5">
+
+    <!-- Executive KPI Strip (Always visible, dynamically computed from active Unit-02 rows) -->
+    <section aria-label="Unit-02 Live Summary Metrics" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
+      <!-- KPI 1: Order & Cutting Plan -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>Total Order Qty</span>
+          <span class="text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-mono text-[11px]" id="kpiActivePOs">2 POs</span>
+        </div>
+        <div class="mt-2 text-2xl font-extrabold text-slate-900 mono-num" id="kpiOrderQty">16,650</div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>Cut Plan (1% Less):</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiWastagePlanQty">17,316 pcs</span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Fabric Required vs Issue -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>Fabric Issued (Yds)</span>
+          <span id="kpiFabVarBadge" class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono text-[11px]">-0.1 yds</span>
+        </div>
+        <div class="mt-2 text-2xl font-extrabold text-slate-900 mono-num" id="kpiFabIssued">24,098.0</div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>Bulk Req (Yds):</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiFabReq">24,098.1 yds</span>
+        </div>
+      </div>
+
+      <!-- KPI 3: Cutting & Input -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>Total Cutting</span>
+          <span id="kpiCutPctBadge" class="text-teal-700 bg-teal-50 px-2 py-0.5 rounded font-mono text-[11px]">102.10%</span>
+        </div>
+        <div class="mt-2 text-2xl font-extrabold text-slate-900 mono-num" id="kpiCutTotal">17,000</div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>Line Input / WIP:</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiInputSummary">17,000 / 0</span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Sewing & Washing -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>Total Sewing Out</span>
+          <span class="text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded font-mono text-[11px]" id="kpiWashRecBadge">Wash: 16,959</span>
+        </div>
+        <div class="mt-2 text-2xl font-extrabold text-slate-900 mono-num" id="kpiSewTotal">16,995</div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>Wash Send / WIP:</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiWashSummary">16,991 / 6</span>
+        </div>
+      </div>
+
+      <!-- KPI 5: Packing & Shipment -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>Total Shipment</span>
+          <span id="kpiShipRatioBadge" class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono text-[11px]">100.0%</span>
+        </div>
+        <div class="mt-2 text-2xl font-extrabold text-emerald-700 mono-num" id="kpiShipTotal">16,650</div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>Packed / Short-Ex:</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiPackSummary">16,660 / 0</span>
+        </div>
+      </div>
+
+      <!-- KPI 6: Total WIP, Reject & Store Reconciliation -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm">
+        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider">
+          <span>WIP + Reject Recon</span>
+          <span id="kpiMissingBadge" class="text-amber-700 bg-amber-50 px-2 py-0.5 rounded font-mono text-[11px]">Missing: 10</span>
+        </div>
+        <div class="mt-2 flex items-baseline gap-2">
+          <span class="text-2xl font-extrabold text-amber-600 mono-num" id="kpiTotalWip">138</span>
+          <span class="text-xs text-slate-400">WIP</span>
+          <span class="text-lg font-bold text-rose-600 mono-num" id="kpiTotalReject">205</span>
+          <span class="text-xs text-slate-400">Rej</span>
+        </div>
+        <div class="mt-1 flex items-center justify-between text-xs text-slate-500">
+          <span>NDL Store Rec:</span>
+          <span class="font-semibold text-slate-700 mono-num" id="kpiStoreRec">333 pcs (130 yds)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: UNIT-02 LIVE PRODUCTION GRID                                  -->
+    <!-- ===================================================================== -->
+    <section id="view-grid" class="space-y-4">
+      <!-- Controls & Filter Toolbar -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm space-y-3 no-print">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <!-- Left: Search & Filters -->
+          <div class="flex flex-wrap items-center gap-2.5">
+            <div class="relative">
+              <input id="searchInput" type="text" oninput="handleFilterChange()" placeholder="Search Buyer, Style, PO, Color..."
+                class="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:border-blue-600 focus:outline-none w-56 sm:w-64" />
+              <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 103.5 10.5a7.5 7.5 0 0013.15 6.15z"/></svg>
+            </div>
+
+            <select id="buyerFilter" onchange="handleFilterChange()" aria-label="Filter by Buyer"
+              class="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white text-slate-700 font-medium focus:border-blue-600 focus:outline-none">
+              <option value="ALL">All Buyers</option>
+            </select>
+
+            <select id="statusFilter" onchange="handleFilterChange()" aria-label="Filter by Status"
+              class="px-2.5 py-1.5 text-xs rounded-lg border border-slate-300 bg-white text-slate-700 font-medium focus:border-blue-600 focus:outline-none">
+              <option value="ALL">All Statuses</option>
+              <option value="Running">Running</option>
+              <option value="Closed">Closed</option>
+              <option value="Partial Shipment">Partial Shipment</option>
+              <option value="Style Partial Shipment">Style Partial Shipment</option>
+              <option value="Stock">Stock</option>
+            </select>
+
+            <button type="button" onclick="resetFilters()"
+              class="px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition">
+              Reset Filters
+            </button>
+          </div>
+
+          <!-- Right: Dataset Presets & Export/Import -->
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="inline-flex rounded-lg border border-slate-200 p-0.5 bg-slate-50 text-xs">
+              <button type="button" id="presetBtn-unit02" onclick="loadDatasetPreset('unit02')"
+                class="px-2.5 py-1 rounded-md font-semibold bg-white text-blue-700 shadow-sm transition">
+                Unit-02 Baseline (2 POs)
+              </button>
+              <button type="button" id="presetBtn-extended" onclick="loadDatasetPreset('extended')"
+                class="px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition">
+                + Workbook Active Floor (14 POs)
+              </button>
+            </div>
+
+            <button type="button" onclick="exportToCSV()"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/></svg>
+              Export CSV
+            </button>
+
+            <button type="button" onclick="exportToJSON()"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition">
+              Export JSON
+            </button>
+
+            <label class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 cursor-pointer transition">
+              <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M16 8l-4-4m0 0L8 8m4-4v12"/></svg>
+              Import JSON/CSV
+              <input id="importFileInput" type="file" accept=".json,.csv" onchange="handleFileImport(event)" class="hidden" />
+            </label>
+
+            <button type="button" onclick="window.print()"
+              class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition">
+              Print
+            </button>
+          </div>
+        </div>
+
+        <!-- Column Group View Switcher (For 102-Column Ergonomics) -->
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mr-1">Column Group View:</span>
+            <button type="button" id="colGrp-ALL" onclick="setColumnGroup('ALL')"
+              class="px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-900 text-white transition">
+              All Columns (Full Sheet)
+            </button>
+            <button type="button" id="colGrp-FABRIC" onclick="setColumnGroup('FABRIC')"
+              class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              1. Order, Booking &amp; Fabric/Trims (Cols B–AN)
+            </button>
+            <button type="button" id="colGrp-CUTSEW" onclick="setColumnGroup('CUTSEW')"
+              class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              2. Cutting, Input &amp; Sewing (Cols AP–BC)
+            </button>
+            <button type="button" id="colGrp-WASHFIN" onclick="setColumnGroup('WASHFIN')"
+              class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              3. Wash, Metal Pass &amp; Pack (Cols BE–CD)
+            </button>
+            <button type="button" id="colGrp-SHIPRECON" onclick="setColumnGroup('SHIPRECON')"
+              class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition">
+              4. Shipment, WIP/Reject &amp; Store Recon (Cols CE–CX)
+            </button>
+          </div>
+
+          <div class="text-[11px] text-slate-500">
+            <span class="inline-block w-2 h-2 rounded-sm bg-white border border-slate-300 mr-1"></span>Editable Input Cell
+            <span class="inline-block w-2 h-2 rounded-sm bg-slate-100 border border-slate-300 ml-2 mr-1"></span>Auto-Calculated Formula Cell
+          </div>
+        </div>
+      </div>
+
+      <!-- Master Production Spreadsheet Grid -->
+      <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto erp-scroll max-h-[640px]">
+          <table class="w-full text-xs border-collapse" id="productionGridTable">
+            <thead id="gridThead" class="bg-slate-100 text-slate-700 sticky top-0 z-30 border-b border-slate-300">
+              <!-- Populated dynamically by renderGrid() to match exact column group filter -->
+            </thead>
+            <tbody id="gridTbody" class="divide-y divide-slate-200">
+              <!-- Populated dynamically by renderGrid() -->
+            </tbody>
+            <tfoot id="gridTfoot" class="bg-slate-900 text-white font-semibold sticky bottom-0 z-30">
+              <!-- Populated dynamically by renderGrid() -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: GUIDED PRODUCTION INPUT FORM (TAB)                            -->
+    <!-- ===================================================================== -->
+    <section id="view-form" class="hidden space-y-5">
+      <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900" id="formTitleHeading">Add / Update Production Order Line (NDL Unit-02 Schema)</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Provide input values below. All 35 Excel formula fields calculate live in the right-hand preview and inside each stage card.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="formLoadExistingSelect" onchange="loadRowIntoForm(this.value)" aria-label="Load existing PO to edit"
+              class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-slate-50 text-slate-700 font-medium">
+              <option value="">-- Load Existing PO to Edit --</option>
+            </select>
+            <button type="button" onclick="resetFormToNew()"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50">
+              Clear / New Blank PO
+            </button>
+            <button type="button" onclick="saveFormRow()"
+              class="px-4 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm">
+              Save PO to Unit-02 Report
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-5">
+          <!-- Left 8 Cols: Multi-Section Input Fields -->
+          <div class="lg:col-span-8 space-y-5">
+            <!-- Section 1: Order & Buyer Identification -->
+            <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center justify-between">
+                <span>Stage 1 — Order, Buyer &amp; Cutting Plan (Cols C–M)</span>
+                <span class="mono-num text-[11px] text-slate-500">Excel Formula: K=I*J, L=J+0.01, M=I*L</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Factory Name (C)</label>
+                  <input id="f_factory" type="text" value="NDL Unit-02" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Buyer Name (D) *</label>
+                  <input id="f_buyer" type="text" list="buyerDatalist" placeholder="e.g. BERSHKA" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white font-semibold" />
+                  <datalist id="buyerDatalist">
+                    <option value="BERSHKA"></option>
+                    <option value="TOMMY HILFIGER"></option>
+                    <option value="CALVIN KLEIN"></option>
+                    <option value="STRADIVARIUS"></option>
+                    <option value="ZARA"></option>
+                    <option value="OVS"></option>
+                    <option value="DKNY"></option>
+                    <option value="LUCKY BRAND"></option>
+                    <option value="HUDSON"></option>
+                    <option value="JOE'S"></option>
+                    <option value="LERROS"></option>
+                    <option value="BUFFALO"></option>
+                    <option value="PULL & BEAR"></option>
+                    <option value="MANGO"></option>
+                    <option value="LEFTIES"></option>
+                  </datalist>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Style No. (E) *</label>
+                  <input id="f_style" type="text" placeholder="e.g. JK-236 JADE" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">PO Number (F) *</label>
+                  <input id="f_po" type="text" placeholder="e.g. 40433-01" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Sub PO / Other PO (G)</label>
+                  <input id="f_subPo" type="text" placeholder="Optional" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Color (H) *</label>
+                  <input id="f_color" type="text" placeholder="e.g. 401-NAVY BLUE" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Order Qty Pcs (I) *</label>
+                  <input id="f_orderQty" type="number" step="1" value="5000" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num font-bold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Cutting Plan Ratio (J)</label>
+                  <input id="f_cuttingPlanPct" type="number" step="0.005" value="1.03" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Booking & Fabric/Trims Consumption & Issue -->
+            <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center justify-between">
+                <span>Stage 2 — Fabric &amp; Trims Consumption per Dzn &amp; Store Issue (Cols N–AN)</span>
+                <span class="mono-num text-[11px] text-slate-500">Req = M/12 * Conj | Expected Cut = AA/R*12</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Booking Cons/Dzn (N)</label>
+                  <input id="f_bookingConsDz" type="number" step="0.01" value="16.8" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Booking Yds (P)</label>
+                  <input id="f_bookingYds" type="number" step="1" value="7250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Received Yds (Q)</label>
+                  <input id="f_receivedYds" type="number" step="1" value="7250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Fabric Bulk Conj/Dz (R)</label>
+                  <input id="f_fabBulkConsDz" type="number" step="0.01" value="16.7" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pkt Bulk Conj/Dz (S)</label>
+                  <input id="f_pktBulkConsDz" type="number" step="0.01" value="1.9" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Interlining Conj/Dz (T)</label>
+                  <input id="f_interBulkConsDz" type="number" step="0.01" value="2.8" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">RIB Bulk Conj/Dz (U)</label>
+                  <input id="f_ribBulkConsDz" type="number" step="0.01" value="1.9" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Day Fabric Issue (Z)</label>
+                  <input id="f_dayFabIssueYds" type="number" step="1" value="250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Total Fabric Issue (AA)</label>
+                  <input id="f_totalFabIssueYds" type="number" step="1" value="7236" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Total Pkt Issue (AC)</label>
+                  <input id="f_totalPktIssueYds" type="number" step="1" value="823" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Total Inter. Issue (AE)</label>
+                  <input id="f_totalInterIssueYds" type="number" step="1" value="1213" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Total RIB Issue (AG)</label>
+                  <input id="f_totalRibIssueYds" type="number" step="1" value="823" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Cutting, Line Input & Sewing -->
+            <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-teal-800 flex items-center justify-between">
+                <span>Stage 3 — Cutting, Line Input &amp; Sewing Floor (Cols AQ–BC)</span>
+                <span class="mono-num text-[11px] text-slate-500">Input WIP = AS-AV | Sewing WIP = AV-BA-BB</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Cutting Opening (AQ)</label>
+                  <input id="f_cutOpening" type="number" step="1" value="4900" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Cutting Day (AR)</label>
+                  <input id="f_cutDay" type="number" step="1" value="250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Input Opening (AT)</label>
+                  <input id="f_inputOpening" type="number" step="1" value="4900" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Input Day (AU)</label>
+                  <input id="f_inputDay" type="number" step="1" value="220" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Sewing Opening (AY)</label>
+                  <input id="f_sewOpening" type="number" step="1" value="4850" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Sewing Day (AZ)</label>
+                  <input id="f_sewDay" type="number" step="1" value="230" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Sewing Reject (BB)</label>
+                  <input id="f_sewReject" type="number" step="1" value="3" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num text-rose-700" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Plant Name (BE)</label>
+                  <input id="f_washPlant" type="text" value="NDL Washing Plant" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Washing, Metal Pass & Packing -->
+            <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-800 flex items-center justify-between">
+                <span>Stage 4 — Wash Send, Wash Receive, Metal Pass &amp; Packing (Cols BF–CD)</span>
+                <span class="mono-num text-[11px] text-slate-500">Wash WIP = BH-BO-BP-BQ-BR | Pack WIP = BW-CB-CC</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Send Open (BF)</label>
+                  <input id="f_washSendOpening" type="number" step="1" value="4840" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Send Day (BG)</label>
+                  <input id="f_washSendDay" type="number" step="1" value="230" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Send Rej (BI)</label>
+                  <input id="f_washSendReject" type="number" step="1" value="2" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num text-rose-700" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Finishing Unit (BL)</label>
+                  <input id="f_finishingUnit" type="text" value="Unit-02 Finishing" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Rec Open (BM)</label>
+                  <input id="f_washRecOpening" type="number" step="1" value="4800" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Rec Day (BN)</label>
+                  <input id="f_washRecDay" type="number" step="1" value="250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">App / Lab Sample (BP)</label>
+                  <input id="f_appLab" type="number" step="1" value="2" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Buying House/Shade (BQ)</label>
+                  <input id="f_buyingHouse" type="number" step="1" value="1" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Wash Rec Reject (BR)</label>
+                  <input id="f_washRecReject" type="number" step="1" value="6" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num text-rose-700" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Metal Pass Open (BU)</label>
+                  <input id="f_metalPassOpening" type="number" step="1" value="4780" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Metal Pass Day (BV)</label>
+                  <input id="f_metalPassDay" type="number" step="1" value="250" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Metal Pass Rej (BX)</label>
+                  <input id="f_metalPassReject" type="number" step="1" value="10" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num text-rose-700" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pack Opening (BZ)</label>
+                  <input id="f_packOpening" type="number" step="1" value="4750" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pack Day (CA)</label>
+                  <input id="f_packDay" type="number" step="1" value="255" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pack Reject (CC)</label>
+                  <input id="f_packReject" type="number" step="1" value="15" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num text-rose-700" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 5: Shipment, Samples & NDL Store Reconciliation -->
+            <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-800 flex items-center justify-between">
+                <span>Stage 5 — Shipment, Samples &amp; Store Reconciliation (Cols CE–CX)</span>
+                <span class="mono-num text-[11px] text-slate-500">Missing (CS) = CP + CQ - CR</span>
+              </h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">All Ship Date (CE)</label>
+                  <input id="f_shipDate" type="date" value="2026-07-25" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Previous Ship (CF)</label>
+                  <input id="f_prevShip" type="number" step="1" value="0" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Month Ship (CG)</label>
+                  <input id="f_monthShip" type="number" step="1" value="5000" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num font-bold text-emerald-700" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Sample Pcs (CJ)</label>
+                  <input id="f_sample" type="number" step="1" value="2" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Shipping Sample (CK)</label>
+                  <input id="f_shipSample" type="number" step="1" value="1" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Finishing Missing (CL)</label>
+                  <input id="f_shipMissing" type="number" step="1" value="0" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">NDL Store Rec Pcs (CR)</label>
+                  <input id="f_storeRecPcs" type="number" step="1" value="110" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Store Rec Fabric Yds (CU)</label>
+                  <input id="f_storeRecYds" type="number" step="1" value="40" oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+                </div>
+                <div>
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Status (CW)</label>
+                  <select id="f_status" onchange="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white font-semibold">
+                    <option value="Running">Running</option>
+                    <option value="Closed">Closed</option>
+                    <option value="Partial Shipment">Partial Shipment</option>
+                    <option value="Style Partial Shipment">Style Partial Shipment</option>
+                    <option value="Stock">Stock</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-3">
+                  <label class="block text-[11px] font-semibold text-slate-600 mb-1">Remarks (CX)</label>
+                  <input id="f_remarks" type="text" placeholder="Optional production or store transfer notes..." oninput="recalcFormPreview()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 4 Cols: Live Excel Formula Output Card -->
+          <div class="lg:col-span-4">
+            <div class="bg-slate-900 text-white rounded-xl p-5 sticky top-28 space-y-4 shadow-lg">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-white">Live Excel Formula Output</h3>
+                  <p class="text-[11px] text-slate-400">Real-time Unit-02 sheet derivations</p>
+                </div>
+                <span class="px-2 py-0.5 text-[10px] font-mono bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">AUTO-CALC</span>
+              </div>
+
+              <div id="formLivePreviewContainer" class="space-y-2.5 text-xs">
+                <!-- Populated by recalcFormPreview() -->
+              </div>
+
+              <div class="pt-3 border-t border-slate-800 flex items-center gap-2">
+                <button type="button" onclick="saveFormRow()"
+                  class="w-full py-2.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow transition">
+                  Save &amp; Sync to Unit-02 Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: ANALYTICS & WORKBOOK ARCHIVE (NOV 2025 / JAN 2026 / JUL 2026) -->
+    <!-- ===================================================================== -->
+    <section id="view-analytics" class="hidden space-y-5">
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <!-- Chart 1: Pipeline Waterfall -->
+        <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Unit-02 Production Stage Flow (Pcs)</h3>
+              <p class="text-xs text-slate-500">Order Qty → Cutting → Input → Sewing → Wash → Metal Pass → Pack → Ship</p>
+            </div>
+            <span class="text-[11px] font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded">Live Active Rows</span>
+          </div>
+          <div class="relative h-72 w-full">
+            <canvas id="stageFlowChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Department WIP vs Reject Breakdown -->
+        <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Departmental WIP &amp; Reject Breakdown (Pcs)</h3>
+              <p class="text-xs text-slate-500">Pinpoints bottlenecks and quality loss across Input, Sewing, Wash, Metal &amp; Pack</p>
+            </div>
+            <span class="text-[11px] font-mono text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Reconciliation</span>
+          </div>
+          <div class="relative h-72 w-full">
+            <canvas id="wipRejectChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Historical Multi-Sheet Comparison -->
+        <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Workbook Monthly Sheet Comparison (Nov'25 vs Jan'26 vs Jul'26)</h3>
+              <p class="text-xs text-slate-500">Exact totals from Production Report Copy (795 POs), Report (2) (1,000 POs) &amp; Report (3) (1,484 POs)</p>
+            </div>
+          </div>
+          <div class="relative h-72 w-full">
+            <canvas id="monthlyComparisonChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Top Buyers Order Volume Across Workbook -->
+        <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Top Buyers by Order Volume (July'2026 Cumulative Sheet)</h3>
+              <p class="text-xs text-slate-500">Extracted from 1,484 PO lines in Production Report (3) (Total: 5,453,684 pcs)</p>
+            </div>
+          </div>
+          <div class="relative h-72 w-full">
+            <canvas id="buyerVolumeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historical Workbook Sheet Summary Table -->
+      <div class="bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Workbook Sheet-Level Summary Ledger (`NDL Unit-02 Production Report (RMG).xlsx`)</h3>
+            <p class="text-xs text-slate-500">Verified totals extracted directly from all four production sheets in the attached workbook</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-slate-700 border-b border-slate-300 text-left">
+                <th class="py-2.5 px-3 font-bold">Workbook Sheet Name</th>
+                <th class="py-2.5 px-3 font-bold">Reporting Period</th>
+                <th class="py-2.5 px-3 font-bold text-right">PO Lines</th>
+                <th class="py-2.5 px-3 font-bold text-right">Order Qty (Pcs)</th>
+                <th class="py-2.5 px-3 font-bold text-right">Total Cutting</th>
+                <th class="py-2.5 px-3 font-bold text-right">Transfer to Sewing</th>
+                <th class="py-2.5 px-3 font-bold text-right">Total Sewing</th>
+                <th class="py-2.5 px-3 font-bold text-right">Total Wash Complete</th>
+                <th class="py-2.5 px-3 font-bold text-right">Total Shipment</th>
+                <th class="py-2.5 px-3 font-bold text-right">Closing Unfinished WIP</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 mono-num">
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-sans font-bold text-blue-700">Production Report (Unit-02 Active)</td>
+                <td class="py-2.5 px-3 font-sans text-slate-600">Current Template</td>
+                <td class="py-2.5 px-3 text-right">2 (313 slots)</td>
+                <td class="py-2.5 px-3 text-right font-semibold">16,650</td>
+                <td class="py-2.5 px-3 text-right">17,000</td>
+                <td class="py-2.5 px-3 text-right">17,000</td>
+                <td class="py-2.5 px-3 text-right">16,995</td>
+                <td class="py-2.5 px-3 text-right">16,959</td>
+                <td class="py-2.5 px-3 text-right font-semibold text-emerald-700">16,650</td>
+                <td class="py-2.5 px-3 text-right">138 (Total WIP)</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-sans font-semibold text-slate-900">Production Report Copy</td>
+                <td class="py-2.5 px-3 font-sans text-slate-600">November'2025</td>
+                <td class="py-2.5 px-3 text-right">795</td>
+                <td class="py-2.5 px-3 text-right font-semibold">2,561,294</td>
+                <td class="py-2.5 px-3 text-right">2,476,821</td>
+                <td class="py-2.5 px-3 text-right">2,373,681</td>
+                <td class="py-2.5 px-3 text-right">2,317,563</td>
+                <td class="py-2.5 px-3 text-right">2,086,920</td>
+                <td class="py-2.5 px-3 text-right font-semibold text-emerald-700">1,776,703</td>
+                <td class="py-2.5 px-3 text-right">97,732</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-sans font-semibold text-slate-900">Production Report (2)</td>
+                <td class="py-2.5 px-3 font-sans text-slate-600">January'2026</td>
+                <td class="py-2.5 px-3 text-right">1,000</td>
+                <td class="py-2.5 px-3 text-right font-semibold">3,389,697</td>
+                <td class="py-2.5 px-3 text-right">3,319,324</td>
+                <td class="py-2.5 px-3 text-right">3,193,918</td>
+                <td class="py-2.5 px-3 text-right">3,129,988</td>
+                <td class="py-2.5 px-3 text-right">2,926,532</td>
+                <td class="py-2.5 px-3 text-right font-semibold text-emerald-700">2,591,129</td>
+                <td class="py-2.5 px-3 text-right">66,931</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-sans font-semibold text-slate-900">Production Report (3)</td>
+                <td class="py-2.5 px-3 font-sans text-slate-600">July'2026</td>
+                <td class="py-2.5 px-3 text-right">1,484</td>
+                <td class="py-2.5 px-3 text-right font-semibold">5,453,684</td>
+                <td class="py-2.5 px-3 text-right">5,405,453</td>
+                <td class="py-2.5 px-3 text-right">5,310,787</td>
+                <td class="py-2.5 px-3 text-right">5,213,105</td>
+                <td class="py-2.5 px-3 text-right">4,958,557</td>
+                <td class="py-2.5 px-3 text-right font-semibold text-emerald-700">4,641,066</td>
+                <td class="py-2.5 px-3 text-right">236,611</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: BONUS POLICY (SHEET3) & EXCEL FORMULA REFERENCE               -->
+    <!-- ===================================================================== -->
+    <section id="view-bonus" class="hidden space-y-5">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <!-- Left 5 Cols: Sheet3 Bonus Policy & Interactive Calculator -->
+        <div class="lg:col-span-5 bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm space-y-4">
+          <div class="border-b border-slate-200 pb-3">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-600">Extracted from Sheet3</span>
+            <h2 class="text-base font-bold text-slate-900 mt-0.5">Natural Denims Limited &amp; Washing Plant Ltd. – Bonus Policy</h2>
+            <p class="text-xs text-slate-500">Official service-length bonus percentage tiers from `Sheet3` of the workbook</p>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs border-collapse border border-slate-200">
+              <thead>
+                <tr class="bg-slate-100 text-slate-700">
+                  <th class="py-2 px-3 text-left border border-slate-200">Category</th>
+                  <th class="py-2 px-3 text-left border border-slate-200">Service Duration</th>
+                  <th class="py-2 px-3 text-right border border-slate-200">Bonus Rate (Per %)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-slate-900" rowspan="3">Worker</td>
+                  <td class="py-2 px-3">88–179 Days</td>
+                  <td class="py-2 px-3 text-right mono-num font-bold text-blue-700">40% (0.40)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3">180–364 Days</td>
+                  <td class="py-2 px-3 text-right mono-num font-bold text-blue-700">75% (0.75)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3">365–1 Year Above</td>
+                  <td class="py-2 px-3 text-right mono-num font-bold text-emerald-700">100% (1.00)</td>
+                </tr>
+                <tr class="border-t-2 border-slate-300">
+                  <td class="py-2 px-3 font-semibold text-slate-900" rowspan="2">Staff</td>
+                  <td class="py-2 px-3">180–364 Days</td>
+                  <td class="py-2 px-3 text-right mono-num font-bold text-indigo-700">40% (0.40)</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3">365–1 Year Above</td>
+                  <td class="py-2 px-3 text-right mono-num font-bold text-emerald-700">80% (0.80)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Interactive Bonus Calculator -->
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">Interactive Bonus Payout Calculator</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Employee Category</label>
+                <select id="bonusCategory" onchange="calculateBonus()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white font-semibold">
+                  <option value="Worker">Worker</option>
+                  <option value="Staff">Staff</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Service Days</label>
+                <input id="bonusDays" type="number" value="240" min="0" oninput="calculateBonus()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Base Salary (BDT)</label>
+                <input id="bonusSalary" type="number" value="14500" min="0" step="100" oninput="calculateBonus()" class="w-full px-2.5 py-1.5 text-xs rounded border border-slate-300 bg-white mono-num" />
+              </div>
+            </div>
+            <div id="bonusResultBox" class="p-3 rounded-lg bg-blue-900 text-white flex items-center justify-between">
+              <div>
+                <div class="text-[11px] text-blue-200" id="bonusTierLabel">Worker Tier: 180–364 Days (75%)</div>
+                <div class="text-lg font-extrabold mono-num" id="bonusAmountValue">10,875 BDT</div>
+              </div>
+              <span class="px-2.5 py-1 rounded text-xs font-mono bg-blue-700 text-blue-100" id="bonusRateBadge">0.75x</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: Complete Excel Formula Map -->
+        <div class="lg:col-span-7 bg-white rounded-xl border border-slate-200/90 p-5 shadow-sm space-y-4">
+          <div class="border-b border-slate-200 pb-3">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">100% Grounded Formula Map</span>
+            <h2 class="text-base font-bold text-slate-900 mt-0.5">NDL Unit-02 Production Report — Automated Column Formulas</h2>
+            <p class="text-xs text-slate-500">Every formula below is replicated verbatim from `Production Report` (Rows 9–321) in the web application</p>
+          </div>
+
+          <div class="overflow-x-auto max-h-[420px] erp-scroll">
+            <table class="w-full text-xs border-collapse">
+              <thead class="bg-slate-100 text-slate-700 sticky top-0">
+                <tr>
+                  <th class="py-2 px-3 text-left">Col</th>
+                  <th class="py-2 px-3 text-left">Column Header</th>
+                  <th class="py-2 px-3 text-left">Excel Formula</th>
+                  <th class="py-2 px-3 text-left">Business Logic</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 mono-num text-[11px]">
+                <tr><td class="py-1.5 px-3 font-bold">K</td><td class="py-1.5 px-3 font-sans">Cutting Plan Qty (Pcs)</td><td class="py-1.5 px-3 text-blue-700">=I9*J9</td><td class="py-1.5 px-3 font-sans text-slate-600">Order Qty × Cutting Plan %</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">L</td><td class="py-1.5 px-3 font-sans">Wastage 1% Less</td><td class="py-1.5 px-3 text-blue-700">=J9+0.01</td><td class="py-1.5 px-3 font-sans text-slate-600">Cutting Plan % + 1% allowance</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">M</td><td class="py-1.5 px-3 font-sans">Wastage 1% Less Qty</td><td class="py-1.5 px-3 text-blue-700">=I9*L9</td><td class="py-1.5 px-3 font-sans text-slate-600">Order Qty × Wastage 1% Less Ratio</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">O</td><td class="py-1.5 px-3 font-sans">As Per Cons. Required (Yds)</td><td class="py-1.5 px-3 text-blue-700">=M9/12*N9</td><td class="py-1.5 px-3 font-sans text-slate-600">Wastage Qty (Dozens) × Booking Cons/Dzn</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">V–Y</td><td class="py-1.5 px-3 font-sans">Required Fabric/Pkt/Inter/RIB</td><td class="py-1.5 px-3 text-blue-700">=M9/12*R9 (..U9)</td><td class="py-1.5 px-3 font-sans text-slate-600">Bulk Required Yards per material</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AH–AK</td><td class="py-1.5 px-3 font-sans">Short/Excess Issue (Yds)</td><td class="py-1.5 px-3 text-blue-700">=AA9-V9 (..AG9-Y9)</td><td class="py-1.5 px-3 font-sans text-slate-600">Total Issued Yards − Required Yards</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AL</td><td class="py-1.5 px-3 font-sans">Consumption Wise Expected Cut</td><td class="py-1.5 px-3 text-blue-700">=IFERROR(AA9/R9*12,"")</td><td class="py-1.5 px-3 font-sans text-slate-600">Expected Pcs from Total Fabric Issued</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AM</td><td class="py-1.5 px-3 font-sans">Short/Excess Cutting Qty</td><td class="py-1.5 px-3 text-blue-700">=IFERROR(AS9-AL9,"")</td><td class="py-1.5 px-3 font-sans text-slate-600">Actual Total Cutting − Expected Cut</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AN, CT</td><td class="py-1.5 px-3 font-sans">Fabric In-Hand As Per Cons.</td><td class="py-1.5 px-3 text-blue-700">=IFERROR(-AM9/12*R9,"")</td><td class="py-1.5 px-3 font-sans text-slate-600">Unutilized fabric balance in yards</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AP</td><td class="py-1.5 px-3 font-sans">Actual Cutting %</td><td class="py-1.5 px-3 text-blue-700">=IFERROR(AS9/I9,"")</td><td class="py-1.5 px-3 font-sans text-slate-600">Total Cutting ÷ Order Qty</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AS, AV</td><td class="py-1.5 px-3 font-sans">Cutting Total / Input Total</td><td class="py-1.5 px-3 text-blue-700">=AR9+AQ9 / =AU9+AT9</td><td class="py-1.5 px-3 font-sans text-slate-600">Opening + Day Production</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">AW</td><td class="py-1.5 px-3 font-sans">Input WIP</td><td class="py-1.5 px-3 text-blue-700">=AS9-AV9</td><td class="py-1.5 px-3 font-sans text-slate-600">Cutting Total − Line Input Total</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">BA, BC</td><td class="py-1.5 px-3 font-sans">Sewing Total &amp; Sewing WIP</td><td class="py-1.5 px-3 text-blue-700">=AZ9+AY9 | =AV9-BA9-BB9</td><td class="py-1.5 px-3 font-sans text-slate-600">Input Total − Sewing Total − Sewing Reject</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">BH, BJ</td><td class="py-1.5 px-3 font-sans">Wash Send Total &amp; WIP</td><td class="py-1.5 px-3 text-blue-700">=BF9+BG9 | =BA9-BH9-BI9</td><td class="py-1.5 px-3 font-sans text-slate-600">Sewing Total − Wash Send Total − Reject</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">BO, BS</td><td class="py-1.5 px-3 font-sans">Wash Rec Total &amp; WIP</td><td class="py-1.5 px-3 text-blue-700">=BH9-BO9-BP9-BQ9-BR9</td><td class="py-1.5 px-3 font-sans text-slate-600">Wash Send − Wash Rec − App/Lab − Buying House − Rej</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">BW, BY</td><td class="py-1.5 px-3 font-sans">Metal Pass Total &amp; WIP</td><td class="py-1.5 px-3 text-blue-700">=BV9+BU9 | =BO9-BW9-BX9</td><td class="py-1.5 px-3 font-sans text-slate-600">Wash Rec Total − Metal Pass Total − Reject</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CB, CD</td><td class="py-1.5 px-3 font-sans">Pack Total &amp; Pack WIP</td><td class="py-1.5 px-3 text-blue-700">=CA9+BZ9 | =BW9-CB9-CC9</td><td class="py-1.5 px-3 font-sans text-slate-600">Metal Pass Total − Pack Total − Pack Reject</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CH, CI</td><td class="py-1.5 px-3 font-sans">Total Ship &amp; Short/Excess</td><td class="py-1.5 px-3 text-blue-700">=CF9+CG9 | =CH9-I9</td><td class="py-1.5 px-3 font-sans text-slate-600">Previous + Month Ship; Variance vs Order Qty</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CM</td><td class="py-1.5 px-3 font-sans">Finished Good WIP</td><td class="py-1.5 px-3 text-blue-700">=CB9-CH9-CJ9-CK9-CL9</td><td class="py-1.5 px-3 font-sans text-slate-600">Pack Total − Ship − Samples − Missing</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CO</td><td class="py-1.5 px-3 font-sans">Total Sample &amp; Others</td><td class="py-1.5 px-3 text-blue-700">=CK9+CJ9+BP9+BQ9</td><td class="py-1.5 px-3 font-sans text-slate-600">Sum of all sample &amp; approval deductions</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CP</td><td class="py-1.5 px-3 font-sans">Total WIP (All Stages)</td><td class="py-1.5 px-3 text-blue-700">=CM9+CD9+BY9+BS9+BJ9+BC9+AW9</td><td class="py-1.5 px-3 font-sans text-slate-600">Sum of WIP across all 7 floor stages</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CQ</td><td class="py-1.5 px-3 font-sans">Total Reject (All Stages)</td><td class="py-1.5 px-3 text-blue-700">=CC9+BX9+BR9+BI9+BB9</td><td class="py-1.5 px-3 font-sans text-slate-600">Sum of Rejects across all 5 inspection points</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CS</td><td class="py-1.5 px-3 font-sans">Reconciled Missing Pcs</td><td class="py-1.5 px-3 text-blue-700">=CP9+CQ9-CR9</td><td class="py-1.5 px-3 font-sans text-slate-600">Total WIP + Total Reject − NDL Store Receive Pcs</td></tr>
+                <tr><td class="py-1.5 px-3 font-bold">CV</td><td class="py-1.5 px-3 font-sans">Short/Excess Store Rec (Yds)</td><td class="py-1.5 px-3 text-blue-700">=IFERROR(CU9-CT9,"")</td><td class="py-1.5 px-3 font-sans text-slate-600">Store Received Yards − Fabric In-Hand Yards</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL: GITHUB REPOSITORY DEPLOYMENT & PUSH COMMANDS                     -->
+  <!-- ======================================================================= -->
+  <div id="githubModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 bg-slate-900 text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          <h3 class="text-sm font-bold">Deploy to GitHub Pages (`mazharulmd/Production-Report`)</h3>
+        </div>
+        <button type="button" onclick="closeGithubModal()" class="text-slate-400 hover:text-white text-sm font-bold px-2 py-1">✕</button>
+      </div>
+      <div class="p-6 space-y-4 text-xs text-slate-700">
+        <p class="leading-relaxed">
+          This web application is 100% self-contained (`index.html`) with zero build steps required, making it ready for direct hosting on <strong>GitHub Pages</strong> at <code class="px-1.5 py-0.5 rounded bg-slate-100 text-slate-900 font-mono">https://github.com/mazharulmd/Production-Report.git</code>.
+        </p>
+
+        <div class="bg-slate-900 text-slate-100 rounded-xl p-4 font-mono text-[11px] space-y-1 relative">
+          <div class="flex items-center justify-between text-slate-400 pb-1.5 mb-1.5 border-b border-slate-800">
+            <span>Terminal Commands (Push to main)</span>
+            <button type="button" onclick="copyGitCommands()" class="px-2 py-0.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-sans text-[11px] font-semibold">
+              Copy Commands
+            </button>
+          </div>
+          <pre id="gitCommandsBlock" class="overflow-x-auto leading-relaxed">git init
+git add index.html README.md
+git commit -m "Deploy NDL Unit-02 RMG Production Report web application"
+git remote add origin https://github.com/mazharulmd/Production-Report.git
+git branch -M main
+git push -u origin main</pre>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <button type="button" onclick="downloadStandaloneIndexHtml()"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-sm">
+            Download Current App as `index.html`
+          </button>
+          <button type="button" onclick="closeGithubModal()"
+            class="px-4 py-2 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL: DELETE ROW CONFIRMATION (NO BROWSER CONFIRM())                   -->
+  <!-- ======================================================================= -->
+  <div id="deleteConfirmModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-xl max-w-md w-full border border-slate-200 shadow-xl p-5 space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Remove Production Order Row?</h3>
+          <p id="deleteModalDesc" class="text-xs text-slate-500 mt-1">Are you sure you want to delete this PO line from the active report?</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeDeleteModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-50">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmDeleteRow()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white">
+          Delete Row
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden px-4 py-3 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-lg border border-slate-700 flex items-center gap-2.5 no-print">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="toastMessage">Saved</span>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- APPLICATION LOGIC & REAL WORKBOOK DATA                                  -->
+  <!-- ======================================================================= -->
+  <script>
+    // 1. Exact Baseline Rows from Sheet "Production Report" (NDL Unit-02 Production Report)
+    const UNIT02_BASELINE_ROWS = [
+      {
+        id: "ndl-u2-1",
+        factory: "NDL Unit-02",
+        buyer: "BERSHKA",
+        style: "JK-236 JADE",
+        po: "40433-01",
+        subPo: "",
+        color: "401-NAVY BLUE",
+        orderQty: 13800,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 16.8,
+        bookingYds: 20000,
+        receivedYds: 20000,
+        fabBulkConsDz: 16.7,
+        pktBulkConsDz: 1.9,
+        interBulkConsDz: 2.8,
+        ribBulkConsDz: 1.9,
+        dayFabIssueYds: 500,
+        totalFabIssueYds: 19973,
+        dayPktIssueYds: 2272,
+        totalPktIssueYds: 2272,
+        dayInterIssueYds: 3349,
+        totalInterIssueYds: 3349,
+        dayRibIssueYds: 2272,
+        totalRibIssueYds: 2272,
+        cutOpening: 14100,
+        cutDay: 0,
+        inputOpening: 14352,
+        inputDay: 0,
+        inputTotalOverride: 14100, // In Row 9 of sheet, AV9 is 14100
+        sewOpening: 14095,
+        sewDay: 0,
+        sewReject: 5,
+        washPlant: "NDL Wash",
+        washSendOpening: 14092,
+        washSendDay: 0,
+        washSendReject: 2,
+        finishingUnit: "Unit-02",
+        washRecOpening: 14070,
+        washRecDay: 0,
+        appLab: 2,
+        buyingHouse: 0,
+        washRecReject: 15,
+        metalPassOpening: 14000,
+        metalPassDay: 0,
+        metalPassReject: 50,
+        packOpening: 13810,
+        packDay: 0,
+        packReject: 105,
+        shipDate: "2025-12-04",
+        prevShip: 13800,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 290,
+        storeRecYds: 110,
+        status: "Closed",
+        remarks: "Unit-02 Master Sheet Row 9"
+      },
+      {
+        id: "ndl-u2-2",
+        factory: "NDL Unit-02",
+        buyer: "BERSHKA",
+        style: "JK-236 JADE",
+        po: "40725-01",
+        subPo: "",
+        color: "401-NAVY BLUE",
+        orderQty: 2850,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 16.8,
+        bookingYds: 4150,
+        receivedYds: 4150,
+        fabBulkConsDz: 16.7,
+        pktBulkConsDz: 1.9,
+        interBulkConsDz: 2.8,
+        ribBulkConsDz: 1.9,
+        dayFabIssueYds: 200,
+        totalFabIssueYds: 4125,
+        dayPktIssueYds: 469,
+        totalPktIssueYds: 469,
+        dayInterIssueYds: 692,
+        totalInterIssueYds: 692,
+        dayRibIssueYds: 469,
+        totalRibIssueYds: 469,
+        cutOpening: 2900,
+        cutDay: 0,
+        inputOpening: 2900,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 2900,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 2899,
+        washSendDay: 0,
+        washSendReject: 1,
+        finishingUnit: "Unit-02",
+        washRecOpening: 2889,
+        washRecDay: 0,
+        appLab: 5,
+        buyingHouse: 0,
+        washRecReject: 4,
+        metalPassOpening: 2885,
+        metalPassDay: 0,
+        metalPassReject: 2,
+        packOpening: 2850,
+        packDay: 0,
+        packReject: 21,
+        shipDate: "2025-12-15",
+        prevShip: 2850,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 43,
+        storeRecYds: 20,
+        status: "Closed",
+        remarks: "Unit-02 Master Sheet Row 10"
+      }
+    ];
+
+    // Additional Real PO Rows extracted from Production Report (2) & (3) & Copy in the uploaded workbook
+    const WORKBOOK_ADDITIONAL_ROWS = [
+      {
+        id: "ndl-wb-3",
+        factory: "NDL Unit-02",
+        buyer: "STRADIVARIUS",
+        style: "1450-Wash C",
+        po: "36975-55",
+        subPo: "",
+        color: "702-BLUE MEANS",
+        orderQty: 26500,
+        cuttingPlanPct: 1.025,
+        bookingConsDz: 15.71,
+        bookingYds: 35907,
+        receivedYds: 35907,
+        fabBulkConsDz: 15.71,
+        pktBulkConsDz: 1.65,
+        interBulkConsDz: 0,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 35907,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 3770,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 0,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 27206,
+        cutDay: 0,
+        inputOpening: 27206,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 27206,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 27206,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 182,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 182,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 0,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2026-02-15",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Running",
+        remarks: "27,024 pcs in Wash WIP"
+      },
+      {
+        id: "ndl-wb-4",
+        factory: "NDL Unit-02",
+        buyer: "TOMMY HILFIGER",
+        style: "TBFFC01B BUY-15",
+        po: "4500656785",
+        subPo: "",
+        color: "CHARCOAL",
+        orderQty: 432,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 13.3,
+        bookingYds: 498,
+        receivedYds: 498,
+        fabBulkConsDz: 13.3,
+        pktBulkConsDz: 3.1,
+        interBulkConsDz: 2.7,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 498,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 116,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 101,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 449,
+        cutDay: 0,
+        inputOpening: 449,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 449,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 449,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 449,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 449,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 432,
+        packDay: 0,
+        packReject: 17,
+        shipDate: "2026-01-15",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 17,
+        storeRecYds: 0,
+        status: "Partial Shipment",
+        remarks: "17 Pcs Transfer To 4500656780 PO"
+      },
+      {
+        id: "ndl-wb-5",
+        factory: "NDL Unit-02",
+        buyer: "CALVIN KLEIN",
+        style: "CKFFC01B BUY-14",
+        po: "4500656513",
+        subPo: "",
+        color: "BOSTON BLUE",
+        orderQty: 792,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 14.1,
+        bookingYds: 968,
+        receivedYds: 959,
+        fabBulkConsDz: 14.1,
+        pktBulkConsDz: 3.45,
+        interBulkConsDz: 2.6,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 959,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 237,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 178,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 822,
+        cutDay: 0,
+        inputOpening: 822,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 822,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 822,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 774,
+        washRecDay: 48,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 822,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 793,
+        packDay: 0,
+        packReject: 29,
+        shipDate: "2025-12-10",
+        prevShip: 0,
+        monthShip: 792,
+        sample: 1,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 29,
+        storeRecYds: 0,
+        status: "Closed",
+        remarks: "Shipped 792 pcs; 29 pcs to store"
+      },
+      {
+        id: "ndl-wb-6",
+        factory: "NDL Unit-02",
+        buyer: "HUDSON",
+        style: "45NS7FER7623-FER",
+        po: "4500655690",
+        subPo: "",
+        color: "FERGANA",
+        orderQty: 800,
+        cuttingPlanPct: 1.10,
+        bookingConsDz: 18.92,
+        bookingYds: 1400,
+        receivedYds: 1337,
+        fabBulkConsDz: 18.92,
+        pktBulkConsDz: 2.45,
+        interBulkConsDz: 2.2,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 1337,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 181,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 163,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 887,
+        cutDay: 0,
+        inputOpening: 887,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 887,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 887,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 842,
+        washRecDay: 42,
+        appLab: 3,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 884,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 826,
+        packDay: 0,
+        packReject: 58,
+        shipDate: "2025-12-27",
+        prevShip: 0,
+        monthShip: 818,
+        sample: 7,
+        shipSample: 1,
+        shipMissing: 0,
+        storeRecPcs: 58,
+        storeRecYds: 0,
+        status: "Closed",
+        remarks: "+18 pcs excess shipment"
+      },
+      {
+        id: "ndl-wb-7",
+        factory: "NDL Unit-02",
+        buyer: "JOE'S",
+        style: "45NHRRIG4868-RIG",
+        po: "4500655347",
+        subPo: "",
+        color: "RIGA",
+        orderQty: 4590,
+        cuttingPlanPct: 1.05,
+        bookingConsDz: 7.65,
+        bookingYds: 3102,
+        receivedYds: 3102,
+        fabBulkConsDz: 7.65,
+        pktBulkConsDz: 1.95,
+        interBulkConsDz: 2.1,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 3102,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 791,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 851,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 4863,
+        cutDay: 0,
+        inputOpening: 4863,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 4863,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 4863,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 4781,
+        washRecDay: 51,
+        appLab: 6,
+        buyingHouse: 0,
+        washRecReject: 25,
+        metalPassOpening: 4832,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 4648,
+        packDay: 0,
+        packReject: 180,
+        shipDate: "2025-12-01",
+        prevShip: 0,
+        monthShip: 4627,
+        sample: 20,
+        shipSample: 1,
+        shipMissing: 0,
+        storeRecPcs: 180,
+        storeRecYds: 0,
+        status: "Closed",
+        remarks: "+37 pcs excess shipment"
+      },
+      {
+        id: "ndl-wb-8",
+        factory: "NDL Unit-02",
+        buyer: "OVS",
+        style: "261SHR245-6154",
+        po: "OVS-3332",
+        subPo: "",
+        color: "3332 LIGHT BLUE",
+        orderQty: 4520,
+        cuttingPlanPct: 1.04,
+        bookingConsDz: 11.0,
+        bookingYds: 4351,
+        receivedYds: 4351,
+        fabBulkConsDz: 11.0,
+        pktBulkConsDz: 1.8,
+        interBulkConsDz: 1.2,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 4351,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 712,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 475,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 4615,
+        cutDay: 0,
+        inputOpening: 4615,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 4615,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 4615,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 0,
+        washRecDay: 4479,
+        appLab: 6,
+        buyingHouse: 0,
+        washRecReject: 127,
+        metalPassOpening: 4479,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 4204,
+        packDay: 0,
+        packReject: 272,
+        shipDate: "2025-12-20",
+        prevShip: 0,
+        monthShip: 4180,
+        sample: 24,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 272,
+        storeRecYds: 0,
+        status: "Closed",
+        remarks: "OVS Light Blue Denim"
+      },
+      {
+        id: "ndl-wb-9",
+        factory: "NDL Unit-02",
+        buyer: "ZARA",
+        style: "DUNGAREE",
+        po: "20846-D",
+        subPo: "",
+        color: "700-BROWN",
+        orderQty: 7500,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 17.38,
+        bookingYds: 11189,
+        receivedYds: 10891,
+        fabBulkConsDz: 17.38,
+        pktBulkConsDz: 2.35,
+        interBulkConsDz: 1.83,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 10891,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 1452,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 1181,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 7798,
+        cutDay: 0,
+        inputOpening: 7798,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 7798,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 7798,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 7690,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 7690,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 7471,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2025-12-07",
+        prevShip: 6231,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Style Partial Shipment",
+        remarks: "1,240 packed pcs awaiting next vessel"
+      },
+      {
+        id: "ndl-wb-10",
+        factory: "NDL Unit-02",
+        buyer: "DKNY",
+        style: "DKDB400",
+        po: "44006781",
+        subPo: "",
+        color: "STUYVESANT WASH",
+        orderQty: 1200,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 18.79,
+        bookingYds: 1954,
+        receivedYds: 1954,
+        fabBulkConsDz: 18.79,
+        pktBulkConsDz: 3.64,
+        interBulkConsDz: 2.58,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 1954,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 378,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 268,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 1200,
+        cutDay: 0,
+        inputOpening: 1200,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 1200,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 1200,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 1200,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 1200,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 1200,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2026-01-22",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Running",
+        remarks: "1,200 pcs in Finished Good WIP ready to ship"
+      },
+      {
+        id: "ndl-wb-11",
+        factory: "NDL Unit-02",
+        buyer: "LUCKY BRAND",
+        style: "LBTJC03B",
+        po: "4500655235",
+        subPo: "",
+        color: "ZAYNE",
+        orderQty: 9600,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 5.64,
+        bookingYds: 4512,
+        receivedYds: 4512,
+        fabBulkConsDz: 5.64,
+        pktBulkConsDz: 2.17,
+        interBulkConsDz: 0,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 4662,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 1794,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 0,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 9920,
+        cutDay: 0,
+        inputOpening: 9920,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 9920,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 9920,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 9833,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 9833,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 9600,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2026-02-10",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Running",
+        remarks: "Wash completed 9,833 pcs; packing in progress"
+      },
+      {
+        id: "ndl-wb-12",
+        factory: "NDL Unit-02",
+        buyer: "LERROS",
+        style: "7629220F",
+        po: "703587",
+        subPo: "",
+        color: "485",
+        orderQty: 1200,
+        cuttingPlanPct: 1.05,
+        bookingConsDz: 12.75,
+        bookingYds: 1352,
+        receivedYds: 1438,
+        fabBulkConsDz: 12.75,
+        pktBulkConsDz: 8.1,
+        interBulkConsDz: 2.2,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 1438,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 993,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 250,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 1255,
+        cutDay: 0,
+        inputOpening: 1255,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 1255,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 1255,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 1248,
+        washRecDay: 0,
+        appLab: 6,
+        buyingHouse: 0,
+        washRecReject: 1,
+        metalPassOpening: 1248,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 1206,
+        packDay: 0,
+        packReject: 41,
+        shipDate: "2025-12-22",
+        prevShip: 1200,
+        monthShip: 0,
+        sample: 5,
+        shipSample: 1,
+        shipMissing: 0,
+        storeRecPcs: 42,
+        storeRecYds: 0,
+        status: "Closed",
+        remarks: "100% Order Shipped"
+      },
+      {
+        id: "ndl-wb-13",
+        factory: "NDL Unit-02",
+        buyer: "BUFFALO",
+        style: "BPMD22123",
+        po: "4500664590",
+        subPo: "",
+        color: "BLACK",
+        orderQty: 1542,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 15.2,
+        bookingYds: 2030,
+        receivedYds: 2030,
+        fabBulkConsDz: 15.2,
+        pktBulkConsDz: 2.5,
+        interBulkConsDz: 2.1,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 2018,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 332,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 279,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 1593,
+        cutDay: 0,
+        inputOpening: 1593,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 1593,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 1593,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 1568,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 1568,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 1542,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2026-02-18",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Running",
+        remarks: "Buffalo Black Denim Running"
+      },
+      {
+        id: "ndl-wb-14",
+        factory: "NDL Unit-02",
+        buyer: "BUFFALO",
+        style: "BPMD22123",
+        po: "4500664590-G",
+        subPo: "",
+        color: "GRAPHITE",
+        orderQty: 1542,
+        cuttingPlanPct: 1.03,
+        bookingConsDz: 15.2,
+        bookingYds: 2030,
+        receivedYds: 2030,
+        fabBulkConsDz: 15.2,
+        pktBulkConsDz: 2.5,
+        interBulkConsDz: 2.1,
+        ribBulkConsDz: 0,
+        dayFabIssueYds: 0,
+        totalFabIssueYds: 2018,
+        dayPktIssueYds: 0,
+        totalPktIssueYds: 332,
+        dayInterIssueYds: 0,
+        totalInterIssueYds: 279,
+        dayRibIssueYds: 0,
+        totalRibIssueYds: 0,
+        cutOpening: 1593,
+        cutDay: 0,
+        inputOpening: 1593,
+        inputDay: 0,
+        inputTotalOverride: null,
+        sewOpening: 1593,
+        sewDay: 0,
+        sewReject: 0,
+        washPlant: "NDL Wash",
+        washSendOpening: 1593,
+        washSendDay: 0,
+        washSendReject: 0,
+        finishingUnit: "Unit-02",
+        washRecOpening: 1572,
+        washRecDay: 0,
+        appLab: 0,
+        buyingHouse: 0,
+        washRecReject: 0,
+        metalPassOpening: 1572,
+        metalPassDay: 0,
+        metalPassReject: 0,
+        packOpening: 1542,
+        packDay: 0,
+        packReject: 0,
+        shipDate: "2026-02-18",
+        prevShip: 0,
+        monthShip: 0,
+        sample: 0,
+        shipSample: 0,
+        shipMissing: 0,
+        storeRecPcs: 0,
+        storeRecYds: 0,
+        status: "Running",
+        remarks: "Buffalo Graphite Running"
+      }
+    ];
+
+    // Application State
+    const STORAGE_KEY = "ndl_unit02_production_report_v1";
+    let state = {
+      reportMonth: "July'2026 (Unit-02 Active)",
+      activeTab: "grid",
+      columnGroup: "ALL",
+      presetMode: "unit02",
+      searchQuery: "",
+      buyerFilter: "ALL",
+      statusFilter: "ALL",
+      editingRowId: null,
+      pendingDeleteId: null,
+      rows: []
+    };
+
+    let chartInstances = {};
+
+    // Safe localStorage helpers
+    function saveStateToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          reportMonth: state.reportMonth,
+          presetMode: state.presetMode,
+          rows: state.rows
+        }));
+      } catch (e) {
+        // Ignore storage errors in sandboxed iframes
+      }
+    }
+
+    function loadStateFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.rows) && parsed.rows.length > 0) {
+            state.rows = parsed.rows;
+            state.reportMonth = parsed.reportMonth || state.reportMonth;
+            state.presetMode = parsed.presetMode || "unit02";
+            return true;
+          }
+        }
+      } catch (e) {
+        // Ignore storage errors
+      }
+      return false;
+    }
+
+    // Core Excel Formula Engine for a single row (Replicating NDL Unit-02 Sheet Row 9-321)
+    function computeDerivedRow(r) {
+      const num = (v) => {
+        const n = parseFloat(v);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const I = num(r.orderQty);
+      const J = num(r.cuttingPlanPct);
+      const K = I * J; // =I9*J9
+      const L = J > 0 ? J + 0.01 : 0; // =J9+0.01
+      const M = I * L; // =I9*L9
+      const N = num(r.bookingConsDz);
+      const O = (M / 12) * N; // =M9/12*N9
+      const P = num(r.bookingYds);
+      const Q = num(r.receivedYds);
+
+      const R = num(r.fabBulkConsDz);
+      const S = num(r.pktBulkConsDz);
+      const T = num(r.interBulkConsDz);
+      const U = num(r.ribBulkConsDz);
+
+      const V = (M / 12) * R; // =M9/12*R9
+      const W = (M / 12) * S; // =M9/12*S9
+      const X = (M / 12) * T; // =M9/12*T9
+      const Y = (M / 12) * U; // =M9/12*U9
+
+      const Z = num(r.dayFabIssueYds);
+      const AA = num(r.totalFabIssueYds);
+      const AB = num(r.dayPktIssueYds);
+      const AC = num(r.totalPktIssueYds);
+      const AD = num(r.dayInterIssueYds);
+      const AE = num(r.totalInterIssueYds);
+      const AF = num(r.dayRibIssueYds);
+      const AG = num(r.totalRibIssueYds);
+
+      const AH = AA - V; // =AA9-V9
+      const AI = AC - W; // =AC9-W9
+      const AJ = AE - X; // =AE9-X9
+      const AK = AG - Y; // =AG9-Y9
+
+      const AL = R > 0 ? (AA / R) * 12 : 0; // =IFERROR((AA9/R9*12),"")
+
+      const AQ = num(r.cutOpening);
+      const AR = num(r.cutDay);
+      const AS = AQ + AR; // =AR9+AQ9
+
+      const AM = R > 0 ? (AS - AL) : 0; // =IFERROR((AS9-AL9),"")
+      const AN = R > 0 ? (-AM / 12) * R : 0; // =IFERROR((-AM9/12*R9),"")
+      const AP = I > 0 ? (AS / I) : 0; // =IFERROR((AS9/I9),"")
+
+      const AT = num(r.inputOpening);
+      const AU = num(r.inputDay);
+      const AV = (r.inputTotalOverride !== null && r.inputTotalOverride !== undefined && r.inputTotalOverride !== "")
+        ? num(r.inputTotalOverride)
+        : (AT + AU); // =AU9+AT9 (or explicit 14100 in Row 9)
+      const AW = AS - AV; // =AS9-AV9
+
+      const AY = num(r.sewOpening);
+      const AZ = num(r.sewDay);
+      const BA = AY + AZ; // =AZ9+AY9
+      const BB = num(r.sewReject);
+      const BC = AV - BA - BB; // =AV9-BA9-BB9
+
+      const BF = num(r.washSendOpening);
+      const BG = num(r.washSendDay);
+      const BH = BF + BG; // =BF9+BG9
+      const BI = num(r.washSendReject);
+      const BJ = BA - BH - BI; // =BA9-BH9-BI9
+
+      const BM = num(r.washRecOpening);
+      const BN = num(r.washRecDay);
+      const BO = BM + BN; // =BM9+BN9
+      const BP = num(r.appLab);
+      const BQ = num(r.buyingHouse);
+      const BR = num(r.washRecReject);
+      const BS = BH - BO - BP - BQ - BR; // =BH9-BO9-BP9-BQ9-BR9
+
+      const BU = num(r.metalPassOpening);
+      const BV = num(r.metalPassDay);
+      const BW = BU + BV; // =BV9+BU9
+      const BX = num(r.metalPassReject);
+      const BY = BO - BW - BX; // =BO9-BW9-BX9
+
+      const BZ = num(r.packOpening);
+      const CA = num(r.packDay);
+      const CB = BZ + CA; // =CA9+BZ9
+      const CC = num(r.packReject);
+      const CD = BW - CB - CC; // =BW9-CB9-CC9
+
+      const CF = num(r.prevShip);
+      const CG = num(r.monthShip);
+      const CH = CF + CG; // =CF9+CG9
+      const CI = CH - I; // =CH9-I9
+
+      const CJ = num(r.sample);
+      const CK = num(r.shipSample);
+      const CL = num(r.shipMissing);
+      const CM = CB - CH - CJ - CK - CL; // =CB9-CH9-CJ9-CK9-CL9
+
+      const CO = CK + CJ + BP + BQ; // =CK9+CJ9+BP9+BQ9
+      const CP = CM + CD + BY + BS + BJ + BC + AW; // =CM9+CD9+BY9+BS9+BJ9+BC9+AW9
+      const CQ = CC + BX + BR + BI + BB; // =CC9+BX9+BR9+BI9+BB9
+      const CR = num(r.storeRecPcs);
+      const CS = CP + CQ - CR; // =CP9+CQ9-CR9
+      const CT = AN; // =AN9
+      const CU = num(r.storeRecYds);
+      const CV = CU - CT; // =CU9-CT9
+
+      return {
+        ...r,
+        K, L, M, O, V, W, X, Y,
+        AH, AI, AJ, AK, AL, AM, AN, AP,
+        AS, AV, AW, BA, BC, BH, BJ, BO, BS,
+        BW, BY, CB, CD, CH, CI, CM, CO, CP, CQ, CS, CT, CV
+      };
+    }
+
+    // Formatting Helpers
+    function fmtInt(n) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "0";
+      return Math.round(n).toLocaleString("en-US");
+    }
+    function fmtDec(n, digits = 1) {
+      if (n === null || n === undefined || Number.isNaN(n)) return "0.0";
+      return Number(n).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+    }
+    function fmtPct(ratio) {
+      if (!Number.isFinite(ratio) || ratio === 0) return "0.00%";
+      return (ratio * 100).toFixed(2) + "%";
+    }
+
+    function showToast(msg) {
+      const banner = document.getElementById("toastBanner");
+      const text = document.getElementById("toastMessage");
+      text.textContent = msg;
+      banner.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        banner.classList.add("hidden");
+      }, 2800);
+    }
+
+    // Filter Active Rows
+    function getFilteredRows() {
+      const q = (state.searchQuery || "").trim().toLowerCase();
+      return state.rows.map(computeDerivedRow).filter(r => {
+        if (state.buyerFilter !== "ALL" && r.buyer !== state.buyerFilter) return false;
+        if (state.statusFilter !== "ALL" && r.status !== state.statusFilter) return false;
+        if (q) {
+          const hay = `${r.buyer} ${r.style} ${r.po} ${r.subPo} ${r.color} ${r.remarks} ${r.status}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+    }
+
+    // Compute Aggregates (SUBTOTAL(9, ...))
+    function computeTotals(computedRows) {
+      const sumKeys = [
+        "orderQty", "K", "M", "O", "bookingYds", "receivedYds",
+        "V", "W", "X", "Y",
+        "dayFabIssueYds", "totalFabIssueYds", "dayPktIssueYds", "totalPktIssueYds",
+        "dayInterIssueYds", "totalInterIssueYds", "dayRibIssueYds", "totalRibIssueYds",
+        "AH", "AI", "AJ", "AK", "AL", "AM", "AN",
+        "cutOpening", "cutDay", "AS",
+        "inputOpening", "inputDay", "AV", "AW",
+        "sewOpening", "sewDay", "BA", "sewReject", "BC",
+        "washSendOpening", "washSendDay", "BH", "washSendReject", "BJ",
+        "washRecOpening", "washRecDay", "BO", "appLab", "buyingHouse", "washRecReject", "BS",
+        "metalPassOpening", "metalPassDay", "BW", "metalPassReject", "BY",
+        "packOpening", "packDay", "CB", "packReject", "CD",
+        "prevShip", "monthShip", "CH", "CI",
+        "sample", "shipSample", "shipMissing", "CM",
+        "CO", "CP", "CQ", "storeRecPcs", "CS", "CT", "storeRecYds", "CV"
+      ];
+      const totals = {};
+      sumKeys.forEach(k => totals[k] = 0);
+      computedRows.forEach(r => {
+        sumKeys.forEach(k => {
+          totals[k] += Number(r[k] || 0);
+        });
+      });
+      totals.AP = totals.orderQty > 0 ? totals.AS / totals.orderQty : 0;
+      return totals;
+    }
+
+    // Populate Buyer Dropdown & Form Select
+    function refreshDropdowns() {
+      const buyerSelect = document.getElementById("buyerFilter");
+      const currentBuyer = state.buyerFilter;
+      const buyers = Array.from(new Set(state.rows.map(r => r.buyer).filter(Boolean))).sort();
+      buyerSelect.innerHTML = `<option value="ALL">All Buyers (${buyers.length})</option>` +
+        buyers.map(b => `<option value="${b}">${b}</option>`).join("");
+      if (buyers.includes(currentBuyer)) {
+        buyerSelect.value = currentBuyer;
+      } else {
+        state.buyerFilter = "ALL";
+        buyerSelect.value = "ALL";
+      }
+
+      const formSelect = document.getElementById("formLoadExistingSelect");
+      if (formSelect) {
+        formSelect.innerHTML = `<option value="">-- Load Existing PO to Edit (${state.rows.length} POs) --</option>` +
+          state.rows.map((r, idx) => `<option value="${r.id}">SL #${idx + 1}: ${r.buyer} — ${r.style} (PO: ${r.po}, ${r.color})</option>`).join("");
+        if (state.editingRowId) {
+          formSelect.value = state.editingRowId;
+        }
+      }
+      document.getElementById("navRowCountBadge").textContent = String(state.rows.length);
+    }
+
+    // Render Top KPI Strip
+    function renderKPIs(filteredRows, totals) {
+      document.getElementById("kpiActivePOs").textContent = `${filteredRows.length} PO${filteredRows.length === 1 ? "" : "s"}`;
+      document.getElementById("kpiOrderQty").textContent = fmtInt(totals.orderQty);
+      document.getElementById("kpiWastagePlanQty").textContent = `${fmtInt(totals.M)} pcs`;
+
+      document.getElementById("kpiFabIssued").textContent = fmtDec(totals.totalFabIssueYds, 1);
+      document.getElementById("kpiFabReq").textContent = `${fmtDec(totals.V, 1)} yds`;
+      const fabVar = totals.AH;
+      const fabBadge = document.getElementById("kpiFabVarBadge");
+      fabBadge.textContent = `${fabVar >= 0 ? "+" : ""}${fmtDec(fabVar, 1)} yds`;
+      fabBadge.className = `px-2 py-0.5 rounded font-mono text-[11px] ${Math.abs(fabVar) <= 5 ? "text-emerald-700 bg-emerald-50" : "text-amber-700 bg-amber-50"}`;
+
+      document.getElementById("kpiCutTotal").textContent = fmtInt(totals.AS);
+      document.getElementById("kpiCutPctBadge").textContent = fmtPct(totals.AP);
+      document.getElementById("kpiInputSummary").textContent = `${fmtInt(totals.AV)} / ${fmtInt(totals.AW)}`;
+
+      document.getElementById("kpiSewTotal").textContent = fmtInt(totals.BA);
+      document.getElementById("kpiWashRecBadge").textContent = `Wash: ${fmtInt(totals.BO)}`;
+      document.getElementById("kpiWashSummary").textContent = `${fmtInt(totals.BH)} / ${fmtInt(totals.BJ + totals.BS)}`;
+
+      document.getElementById("kpiShipTotal").textContent = fmtInt(totals.CH);
+      const shipRatio = totals.orderQty > 0 ? (totals.CH / totals.orderQty) * 100 : 0;
+      document.getElementById("kpiShipRatioBadge").textContent = `${shipRatio.toFixed(1)}%`;
+      document.getElementById("kpiPackSummary").textContent = `${fmtInt(totals.CB)} / ${totals.CI >= 0 ? "+" : ""}${fmtInt(totals.CI)}`;
+
+      document.getElementById("kpiTotalWip").textContent = fmtInt(totals.CP);
+      document.getElementById("kpiTotalReject").textContent = fmtInt(totals.CQ);
+      document.getElementById("kpiMissingBadge").textContent = `Missing: ${fmtInt(totals.CS)}`;
+      document.getElementById("kpiStoreRec").textContent = `${fmtInt(totals.storeRecPcs)} pcs (${fmtInt(totals.storeRecYds)} yds)`;
+    }
+
+    // Master Table Column Definitions (Grouped by Section)
+    const GRID_COLUMNS = [
+      // Sticky Identity Columns (Always visible)
+      { key: "sl", label: "SL", col: "B", group: "STICKY", stickyClass: "sticky-col-1 bg-inherit", width: "w-12" },
+      { key: "buyer", label: "Buyer", col: "D", group: "STICKY", stickyClass: "sticky-col-2 bg-inherit", width: "w-32", editableText: true },
+      { key: "style", label: "Style No.", col: "E", group: "STICKY", stickyClass: "sticky-col-3 bg-inherit", width: "w-32", editableText: true },
+      { key: "po", label: "PO & Color", col: "F/H", group: "STICKY", stickyClass: "sticky-col-4 bg-inherit", width: "w-36" },
+
+      // Group 1: Order, Booking & Fabric/Trims
+      { key: "orderQty", label: "Order Qty (Pcs)", col: "I", group: "FABRIC", editable: true, step: "1" },
+      { key: "cuttingPlanPct", label: "Cut Plan %", col: "J", group: "FABRIC", editable: true, step: "0.01" },
+      { key: "K", label: "Cut Plan Qty", col: "K", group: "FABRIC", calc: true, dec: 1 },
+      { key: "L", label: "Wastage 1% Less", col: "L", group: "FABRIC", calc: true, dec: 2 },
+      { key: "M", label: "Wastage Plan Qty", col: "M", group: "FABRIC", calc: true, dec: 0 },
+      { key: "bookingConsDz", label: "Book Cons/Dz", col: "N", group: "FABRIC", editable: true, step: "0.1" },
+      { key: "O", label: "As Per Cons Req (Yds)", col: "O", group: "FABRIC", calc: true, dec: 1 },
+      { key: "bookingYds", label: "Booking (Yds)", col: "P", group: "FABRIC", editable: true, step: "1" },
+      { key: "receivedYds", label: "Received (Yds)", col: "Q", group: "FABRIC", editable: true, step: "1" },
+      { key: "fabBulkConsDz", label: "Fab Conj/Dz", col: "R", group: "FABRIC", editable: true, step: "0.1" },
+      { key: "pktBulkConsDz", label: "Pkt Conj/Dz", col: "S", group: "FABRIC", editable: true, step: "0.1" },
+      { key: "interBulkConsDz", label: "Inter Conj/Dz", col: "T", group: "FABRIC", editable: true, step: "0.1" },
+      { key: "ribBulkConsDz", label: "RIB Conj/Dz", col: "U", group: "FABRIC", editable: true, step: "0.1" },
+      { key: "V", label: "Req Fabric (Yds)", col: "V", group: "FABRIC", calc: true, dec: 1 },
+      { key: "W", label: "Req Pkt (Yds)", col: "W", group: "FABRIC", calc: true, dec: 1 },
+      { key: "X", label: "Req Inter (Yds)", col: "X", group: "FABRIC", calc: true, dec: 1 },
+      { key: "Y", label: "Req RIB (Yds)", col: "Y", group: "FABRIC", calc: true, dec: 1 },
+      { key: "dayFabIssueYds", label: "Day Fab Issue", col: "Z", group: "FABRIC", editable: true, step: "1" },
+      { key: "totalFabIssueYds", label: "Total Fab Issue", col: "AA", group: "FABRIC", editable: true, step: "1" },
+      { key: "totalPktIssueYds", label: "Total Pkt Issue", col: "AC", group: "FABRIC", editable: true, step: "1" },
+      { key: "totalInterIssueYds", label: "Total Inter Issue", col: "AE", group: "FABRIC", editable: true, step: "1" },
+      { key: "totalRibIssueYds", label: "Total RIB Issue", col: "AG", group: "FABRIC", editable: true, step: "1" },
+      { key: "AH", label: "Fab Short/Ex", col: "AH", group: "FABRIC", calc: true, dec: 1, variance: true },
+      { key: "AL", label: "Exp. Cut Qty", col: "AL", group: "FABRIC", calc: true, dec: 1 },
+      { key: "AM", label: "Short/Ex Cut", col: "AM", group: "FABRIC", calc: true, dec: 1, variance: true },
+      { key: "AN", label: "Fab In-Hand (Yds)", col: "AN", group: "FABRIC", calc: true, dec: 1 },
+
+      // Group 2: Cutting, Input & Sewing
+      { key: "AP", label: "Actual Cut %", col: "AP", group: "CUTSEW", calc: true, pct: true },
+      { key: "cutOpening", label: "Cut Open", col: "AQ", group: "CUTSEW", editable: true, step: "1" },
+      { key: "cutDay", label: "Cut Day", col: "AR", group: "CUTSEW", editable: true, step: "1" },
+      { key: "AS", label: "Total Cut", col: "AS", group: "CUTSEW", calc: true, dec: 0 },
+      { key: "inputOpening", label: "Input Open", col: "AT", group: "CUTSEW", editable: true, step: "1" },
+      { key: "inputDay", label: "Input Day", col: "AU", group: "CUTSEW", editable: true, step: "1" },
+      { key: "AV", label: "Total Input", col: "AV", group: "CUTSEW", calc: true, dec: 0 },
+      { key: "AW", label: "Input WIP", col: "AW", group: "CUTSEW", calc: true, dec: 0, wip: true },
+      { key: "sewOpening", label: "Sew Open", col: "AY", group: "CUTSEW", editable: true, step: "1" },
+      { key: "sewDay", label: "Sew Day", col: "AZ", group: "CUTSEW", editable: true, step: "1" },
+      { key: "BA", label: "Total Sewing", col: "BA", group: "CUTSEW", calc: true, dec: 0 },
+      { key: "sewReject", label: "Sew Reject", col: "BB", group: "CUTSEW", editable: true, step: "1", reject: true },
+      { key: "BC", label: "Sewing WIP", col: "BC", group: "CUTSEW", calc: true, dec: 0, wip: true },
+
+      // Group 3: Wash Send, Wash Rec, Metal Pass & Pack
+      { key: "washSendOpening", label: "Wash Send Open", col: "BF", group: "WASHFIN", editable: true, step: "1" },
+      { key: "washSendDay", label: "Wash Send Day", col: "BG", group: "WASHFIN", editable: true, step: "1" },
+      { key: "BH", label: "Total Wash Send", col: "BH", group: "WASHFIN", calc: true, dec: 0 },
+      { key: "washSendReject", label: "Wash Send Rej", col: "BI", group: "WASHFIN", editable: true, step: "1", reject: true },
+      { key: "BJ", label: "Wash Send WIP", col: "BJ", group: "WASHFIN", calc: true, dec: 0, wip: true },
+      { key: "washRecOpening", label: "Wash Rec Open", col: "BM", group: "WASHFIN", editable: true, step: "1" },
+      { key: "washRecDay", label: "Wash Rec Day", col: "BN", group: "WASHFIN", editable: true, step: "1" },
+      { key: "BO", label: "Total Wash Rec", col: "BO", group: "WASHFIN", calc: true, dec: 0 },
+      { key: "appLab", label: "App/Lab", col: "BP", group: "WASHFIN", editable: true, step: "1" },
+      { key: "buyingHouse", label: "Buying House", col: "BQ", group: "WASHFIN", editable: true, step: "1" },
+      { key: "washRecReject", label: "Wash Rec Rej", col: "BR", group: "WASHFIN", editable: true, step: "1", reject: true },
+      { key: "BS", label: "Wash Rec WIP", col: "BS", group: "WASHFIN", calc: true, dec: 0, wip: true },
+      { key: "metalPassOpening", label: "Metal Open", col: "BU", group: "WASHFIN", editable: true, step: "1" },
+      { key: "metalPassDay", label: "Metal Day", col: "BV", group: "WASHFIN", editable: true, step: "1" },
+      { key: "BW", label: "Total Metal Pass", col: "BW", group: "WASHFIN", calc: true, dec: 0 },
+      { key: "metalPassReject", label: "Metal Reject", col: "BX", group: "WASHFIN", editable: true, step: "1", reject: true },
+      { key: "BY", label: "Metal WIP", col: "BY", group: "WASHFIN", calc: true, dec: 0, wip: true },
+      { key: "packOpening", label: "Pack Open", col: "BZ", group: "WASHFIN", editable: true, step: "1" },
+      { key: "packDay", label: "Pack Day", col: "CA", group: "WASHFIN", editable: true, step: "1" },
+      { key: "CB", label: "Total Pack", col: "CB", group: "WASHFIN", calc: true, dec: 0 },
+      { key: "packReject", label: "Pack Reject", col: "CC", group: "WASHFIN", editable: true, step: "1", reject: true },
+      { key: "CD", label: "Pack WIP", col: "CD", group: "WASHFIN", calc: true, dec: 0, wip: true },
+
+      // Group 4: Shipment, WIP/Reject Summary & Store Reconciliation
+      { key: "prevShip", label: "Prev Ship", col: "CF", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "monthShip", label: "Month Ship", col: "CG", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "CH", label: "Total Ship", col: "CH", group: "SHIPRECON", calc: true, dec: 0 },
+      { key: "CI", label: "Short/Ex Ship", col: "CI", group: "SHIPRECON", calc: true, dec: 0, variance: true },
+      { key: "sample", label: "Sample", col: "CJ", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "shipSample", label: "Ship Sample", col: "CK", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "CM", label: "FG WIP", col: "CM", group: "SHIPRECON", calc: true, dec: 0, wip: true },
+      { key: "CO", label: "Total Sample/Oth", col: "CO", group: "SHIPRECON", calc: true, dec: 0 },
+      { key: "CP", label: "Total WIP", col: "CP", group: "SHIPRECON", calc: true, dec: 0, wip: true },
+      { key: "CQ", label: "Total Reject", col: "CQ", group: "SHIPRECON", calc: true, dec: 0, reject: true },
+      { key: "storeRecPcs", label: "Store Rec (Pcs)", col: "CR", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "CS", label: "Missing (Pcs)", col: "CS", group: "SHIPRECON", calc: true, dec: 0, variance: true },
+      { key: "CT", label: "Fab In-Hand (Yds)", col: "CT", group: "SHIPRECON", calc: true, dec: 1 },
+      { key: "storeRecYds", label: "Store Rec (Yds)", col: "CU", group: "SHIPRECON", editable: true, step: "1" },
+      { key: "CV", label: "Short/Ex Store Yds", col: "CV", group: "SHIPRECON", calc: true, dec: 1, variance: true },
+      { key: "status", label: "Status", col: "CW", group: "SHIPRECON" },
+      { key: "actions", label: "Actions", col: "ACT", group: "SHIPRECON" }
+    ];
+
+    function getVisibleColumns() {
+      return GRID_COLUMNS.filter(c => {
+        if (c.group === "STICKY") return true;
+        if (c.key === "actions" || c.key === "status") return true;
+        if (state.columnGroup === "ALL") return true;
+        return c.group === state.columnGroup;
+      });
+    }
+
+    // Render Main Production Table
+    function renderGrid() {
+      const filteredRows = getFilteredRows();
+      const totals = computeTotals(filteredRows);
+      renderKPIs(filteredRows, totals);
+
+      const cols = getVisibleColumns();
+      const thead = document.getElementById("gridThead");
+      const tbody = document.getElementById("gridTbody");
+      const tfoot = document.getElementById("gridTfoot");
+
+      // Header Row 1: Column Letters + Labels
+      thead.innerHTML = `
+        <tr class="bg-slate-800 text-slate-200 text-[10px] font-mono">
+          ${cols.map(c => `<th class="py-1 px-2 border-r border-slate-700 text-center ${c.stickyClass ? c.stickyClass.replace('bg-inherit', 'bg-slate-800') : ''}">${c.col}</th>`).join("")}
+        </tr>
+        <tr class="bg-slate-100 text-slate-700 border-b border-slate-300">
+          ${cols.map(c => `<th class="py-2.5 px-2.5 border-r border-slate-200 font-bold whitespace-nowrap ${c.stickyClass ? c.stickyClass.replace('bg-inherit', 'bg-slate-100') : ''}">${c.label}</th>`).join("")}
+        </tr>
+      `;
+
+      // Body Rows
+      if (filteredRows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="${cols.length}" class="py-10 text-center text-slate-500">
+              No production order rows match your current filters. Click <strong>Reset Filters</strong> or <strong>Add / Input PO Row</strong>.
+            </td>
+          </tr>
+        `;
+      } else {
+        tbody.innerHTML = filteredRows.map((row, idx) => {
+          const rowBg = idx % 2 === 0 ? "bg-white" : "bg-slate-50/60";
+          return `
+            <tr class="${rowBg} hover:bg-blue-50/40 transition group">
+              ${cols.map(c => renderGridCell(row, idx, c, rowBg)).join("")}
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // Footer Row (SUBTOTAL / Total)
+      tfoot.innerHTML = `
+        <tr>
+          ${cols.map(c => renderFooterCell(c, totals, filteredRows.length)).join("")}
+        </tr>
+      `;
+    }
+
+    function renderGridCell(row, idx, col, rowBg) {
+      const stickyCls = col.stickyClass ? col.stickyClass.replace("bg-inherit", rowBg) : "";
+      if (col.key === "sl") {
+        return `<td class="py-2 px-2.5 text-center font-mono font-bold text-slate-500 border-r border-slate-200 ${stickyCls}">${idx + 1}</td>`;
+      }
+      if (col.key === "buyer") {
+        return `<td class="py-2 px-2.5 font-bold text-slate-900 border-r border-slate-200 whitespace-nowrap ${stickyCls}">${escapeHtml(row.buyer)}</td>`;
+      }
+      if (col.key === "style") {
+        return `<td class="py-2 px-2.5 font-semibold text-slate-700 border-r border-slate-200 whitespace-nowrap ${stickyCls}">${escapeHtml(row.style)}</td>`;
+      }
+      if (col.key === "po") {
+        return `
+          <td class="py-1.5 px-2.5 border-r border-slate-200 whitespace-nowrap ${stickyCls}">
+            <div class="font-mono font-bold text-blue-700 text-[11px]">${escapeHtml(row.po)}</div>
+            <div class="text-[10px] text-slate-500 truncate max-w-[130px]" title="${escapeHtml(row.color)}">${escapeHtml(row.color)}</div>
+          </td>
+        `;
+      }
+      if (col.key === "status") {
+        const badgeColor = row.status === "Closed"
+          ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+          : row.status === "Running"
+          ? "bg-blue-100 text-blue-800 border-blue-200"
+          : "bg-amber-100 text-amber-800 border-amber-200";
+        return `
+          <td class="py-1.5 px-2.5 border-r border-slate-200 whitespace-nowrap text-center">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badgeColor}">${escapeHtml(row.status)}</span>
+          </td>
+        `;
+      }
+      if (col.key === "actions") {
+        return `
+          <td class="py-1.5 px-2.5 whitespace-nowrap text-center no-print">
+            <div class="inline-flex items-center gap-1">
+              <button type="button" onclick="editRowInModal('${row.id}')" title="Edit in Full Guided Form"
+                class="px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-[11px]">
+                Edit
+              </button>
+              <button type="button" onclick="duplicateRow('${row.id}')" title="Duplicate PO Row"
+                class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px]">
+                Copy
+              </button>
+              <button type="button" onclick="promptDeleteRow('${row.id}')" title="Delete PO Row"
+                class="px-2 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-[11px]">
+                Del
+              </button>
+            </div>
+          </td>
+        `;
+      }
+
+      // Editable Numeric Input Cell
+      if (col.editable) {
+        const val = row[col.key] !== undefined && row[col.key] !== null ? row[col.key] : 0;
+        const textClr = col.reject ? "text-rose-700 font-semibold" : "text-slate-900";
+        return `
+          <td class="py-1 px-1.5 border-r border-slate-200 text-right mono-num">
+            <input type="number" step="${col.step || '1'}" value="${val}"
+              aria-label="${col.label} for ${escapeHtml(row.po)}"
+              onchange="handleInlineCellEdit('${row.id}', '${col.key}', this.value)"
+              class="cell-input mono-num ${textClr}" />
+          </td>
+        `;
+      }
+
+      // Auto-Calculated Formula Cell
+      const val = Number(row[col.key] || 0);
+      let formatted = col.pct ? fmtPct(val) : (col.dec ? fmtDec(val, col.dec) : fmtInt(val));
+      let colorClass = "text-slate-800";
+      if (col.wip && val > 0) colorClass = "text-amber-700 bg-amber-50/70";
+      if (col.reject && val > 0) colorClass = "text-rose-700 bg-rose-50/70";
+      if (col.variance) {
+        colorClass = val < -0.5 ? "text-rose-700" : (val > 0.5 ? "text-emerald-700" : "text-slate-600");
+      }
+      return `<td class="py-2 px-2.5 border-r border-slate-200 text-right mono-num cell-calc ${colorClass}">${formatted}</td>`;
+    }
+
+    function renderFooterCell(col, totals, count) {
+      const stickyCls = col.stickyClass ? col.stickyClass.replace("bg-inherit", "bg-slate-900") : "";
+      if (col.key === "sl") {
+        return `<td class="py-2.5 px-2.5 text-center font-mono border-r border-slate-800 ${stickyCls}">Σ</td>`;
+      }
+      if (col.key === "buyer") {
+        return `<td class="py-2.5 px-2.5 font-bold border-r border-slate-800 whitespace-nowrap ${stickyCls}">SUBTOTAL (${count} POs)</td>`;
+      }
+      if (col.key === "style" || col.key === "po" || col.key === "status" || col.key === "actions") {
+        return `<td class="py-2.5 px-2.5 border-r border-slate-800 ${stickyCls}"></td>`;
+      }
+      if (totals[col.key] !== undefined) {
+        const val = totals[col.key];
+        const formatted = col.pct ? fmtPct(val) : (col.dec ? fmtDec(val, col.dec) : fmtInt(val));
+        return `<td class="py-2.5 px-2.5 text-right mono-num border-r border-slate-800">${formatted}</td>`;
+      }
+      return `<td class="py-2.5 px-2.5 border-r border-slate-800"></td>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    // Inline Cell Edit Handler
+    function handleInlineCellEdit(rowId, key, rawVal) {
+      const target = state.rows.find(r => r.id === rowId);
+      if (!target) return;
+      const numVal = parseFloat(rawVal);
+      target[key] = Number.isFinite(numVal) ? numVal : 0;
+      if (key === "inputOpening" || key === "inputDay") {
+        target.inputTotalOverride = null; // Clear static override when user edits input opening/day
+      }
+      saveStateToStorage();
+      renderGrid();
+      if (state.activeTab === "analytics") renderCharts();
+      showToast(`Updated ${key} for PO ${target.po}`);
+    }
+
+    // Switch Main Navigation Tabs
+    function switchMainTab(tabId) {
+      state.activeTab = tabId;
+      ["grid", "form", "analytics", "bonus"].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (t === tabId) {
+          view.classList.remove("hidden");
+          btn.className = "px-4 py-2.5 text-xs font-semibold border-b-2 border-blue-500 text-white flex items-center gap-2 whitespace-nowrap";
+        } else {
+          view.classList.add("hidden");
+          btn.className = "px-4 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap";
+        }
+      });
+      if (tabId === "form") {
+        recalcFormPreview();
+      } else if (tabId === "analytics") {
+        renderCharts();
+      } else if (tabId === "bonus") {
+        calculateBonus();
+      }
+    }
+
+    function setColumnGroup(grp) {
+      state.columnGroup = grp;
+      ["ALL", "FABRIC", "CUTSEW", "WASHFIN", "SHIPRECON"].forEach(g => {
+        const btn = document.getElementById(`colGrp-${g}`);
+        if (g === grp) {
+          btn.className = "px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-900 text-white transition";
+        } else {
+          btn.className = "px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition";
+        }
+      });
+      renderGrid();
+    }
+
+    function handleFilterChange() {
+      state.searchQuery = document.getElementById("searchInput").value;
+      state.buyerFilter = document.getElementById("buyerFilter").value;
+      state.statusFilter = document.getElementById("statusFilter").value;
+      renderGrid();
+    }
+
+    function resetFilters() {
+      state.searchQuery = "";
+      state.buyerFilter = "ALL";
+      state.statusFilter = "ALL";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("buyerFilter").value = "ALL";
+      document.getElementById("statusFilter").value = "ALL";
+      renderGrid();
+      showToast("Filters cleared");
+    }
+
+    function updateReportMonth(val) {
+      state.reportMonth = val;
+      saveStateToStorage();
+      showToast(`Report period updated to ${val}`);
+    }
+
+    function loadDatasetPreset(mode) {
+      state.presetMode = mode;
+      if (mode === "unit02") {
+        state.rows = JSON.parse(JSON.stringify(UNIT02_BASELINE_ROWS));
+      } else {
+        state.rows = JSON.parse(JSON.stringify([...UNIT02_BASELINE_ROWS, ...WORKBOOK_ADDITIONAL_ROWS]));
+      }
+      document.getElementById("presetBtn-unit02").className = mode === "unit02"
+        ? "px-2.5 py-1 rounded-md font-semibold bg-white text-blue-700 shadow-sm transition"
+        : "px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition";
+      document.getElementById("presetBtn-extended").className = mode === "extended"
+        ? "px-2.5 py-1 rounded-md font-semibold bg-white text-blue-700 shadow-sm transition"
+        : "px-2.5 py-1 rounded-md font-medium text-slate-600 hover:text-slate-900 transition";
+
+      saveStateToStorage();
+      refreshDropdowns();
+      renderGrid();
+      if (state.activeTab === "analytics") renderCharts();
+      showToast(mode === "unit02" ? "Loaded NDL Unit-02 Baseline (2 POs)" : "Loaded 14 Real Workbook POs");
+    }
+
+    // Guided Form Functions
+    function openEntryModal() {
+      resetFormToNew();
+      switchMainTab("form");
+    }
+
+    function editRowInModal(rowId) {
+      loadRowIntoForm(rowId);
+      switchMainTab("form");
+    }
+
+    function loadRowIntoForm(rowId) {
+      if (!rowId) {
+        resetFormToNew();
+        return;
+      }
+      const r = state.rows.find(x => x.id === rowId);
+      if (!r) return;
+      state.editingRowId = r.id;
+      document.getElementById("formTitleHeading").textContent = `Editing PO ${r.po} (${r.buyer} — ${r.style})`;
+      document.getElementById("formLoadExistingSelect").value = r.id;
+
+      const fields = [
+        "factory", "buyer", "style", "po", "subPo", "color", "orderQty", "cuttingPlanPct",
+        "bookingConsDz", "bookingYds", "receivedYds", "fabBulkConsDz", "pktBulkConsDz", "interBulkConsDz", "ribBulkConsDz",
+        "dayFabIssueYds", "totalFabIssueYds", "totalPktIssueYds", "totalInterIssueYds", "totalRibIssueYds",
+        "cutOpening", "cutDay", "inputOpening", "inputDay", "sewOpening", "sewDay", "sewReject", "washPlant",
+        "washSendOpening", "washSendDay", "washSendReject", "finishingUnit",
+        "washRecOpening", "washRecDay", "appLab", "buyingHouse", "washRecReject",
+        "metalPassOpening", "metalPassDay", "metalPassReject",
+        "packOpening", "packDay", "packReject",
+        "shipDate", "prevShip", "monthShip", "sample", "shipSample", "shipMissing",
+        "storeRecPcs", "storeRecYds", "status", "remarks"
+      ];
+      fields.forEach(k => {
+        const el = document.getElementById(`f_${k}`);
+        if (el) el.value = r[k] !== undefined && r[k] !== null ? r[k] : "";
+      });
+      recalcFormPreview();
+    }
+
+    function resetFormToNew() {
+      state.editingRowId = null;
+      document.getElementById("formTitleHeading").textContent = "Add New Production Order Line (NDL Unit-02 Schema)";
+      const sel = document.getElementById("formLoadExistingSelect");
+      if (sel) sel.value = "";
+      document.getElementById("f_buyer").value = "BERSHKA";
+      document.getElementById("f_style").value = "JK-240 DENIM";
+      document.getElementById("f_po").value = "40910-01";
+      document.getElementById("f_subPo").value = "";
+      document.getElementById("f_color").value = "401-NAVY BLUE";
+      document.getElementById("f_orderQty").value = 5000;
+      document.getElementById("f_cuttingPlanPct").value = 1.03;
+      recalcFormPreview();
+    }
+
+    function readFormValues() {
+      const getVal = (id) => {
+        const el = document.getElementById(`f_${id}`);
+        return el ? el.value : "";
+      };
+      const getNum = (id) => {
+        const v = parseFloat(getVal(id));
+        return Number.isFinite(v) ? v : 0;
+      };
+      return {
+        id: state.editingRowId || ("ndl-po-" + Date.now()),
+        factory: getVal("factory") || "NDL Unit-02",
+        buyer: (getVal("buyer") || "UNNAMED BUYER").trim().toUpperCase(),
+        style: (getVal("style") || "STYLE-01").trim(),
+        po: (getVal("po") || "PO-01").trim(),
+        subPo: getVal("subPo").trim(),
+        color: (getVal("color") || "STANDARD").trim().toUpperCase(),
+        orderQty: getNum("orderQty"),
+        cuttingPlanPct: getNum("cuttingPlanPct") || 1.03,
+        bookingConsDz: getNum("bookingConsDz"),
+        bookingYds: getNum("bookingYds"),
+        receivedYds: getNum("receivedYds"),
+        fabBulkConsDz: getNum("fabBulkConsDz"),
+        pktBulkConsDz: getNum("pktBulkConsDz"),
+        interBulkConsDz: getNum("interBulkConsDz"),
+        ribBulkConsDz: getNum("ribBulkConsDz"),
+        dayFabIssueYds: getNum("dayFabIssueYds"),
+        totalFabIssueYds: getNum("totalFabIssueYds"),
+        dayPktIssueYds: getNum("totalPktIssueYds"),
+        totalPktIssueYds: getNum("totalPktIssueYds"),
+        dayInterIssueYds: getNum("totalInterIssueYds"),
+        totalInterIssueYds: getNum("totalInterIssueYds"),
+        dayRibIssueYds: getNum("totalRibIssueYds"),
+        totalRibIssueYds: getNum("totalRibIssueYds"),
+        cutOpening: getNum("cutOpening"),
+        cutDay: getNum("cutDay"),
+        inputOpening: getNum("inputOpening"),
+        inputDay: getNum("inputDay"),
+        inputTotalOverride: null,
+        sewOpening: getNum("sewOpening"),
+        sewDay: getNum("sewDay"),
+        sewReject: getNum("sewReject"),
+        washPlant: getVal("washPlant"),
+        washSendOpening: getNum("washSendOpening"),
+        washSendDay: getNum("washSendDay"),
+        washSendReject: getNum("washSendReject"),
+        finishingUnit: getVal("finishingUnit"),
+        washRecOpening: getNum("washRecOpening"),
+        washRecDay: getNum("washRecDay"),
+        appLab: getNum("appLab"),
+        buyingHouse: getNum("buyingHouse"),
+        washRecReject: getNum("washRecReject"),
+        metalPassOpening: getNum("metalPassOpening"),
+        metalPassDay: getNum("metalPassDay"),
+        metalPassReject: getNum("metalPassReject"),
+        packOpening: getNum("packOpening"),
+        packDay: getNum("packDay"),
+        packReject: getNum("packReject"),
+        shipDate: getVal("shipDate"),
+        prevShip: getNum("prevShip"),
+        monthShip: getNum("monthShip"),
+        sample: getNum("sample"),
+        shipSample: getNum("shipSample"),
+        shipMissing: getNum("shipMissing"),
+        storeRecPcs: getNum("storeRecPcs"),
+        storeRecYds: getNum("storeRecYds"),
+        status: getVal("status") || "Running",
+        remarks: getVal("remarks")
+      };
+    }
+
+    function recalcFormPreview() {
+      const raw = readFormValues();
+      const d = computeDerivedRow(raw);
+      const container = document.getElementById("formLivePreviewContainer");
+      if (!container) return;
+
+      const items = [
+        { label: "Cutting Plan Qty (K = I×J)", val: `${fmtDec(d.K, 1)} pcs`, col: "text-blue-300" },
+        { label: "Wastage 1% Less Qty (M = I×L)", val: `${fmtInt(d.M)} pcs (${fmtPct(d.L)})`, col: "text-blue-300" },
+        { label: "As Per Cons. Req (O = M/12×N)", val: `${fmtDec(d.O, 1)} yds`, col: "text-slate-200" },
+        { label: "Bulk Fabric Req (V = M/12×R)", val: `${fmtDec(d.V, 1)} yds`, col: "text-slate-200" },
+        { label: "Fabric Short/Excess (AH = AA-V)", val: `${d.AH >= 0 ? "+" : ""}${fmtDec(d.AH, 1)} yds`, col: d.AH < 0 ? "text-amber-300" : "text-emerald-300" },
+        { label: "Expected Cut Qty (AL = AA/R×12)", val: `${fmtDec(d.AL, 1)} pcs`, col: "text-teal-300" },
+        { label: "Total Cutting (AS = AQ+AR)", val: `${fmtInt(d.AS)} pcs (${fmtPct(d.AP)})`, col: "text-teal-300 font-bold" },
+        { label: "Fabric In-Hand Cons (AN / CT)", val: `${fmtDec(d.AN, 2)} yds`, col: "text-amber-300" },
+        { label: "Input Total (AV) / WIP (AW)", val: `${fmtInt(d.AV)} pcs / WIP: ${fmtInt(d.AW)}`, col: "text-slate-200" },
+        { label: "Sewing Total (BA) / WIP (BC)", val: `${fmtInt(d.BA)} pcs / WIP: ${fmtInt(d.BC)}`, col: "text-slate-200" },
+        { label: "Wash Send (BH) / Wash Rec (BO)", val: `${fmtInt(d.BH)} / ${fmtInt(d.BO)} (WIP: ${fmtInt(d.BS)})`, col: "text-indigo-300" },
+        { label: "Metal Pass (BW) / Pack Total (CB)", val: `${fmtInt(d.BW)} / ${fmtInt(d.CB)} (WIP: ${fmtInt(d.CD)})`, col: "text-indigo-300" },
+        { label: "Total Shipment (CH = CF+CG)", val: `${fmtInt(d.CH)} pcs (Var: ${fmtInt(d.CI)})`, col: "text-emerald-400 font-bold" },
+        { label: "Finished Good WIP (CM)", val: `${fmtInt(d.CM)} pcs`, col: "text-amber-300" },
+        { label: "Total WIP (CP) + Total Reject (CQ)", val: `${fmtInt(d.CP)} WIP + ${fmtInt(d.CQ)} Rej`, col: "text-amber-300 font-bold" },
+        { label: "Reconciled Missing Pcs (CS)", val: `${fmtInt(d.CS)} pcs`, col: d.CS === 0 ? "text-emerald-300" : "text-rose-400 font-bold" },
+        { label: "Short/Excess Store Yds (CV = CU-CT)", val: `${fmtDec(d.CV, 2)} yds`, col: "text-slate-300" }
+      ];
+
+      container.innerHTML = items.map(item => `
+        <div class="flex items-center justify-between py-1 border-b border-slate-800/80">
+          <span class="text-slate-400">${item.label}</span>
+          <span class="mono-num ${item.col}">${item.val}</span>
+        </div>
+      `).join("");
+    }
+
+    function saveFormRow() {
+      const rowData = readFormValues();
+      const existingIdx = state.rows.findIndex(r => r.id === rowData.id);
+      if (existingIdx >= 0) {
+        state.rows[existingIdx] = rowData;
+        showToast(`Updated PO ${rowData.po} (${rowData.buyer})`);
+      } else {
+        state.rows.push(rowData);
+        showToast(`Added new PO ${rowData.po} (${rowData.buyer})`);
+      }
+      saveStateToStorage();
+      refreshDropdowns();
+      renderGrid();
+      switchMainTab("grid");
+    }
+
+    function duplicateRow(rowId) {
+      const orig = state.rows.find(r => r.id === rowId);
+      if (!orig) return;
+      const copy = JSON.parse(JSON.stringify(orig));
+      copy.id = "ndl-po-" + Date.now();
+      copy.po = `${orig.po}-COPY`;
+      state.rows.push(copy);
+      saveStateToStorage();
+      refreshDropdowns();
+      renderGrid();
+      showToast(`Duplicated PO ${orig.po}`);
+    }
+
+    function promptDeleteRow(rowId) {
+      state.pendingDeleteId = rowId;
+      const r = state.rows.find(x => x.id === rowId);
+      if (r) {
+        document.getElementById("deleteModalDesc").textContent =
+          `Remove PO "${r.po}" (${r.buyer} — ${r.style}, Order Qty: ${fmtInt(r.orderQty)} pcs) from the active report?`;
+      }
+      document.getElementById("deleteConfirmModal").classList.remove("hidden");
+    }
+
+    function closeDeleteModal() {
+      state.pendingDeleteId = null;
+      document.getElementById("deleteConfirmModal").classList.add("hidden");
+    }
+
+    function confirmDeleteRow() {
+      if (!state.pendingDeleteId) return;
+      const target = state.rows.find(x => x.id === state.pendingDeleteId);
+      state.rows = state.rows.filter(x => x.id !== state.pendingDeleteId);
+      closeDeleteModal();
+      saveStateToStorage();
+      refreshDropdowns();
+      renderGrid();
+      showToast(target ? `Deleted PO ${target.po}` : "Row deleted");
+    }
+
+    // Charts Rendering (View 3)
+    function renderCharts() {
+      const filteredRows = getFilteredRows();
+      const totals = computeTotals(filteredRows);
+
+      // 1. Stage Flow Chart
+      if (chartInstances.stageFlow) chartInstances.stageFlow.destroy();
+      const ctx1 = document.getElementById("stageFlowChart").getContext("2d");
+      chartInstances.stageFlow = new Chart(ctx1, {
+        type: "bar",
+        data: {
+          labels: ["Order Qty", "Wastage Plan", "Cutting", "Line Input", "Sewing Out", "Wash Send", "Wash Rec", "Metal Pass", "Packed", "Shipped"],
+          datasets: [{
+            label: "Pieces (Pcs)",
+            data: [
+              totals.orderQty, totals.M, totals.AS, totals.AV,
+              totals.BA, totals.BH, totals.BO, totals.BW, totals.CB, totals.CH
+            ],
+            backgroundColor: [
+              "#1E40AF", "#3B82F6", "#0D9488", "#14B8A6",
+              "#4F46E5", "#6366F1", "#0284C7", "#0EA5E9", "#059669", "#10B981"
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#F1F5F9" } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 2. WIP & Reject Breakdown Chart
+      if (chartInstances.wipReject) chartInstances.wipReject.destroy();
+      const ctx2 = document.getElementById("wipRejectChart").getContext("2d");
+      chartInstances.wipReject = new Chart(ctx2, {
+        type: "bar",
+        data: {
+          labels: ["Input", "Sewing", "Wash Send", "Wash Rec", "Metal Pass", "Packing", "Finished Good"],
+          datasets: [
+            {
+              label: "Department WIP (Pcs)",
+              data: [totals.AW, totals.BC, totals.BJ, totals.BS, totals.BY, totals.CD, totals.CM],
+              backgroundColor: "#F59E0B",
+              borderRadius: 5
+            },
+            {
+              label: "Department Reject (Pcs)",
+              data: [0, totals.sewReject, totals.washSendReject, totals.washRecReject, totals.metalPassReject, totals.packReject, 0],
+              backgroundColor: "#E11D48",
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "top" } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#F1F5F9" } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 3. Workbook Monthly Sheet Comparison Chart
+      if (chartInstances.monthlyComp) chartInstances.monthlyComp.destroy();
+      const ctx3 = document.getElementById("monthlyComparisonChart").getContext("2d");
+      chartInstances.monthlyComp = new Chart(ctx3, {
+        type: "bar",
+        data: {
+          labels: ["Nov'2025 (795 POs)", "Jan'2026 (1,000 POs)", "Jul'2026 (1,484 POs)"],
+          datasets: [
+            {
+              label: "Order Qty",
+              data: [2561294, 3389697, 5453684],
+              backgroundColor: "#1E40AF",
+              borderRadius: 4
+            },
+            {
+              label: "Total Cutting",
+              data: [2476821, 3319324, 5405453],
+              backgroundColor: "#0D9488",
+              borderRadius: 4
+            },
+            {
+              label: "Total Sewing",
+              data: [2317563, 3129988, 5213105],
+              backgroundColor: "#6366F1",
+              borderRadius: 4
+            },
+            {
+              label: "Total Shipment",
+              data: [1776703, 2591129, 4641066],
+              backgroundColor: "#059669",
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: "top" } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#F1F5F9" } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+
+      // 4. Top Buyers Volume (Extracted from Production Report (3))
+      if (chartInstances.buyerVol) chartInstances.buyerVol.destroy();
+      const ctx4 = document.getElementById("buyerVolumeChart").getContext("2d");
+      chartInstances.buyerVol = new Chart(ctx4, {
+        type: "bar",
+        data: {
+          labels: ["BERSHKA", "LEFTIES", "OVS", "TOMMY HILFIGER", "STRADIVARIUS", "BUFFALO", "DKNY", "PULL & BEAR", "ZARA", "CALVIN KLEIN"],
+          datasets: [{
+            label: "Order Volume (Pcs)",
+            data: [687788, 653140, 561444, 560749, 384186, 267751, 265473, 262002, 234832, 224214],
+            backgroundColor: "#2563EB",
+            borderRadius: 5
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { beginAtZero: true, grid: { color: "#F1F5F9" } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // Bonus Policy Calculator (Sheet3)
+    function calculateBonus() {
+      const cat = document.getElementById("bonusCategory").value;
+      const days = parseFloat(document.getElementById("bonusDays").value) || 0;
+      const salary = parseFloat(document.getElementById("bonusSalary").value) || 0;
+
+      let rate = 0;
+      let tierText = "";
+      if (cat === "Worker") {
+        if (days >= 365) {
+          rate = 1.0;
+          tierText = "Worker Tier: 365–1 Year Above (100%)";
+        } else if (days >= 180) {
+          rate = 0.75;
+          tierText = "Worker Tier: 180–364 Days (75%)";
+        } else if (days >= 88) {
+          rate = 0.40;
+          tierText = "Worker Tier: 88–179 Days (40%)";
+        } else {
+          rate = 0;
+          tierText = "Worker Tier: Below 88 Days (0%)";
+        }
+      } else {
+        if (days >= 365) {
+          rate = 0.80;
+          tierText = "Staff Tier: 365–1 Year Above (80%)";
+        } else if (days >= 180) {
+          rate = 0.40;
+          tierText = "Staff Tier: 180–364 Days (40%)";
+        } else {
+          rate = 0;
+          tierText = "Staff Tier: Below 180 Days (0%)";
+        }
+      }
+
+      const payout = Math.round(salary * rate);
+      document.getElementById("bonusTierLabel").textContent = tierText;
+      document.getElementById("bonusAmountValue").textContent = `${fmtInt(payout)} BDT`;
+      document.getElementById("bonusRateBadge").textContent = `${(rate * 100).toFixed(0)}% (${rate.toFixed(2)}x)`;
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+      const computed = getFilteredRows();
+      const headers = [
+        "SL", "Factory", "Buyer", "Style", "PO", "Sub_PO", "Color",
+        "Order_Qty_I", "Cut_Plan_Pct_J", "Cut_Plan_Qty_K", "Wastage_1Pct_Less_L", "Wastage_Qty_M",
+        "Booking_Cons_Dz_N", "As_Per_Cons_Req_Yds_O", "Booking_Yds_P", "Received_Yds_Q",
+        "Fab_Bulk_Cons_R", "Pkt_Bulk_Cons_S", "Inter_Bulk_Cons_T", "RIB_Bulk_Cons_U",
+        "Req_Fab_Yds_V", "Req_Pkt_Yds_W", "Req_Inter_Yds_X", "Req_RIB_Yds_Y",
+        "Total_Fab_Issue_AA", "Total_Pkt_Issue_AC", "Total_Inter_Issue_AE", "Total_RIB_Issue_AG",
+        "Fab_Short_Excess_AH", "Expected_Cut_AL", "Short_Excess_Cut_AM", "Fab_In_Hand_AN",
+        "Actual_Cut_Pct_AP", "Cut_Open_AQ", "Cut_Day_AR", "Cut_Total_AS",
+        "Input_Open_AT", "Input_Day_AU", "Input_Total_AV", "Input_WIP_AW",
+        "Sew_Open_AY", "Sew_Day_AZ", "Sew_Total_BA", "Sew_Reject_BB", "Sew_WIP_BC",
+        "Wash_Send_Open_BF", "Wash_Send_Day_BG", "Wash_Send_Total_BH", "Wash_Send_Rej_BI", "Wash_Send_WIP_BJ",
+        "Wash_Rec_Open_BM", "Wash_Rec_Day_BN", "Wash_Rec_Total_BO", "App_Lab_BP", "Buying_House_BQ", "Wash_Rec_Rej_BR", "Wash_Rec_WIP_BS",
+        "Metal_Open_BU", "Metal_Day_BV", "Metal_Total_BW", "Metal_Rej_BX", "Metal_WIP_BY",
+        "Pack_Open_BZ", "Pack_Day_CA", "Pack_Total_CB", "Pack_Rej_CC", "Pack_WIP_CD",
+        "Ship_Date_CE", "Prev_Ship_CF", "Month_Ship_CG", "Total_Ship_CH", "Short_Excess_Ship_CI",
+        "Sample_CJ", "Ship_Sample_CK", "FG_WIP_CM", "Total_Sample_Oth_CO", "Total_WIP_CP", "Total_Reject_CQ",
+        "NDL_Store_Rec_Pcs_CR", "Missing_CS", "Store_Rec_Yds_CU", "Short_Excess_Store_Yds_CV", "Status_CW", "Remarks_CX"
+      ];
+
+      const csvRows = [headers.join(",")];
+      computed.forEach((r, i) => {
+        const vals = [
+          i + 1, r.factory, r.buyer, r.style, r.po, r.subPo, r.color,
+          r.orderQty, r.cuttingPlanPct, r.K.toFixed(1), r.L.toFixed(2), Math.round(r.M),
+          r.bookingConsDz, r.O.toFixed(1), r.bookingYds, r.receivedYds,
+          r.fabBulkConsDz, r.pktBulkConsDz, r.interBulkConsDz, r.ribBulkConsDz,
+          r.V.toFixed(1), r.W.toFixed(1), r.X.toFixed(1), r.Y.toFixed(1),
+          r.totalFabIssueYds, r.totalPktIssueYds, r.totalInterIssueYds, r.totalRibIssueYds,
+          r.AH.toFixed(2), r.AL.toFixed(1), r.AM.toFixed(1), r.AN.toFixed(2),
+          (r.AP * 100).toFixed(2) + "%", r.cutOpening, r.cutDay, r.AS,
+          r.inputOpening, r.inputDay, r.AV, r.AW,
+          r.sewOpening, r.sewDay, r.BA, r.sewReject, r.BC,
+          r.washSendOpening, r.washSendDay, r.BH, r.washSendReject, r.BJ,
+          r.washRecOpening, r.washRecDay, r.BO, r.appLab, r.buyingHouse, r.washRecReject, r.BS,
+          r.metalPassOpening, r.metalPassDay, r.BW, r.metalPassReject, r.BY,
+          r.packOpening, r.packDay, r.CB, r.packReject, r.CD,
+          r.shipDate, r.prevShip, r.monthShip, r.CH, r.CI,
+          r.sample, r.shipSample, r.CM, r.CO, r.CP, r.CQ,
+          r.storeRecPcs, r.CS, r.storeRecYds, r.CV.toFixed(2), r.status, r.remarks
+        ].map(v => `"${String(v ?? "").replace(/"/g, '""')}"`);
+        csvRows.push(vals.join(","));
+      });
+
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "NDL_Unit02_Production_Report.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Exported NDL_Unit02_Production_Report.csv");
+    }
+
+    function exportToJSON() {
+      const payload = {
+        company: "Natural Denims Limited",
+        reportTitle: "NDL Unit-02 Production Report",
+        reportMonth: state.reportMonth,
+        exportedAt: new Date().toISOString(),
+        rows: state.rows
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "NDL_Unit02_Production_Report.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Exported NDL_Unit02_Production_Report.json");
+    }
+
+    function handleFileImport(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target.result;
+          if (file.name.endsWith(".json")) {
+            const parsed = JSON.parse(content);
+            const importedRows = Array.isArray(parsed) ? parsed : (parsed.rows || []);
+            if (importedRows.length > 0) {
+              state.rows = importedRows;
+              saveStateToStorage();
+              refreshDropdowns();
+              renderGrid();
+              showToast(`Imported ${importedRows.length} PO rows from JSON`);
+            }
+          } else {
+            // Simple CSV import fallback
+            const lines = content.split(/\r?\n/).filter(l => l.trim());
+            if (lines.length > 1) {
+              showToast(`Parsed ${lines.length - 1} rows from CSV`);
+            }
+          }
+        } catch (err) {
+          showToast("Could not parse file format");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // GitHub Modal Controls
+    function openGithubModal() {
+      document.getElementById("githubModal").classList.remove("hidden");
+    }
+    function closeGithubModal() {
+      document.getElementById("githubModal").classList.add("hidden");
+    }
+    function copyGitCommands() {
+      const text = document.getElementById("gitCommandsBlock").innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast("Git commands copied to clipboard"));
+      } else {
+        showToast("Git commands ready to copy");
+      }
+    }
+    function downloadStandaloneIndexHtml() {
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "index.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Downloaded index.html for GitHub repository");
+    }
+
+    // Initialize Application on Load
+    function initApp() {
+      const restored = loadStateFromStorage();
+      if (!restored) {
+        state.rows = JSON.parse(JSON.stringify(UNIT02_BASELINE_ROWS));
+      }
+      document.getElementById("reportMonthInput").value = state.reportMonth;
+      refreshDropdowns();
+      renderGrid();
+      recalcFormPreview();
+      calculateBonus();
+    }
+
+    window.addEventListener("DOMContentLoaded", initApp);
+  </script>
+</body>
+</html>
