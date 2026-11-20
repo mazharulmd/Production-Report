@@ -1,19 +1,25 @@
-# Natural Denims Limited — NDL Unit-02 RMG Production Report
+# Natural Denims Limited — NDL Unit-02 RMG Multi-Department Production ERP
 
-Interactive web application for **Natural Denims Limited** (Tongabari, Ashulia, Savar, Dhaka) Unit-02 RMG Cut-to-Ship & Production Reporting.
+Interactive Role-Based Production & WIP ERP web application for Natural Denims Limited (Tongabari, Ashulia, Savar, Dhaka) Unit-02.
+
+## Role-Based Access & Default Credentials
+- **Administrator**: `admin@ndlunit02.com` / `Admin@123` (Full access: Dashboard, Master Unit-02 Report, all 4 Departments, Submissions Review, User Management & Settings, Bonus Policy)
+- **Cutting Department**: `cutting@ndlunit02.com` / `Cut@123`
+- **Sewing Department**: `sewing@ndlunit02.com` / `Sew@123`
+- **Wash Department**: `wash@ndlunit02.com` / `Wash@123`
+- **Finishing Department**: `finishing@ndlunit02.com` / `Fin@123`
 
 ## Features
-- **Live 102-Column Production Grid**: Inline editing and automated calculation for all 35 Excel formula columns (`Cutting Plan Qty`, `Wastage 1% Less`, `As Per Consumption Required`, `Bulk Fabric/Pocketing/Interlining/RIB Required & Short/Excess`, `Expected Cut Qty`, `Fabric In-Hand`, `Cutting`, `Line Input`, `Sewing`, `Wash Send & Receive`, `Metal Pass`, `Packing`, `Shipment`, `Total WIP`, `Total Reject`, `Missing Reconciliation`, and `Store Fabric Balance`).
-- **Guided Production Input Form**: Multi-stage data entry form with live side-by-side Excel formula preview.
-- **Analytics & Workbook Archive**: Interactive charts and historical benchmarks from `November'2025` (795 POs), `January'2026` (1,000 POs), and `July'2026` (1,484 POs).
-- **Bonus Policy Calculator**: Built-in Worker & Staff bonus tier calculator (`Sheet3`).
-- **CSV / JSON Import & Export**: Full local state persistence and one-click spreadsheet export.
+- **Separate Department Workspaces**: Cutting, Sewing, Wash, and Finishing modules with exact Excel formulas, inline editing, CSV/JSON upload, and CSV export.
+- **Submission & Approval Workflow**: Department users submit daily reports to the Administrator for review, approval, editing, or revision feedback.
+- **User Management & Settings**: Admin can create, edit, reset passwords, or disable department user accounts.
+- **Master Unit-02 Consolidated Report**: Automatic PO & Style aggregation across all 4 departments.
 
 ## Deploy to GitHub (`mazharulmd/Production-Report`)
 ```bash
 git init
 git add index.html README.md
-git commit -m "Deploy NDL Unit-02 RMG Production Report web application"
+git commit -m "Upgrade NDL Unit-02 ERP with Multi-Department RBAC & Login"
 git remote add origin https://github.com/mazharulmd/Production-Report.git
 git branch -M main
 git push -u origin main
