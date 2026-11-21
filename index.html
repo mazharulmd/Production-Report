@@ -2,1497 +2,1671 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NDL Unit-02 — RMG Multi-Department Production ERP</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NDL Garments Production ERP — Unit-02</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-    .tabular-nums { font-variant-numeric: tabular-nums; }
-    .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
-    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    .cell-input {
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eef2f7;
+      color: #243247;
+    }
+    .header {
+      background: #17365d;
+      color: #ffffff;
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .header h2 { margin: 0; font-size: 21px; }
+    .user-info { font-size: 12px; color: #e2e8f0; margin-top: 4px; }
+    .container { padding: 20px; max-width: 1500px; margin: 0 auto; }
+    .card {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 9px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    }
+    .card h3 { margin-top: 0; color: #17365d; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 13px;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 13px;
+      margin-bottom: 16px;
+    }
+    .kpi-box {
+      background: #f8fafc;
+      border: 1px solid #d8e0ea;
+      border-radius: 7px;
+      padding: 13px;
+    }
+    .kpi-label { font-size: 11px; font-weight: bold; color: #64748b; text-transform: uppercase; }
+    .kpi-val { font-size: 22px; font-weight: bold; color: #17365d; margin-top: 4px; }
+    .kpi-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+    .field { display: flex; flex-direction: column; gap: 6px; position: relative; }
+    label { font-size: 13px; font-weight: bold; color: #34445b; }
+    input, select, textarea {
       width: 100%;
-      min-width: 68px;
-      padding: 4px 6px;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      font-size: 14px;
+      background: #ffffff;
+      min-width: 0;
+      font-family: inherit;
+    }
+    input.search-select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'></circle><line x1='21' y1='21' x2='16.65' y2='16.65'></line></svg>");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+    }
+    input[readonly] {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: bold;
+    }
+    input.avail-ok {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+      font-weight: bold;
+    }
+    input.avail-low {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #991b1b;
+      font-weight: bold;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #9bbce5;
+      border-color: #2563eb;
+    }
+    button {
+      border: 0;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      background: #17365d;
+      color: #ffffff;
+      font-weight: bold;
+      margin: 4px 3px 4px 0;
+      font-size: 13px;
+    }
+    button:hover { opacity: 0.92; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-success { background: #16834a; }
+    .btn-secondary { background: #64748b; }
+    .btn-danger { background: #b42318; }
+    .btn-teal { background: #0f766e; }
+    .btn-sm { padding: 6px 10px; font-size: 12px; margin: 0; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; align-items: center; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 17px; }
+    .tab-button { background: #dce5f0; color: #17365d; }
+    .tab-button.active { background: #17365d; color: #ffffff; }
+    .alert {
+      display: none;
+      padding: 12px 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .alert.success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .alert.error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .batch-row {
+      border: 1px solid #d8e0ea;
+      border-radius: 7px;
+      padding: 14px;
+      margin: 12px 0;
+      background: #fbfdff;
+    }
+    .batch-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #17365d;
+    }
+    .excess-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #f59e0b;
+      background: #fffbeb;
+      border-radius: 6px;
+    }
+    .table-wrap { overflow-x: auto; width: 100%; margin-top: 15px; }
+    table { border-collapse: collapse; width: 100%; min-width: 950px; font-size: 13px; }
+    th, td { border: 1px solid #d8e0ea; padding: 7px 8px; text-align: left; white-space: nowrap; }
+    th { background: #e8eef6; color: #17365d; font-size: 12px; }
+    td input.tbl-inp {
+      padding: 5px 6px;
       font-size: 12px;
       border: 1px solid transparent;
-      border-radius: 4px;
       background: transparent;
-      transition: all 0.15s;
+      min-width: 65px;
     }
-    .cell-input:hover { background: #f8fafc; border-color: #e2e8f0; }
-    .cell-input:focus { outline: none; background: #ffffff; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.12); }
-    .cell-calc {
+    td input.tbl-inp:hover { border-color: #cbd5e1; background: #fff; }
+    td input.tbl-inp:focus { border-color: #17365d; background: #fff; outline: none; }
+    td.calc-cell { background: #f1f5f9; font-weight: bold; color: #0f172a; text-align: right; }
+    .summary {
+      padding: 13px;
+      background: #eaf1f9;
+      border-radius: 6px;
+      margin-top: 15px;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+    .muted { color: #64748b; font-size: 13px; line-height: 1.6; }
+    .login-card { max-width: 480px; margin: 35px auto; }
+    .login-card h2 { text-align: center; color: #17365d; margin-top: 0; }
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .demo-btn {
+      background: #f1f5f9;
+      color: #17365d;
+      border: 1px solid #cbd5e1;
+      text-align: left;
+      padding: 8px 10px;
       font-size: 12px;
-      font-weight: 600;
-      padding: 4px 6px;
-      background: #f8fafc;
-      color: #0f172a;
-      border-radius: 4px;
-      white-space: nowrap;
+      margin: 0;
+    }
+    .demo-btn:hover { background: #dce5f0; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .badge-ok { background: #dcfce7; color: #166534; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    .badge-err { background: #fee2e2; color: #991b1b; }
+    .badge-navy { background: #17365d; color: #ffffff; }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 9px;
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    @media (max-width: 600px) {
+      .container { padding: 10px; }
+      .card { padding: 14px; }
+      .header { padding: 13px; }
+      .header h2 { font-size: 17px; }
+      .grid { grid-template-columns: 1fr; }
+      button { padding: 10px 12px; }
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+<body>
 
-  <!-- Toast Container -->
-  <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-  <!-- Modal Backdrop -->
-  <div id="modal-backdrop" class="hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div id="modal-content" class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"></div>
+  <!-- TOP NAVY HEADER -->
+  <div class="header">
+    <div>
+      <h2>NDL Garments Production ERP — Unit-02</h2>
+      <div class="user-info" id="userInfo">Natural Denims Limited · Ashulia, Savar, Dhaka</div>
+    </div>
+    <button id="logoutButton" class="btn-danger" style="display:none;" onclick="handleLogout()">Logout</button>
   </div>
 
-  <!-- LOGIN VIEW -->
-  <div id="login-view" class="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-    <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-800">
-      <!-- Left Brand Panel -->
-      <div class="md:col-span-5 bg-slate-950 text-white p-8 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-lg tracking-tight">NDL</div>
-            <div>
-              <div class="font-bold text-sm tracking-wide">NATURAL DENIMS LTD.</div>
-              <div class="text-xs text-slate-400">Unit-02 · Ashulia, Savar, Dhaka</div>
-            </div>
-          </div>
-          <h1 class="text-2xl font-bold leading-snug mb-3">RMG Production &amp; WIP ERP</h1>
-          <p class="text-xs text-slate-400 leading-relaxed mb-6">
-            Role-based multi-department production portal. Each department logs in to input, import, and submit daily reports; Administrators review, approve, and consolidate the Unit-02 Master Cut-to-Ship sheet.
-          </p>
-          <div class="space-y-2.5 text-xs text-slate-300">
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> Cutting · Daily Fabric &amp; Cut Tracking</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-400"></span> Sewing · Line Efficiency &amp; SMV</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span> Wash · Plant Challan &amp; Sample WIP</div>
-            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-violet-400"></span> Finishing · Metal Pass, Pack &amp; Ship</div>
-          </div>
-        </div>
-        <div class="pt-6 border-t border-slate-800 text-[11px] text-slate-500">
-          Hosted on GitHub Pages · Local Browser Persistence
-        </div>
+  <!-- MODAL -->
+  <div id="modalBackdrop" class="modal-backdrop" onclick="if(event.target.id==='modalBackdrop') closeModal()">
+    <div id="modalBox" class="modal-box"></div>
+  </div>
+
+  <div class="container">
+    <div id="globalAlert" class="alert"></div>
+
+    <!-- LOGIN SECTION -->
+    <section id="loginSection" class="card login-card">
+      <h2>ERP Login</h2>
+      <p class="muted" style="text-align:center;">Sign in with your Department Email &amp; Password</p>
+
+      <div class="field">
+        <label>Email *</label>
+        <input id="loginEmail" type="email" placeholder="Enter Email" />
       </div>
 
-      <!-- Right Login Form -->
-      <div class="md:col-span-7 p-8 flex flex-col justify-center">
-        <div class="mb-6">
-          <h2 class="text-xl font-bold text-slate-900">Sign in to your workspace</h2>
-          <p class="text-xs text-slate-500 mt-1">Enter your department email and password to continue.</p>
-        </div>
+      <div class="field" style="margin-top:12px;">
+        <label>Password *</label>
+        <input id="loginPassword" type="password" placeholder="Enter Password" />
+      </div>
 
-        <div id="login-error" class="hidden mb-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium"></div>
+      <div class="button-row">
+        <button class="btn-success" style="width:100%;" onclick="handleLogin()">Login</button>
+      </div>
 
-        <form id="login-form" class="space-y-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Email Address</label>
-            <input id="login-email" type="email" required placeholder="e.g. admin@ndlunit02.com"
-              class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
-            <div class="relative">
-              <input id="login-password" type="password" required placeholder="Enter password"
-                class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-16" />
-              <button type="button" id="toggle-pw-btn" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 hover:text-slate-800">Show</button>
-            </div>
-          </div>
-          <button type="submit" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg shadow-sm transition">
-            Sign In
+      <div style="margin-top:18px; border-top:1px solid #d8e0ea; padding-top:12px;">
+        <div style="font-size:12px; font-weight:bold; color:#34445b;">Quick Demo Accounts:</div>
+        <div class="demo-grid">
+          <button type="button" class="demo-btn" onclick="fillDemo('admin@ndlunit02.com','Admin@123')">
+            <strong>Administrator</strong><br><span style="font-size:10px;">All Modules</span>
           </button>
-        </form>
-
-        <!-- Quick Demo Access -->
-        <div class="mt-6 pt-5 border-t border-slate-200">
-          <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Quick Demo Account Fill</div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <button type="button" onclick="fillDemoLogin('admin@ndlunit02.com','Admin@123')" class="text-left p-2 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition">
-              <div class="text-xs font-bold text-slate-900">Administrator</div>
-              <div class="text-[10px] text-slate-500 truncate">admin@ndlunit02.com</div>
-            </button>
-            <button type="button" onclick="fillDemoLogin('cutting@ndlunit02.com','Cut@123')" class="text-left p-2 rounded-lg border border-slate-200 hover:border-emerald-400 hover:bg-emerald-50/50 transition">
-              <div class="text-xs font-bold text-emerald-700">Cutting Dept</div>
-              <div class="text-[10px] text-slate-500 truncate">cutting@ndlunit02.com</div>
-            </button>
-            <button type="button" onclick="fillDemoLogin('sewing@ndlunit02.com','Sew@123')" class="text-left p-2 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition">
-              <div class="text-xs font-bold text-blue-700">Sewing Dept</div>
-              <div class="text-[10px] text-slate-500 truncate">sewing@ndlunit02.com</div>
-            </button>
-            <button type="button" onclick="fillDemoLogin('wash@ndlunit02.com','Wash@123')" class="text-left p-2 rounded-lg border border-slate-200 hover:border-amber-400 hover:bg-amber-50/50 transition">
-              <div class="text-xs font-bold text-amber-700">Wash Dept</div>
-              <div class="text-[10px] text-slate-500 truncate">wash@ndlunit02.com</div>
-            </button>
-            <button type="button" onclick="fillDemoLogin('finishing@ndlunit02.com','Fin@123')" class="text-left p-2 rounded-lg border border-slate-200 hover:border-violet-400 hover:bg-violet-50/50 transition">
-              <div class="text-xs font-bold text-violet-700">Finishing Dept</div>
-              <div class="text-[10px] text-slate-500 truncate">finishing@ndlunit02.com</div>
-            </button>
-          </div>
+          <button type="button" class="demo-btn" onclick="fillDemo('fabric@ndlunit02.com','Fab@123')">
+            <strong>Fabric Store</strong><br><span style="font-size:10px;">Receive / Issue / Stock</span>
+          </button>
+          <button type="button" class="demo-btn" onclick="fillDemo('cutting@ndlunit02.com','Cut@123')">
+            <strong>Cutting Dept</strong><br><span style="font-size:10px;">Cutting Tracking</span>
+          </button>
+          <button type="button" class="demo-btn" onclick="fillDemo('sewing@ndlunit02.com','Sew@123')">
+            <strong>Sewing Dept</strong><br><span style="font-size:10px;">Line Efficiency</span>
+          </button>
+          <button type="button" class="demo-btn" onclick="fillDemo('wash@ndlunit02.com','Wash@123')">
+            <strong>Wash Dept</strong><br><span style="font-size:10px;">Challan &amp; WIP</span>
+          </button>
+          <button type="button" class="demo-btn" onclick="fillDemo('finishing@ndlunit02.com','Fin@123')">
+            <strong>Finishing Dept</strong><br><span style="font-size:10px;">Pack &amp; Shipment</span>
+          </button>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- MAIN APPLICATION -->
+    <section id="appSection" style="display:none;">
+      <div class="tabs" id="mainTabs"></div>
+      <div id="tabWorkspace"></div>
+    </section>
   </div>
 
-  <!-- MAIN APP SHELL (Vyapar-Style Dark Sidebar + Light Workspace) -->
-  <div id="app-shell" class="hidden min-h-screen flex flex-col">
-    <!-- Top Utility Bar -->
-    <header class="h-12 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 z-20">
-      <div class="flex items-center gap-4">
-        <button id="mobile-menu-btn" class="lg:hidden p-1.5 rounded-md text-slate-600 hover:bg-slate-100">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-        <div class="flex items-center gap-2 text-xs">
-          <span class="w-6 h-6 rounded bg-rose-600 text-white font-bold flex items-center justify-center text-[11px]">N</span>
-          <span class="font-bold text-slate-800">Natural Denims Ltd.</span>
-          <span class="text-slate-300">|</span>
-          <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium" id="header-unit-badge">Unit-02 (RMG)</span>
-        </div>
+<script>
+// =========================================================================
+// 1. STORAGE, SEED DATA & ROLE-BASED ACCESS CONTROL
+// =========================================================================
+const STORAGE_KEY = "NDL_COMBINED_ERP_V1";
+
+function safeGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function safeSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+const DEFAULT_USERS = [
+  { id: "USR-01", name: "Mazharul Islam (Admin)", email: "admin@ndlunit02.com", password: "Admin@123", role: "Admin", dept: "All", desktopWrite: true, status: "Active" },
+  { id: "USR-02", name: "Ekramul Haque (Admin)", email: "ekramh478@gmail.com", password: "Admin@123", role: "Admin", dept: "All", desktopWrite: true, status: "Active" },
+  { id: "USR-03", name: "Fabric Store In-Charge", email: "fabric@ndlunit02.com", password: "Fab@123", role: "Dept", dept: "Fabric", desktopWrite: true, status: "Active" },
+  { id: "USR-04", name: "Cutting In-Charge", email: "cutting@ndlunit02.com", password: "Cut@123", role: "Dept", dept: "Cutting", desktopWrite: true, status: "Active" },
+  { id: "USR-05", name: "Sewing Floor Manager", email: "sewing@ndlunit02.com", password: "Sew@123", role: "Dept", dept: "Sewing", desktopWrite: true, status: "Active" },
+  { id: "USR-06", name: "Wash Coordinator", email: "wash@ndlunit02.com", password: "Wash@123", role: "Dept", dept: "Wash", desktopWrite: true, status: "Active" },
+  { id: "USR-07", name: "Finishing In-Charge", email: "finishing@ndlunit02.com", password: "Fin@123", role: "Dept", dept: "Finishing", desktopWrite: true, status: "Active" }
+];
+
+const DEFAULT_MASTER = [
+  { Master_ID: "MST-01", Buyer: "JOE'S", Style: "45NS7DTE8220-DTE", PO: "4500716813", Garment_Color: "DANTE", Fabric_Code: "NDL-DNM-101", Fabric_Color: "INDIGO", Composition: "98% Cotton 2% Elastane", Bulk_Consumption_DZ: 18.2, PI_No: "PI-2026-101", Supplier: "NZ Denim Ltd.", Order_Qty: 3653, Booking_Qty_Yards: 5850, Unit_Price_USD: 2.85, Unit: "Yards", Status: "Active" },
+  { Master_ID: "MST-02", Buyer: "GUESS", Style: "GUFJC02B", PO: "4500713441", Garment_Color: "DISSTRESSED LIGHT", Fabric_Code: "NDL-DNM-204", Fabric_Color: "MID BLUE", Composition: "99% Cotton 1% Spandex", Bulk_Consumption_DZ: 13.15, PI_No: "PI-2026-102", Supplier: "Amber Denim Mills", Order_Qty: 9320, Booking_Qty_Yards: 10550, Unit_Price_USD: 3.10, Unit: "Yards", Status: "Active" },
+  { Master_ID: "MST-03", Buyer: "TOMMY HILFIGER", Style: "T35/857000(ACADEMY)", PO: "4500723111", Garment_Color: "VINTAGE INDIGO", Fabric_Code: "NDL-DNM-309", Fabric_Color: "DARK INDIGO", Composition: "100% Cotton 12.5oz", Bulk_Consumption_DZ: 16.5, PI_No: "PI-2026-103", Supplier: "Ha-Meem Denim", Order_Qty: 16749, Booking_Qty_Yards: 23750, Unit_Price_USD: 3.25, Unit: "Yards", Status: "Active" },
+  { Master_ID: "MST-04", Buyer: "HUDSON", Style: "45NS7SLA7642-SLA", PO: "4500715874", Garment_Color: "SHANGRI LA", Fabric_Code: "NDL-DNM-412", Fabric_Color: "SHANGRI LA BLUE", Composition: "98% Cotton 2% Lycra", Bulk_Consumption_DZ: 17.4, PI_No: "PI-2026-104", Supplier: "Partex Denim", Order_Qty: 2750, Booking_Qty_Yards: 4100, Unit_Price_USD: 3.40, Unit: "Yards", Status: "Active" },
+  { Master_ID: "MST-05", Buyer: "TOMMY HILFIGER", Style: "TGSKC11G", PO: "4500713249", Garment_Color: "LIGHT WASH", Fabric_Code: "NDL-DNM-505", Fabric_Color: "SKY INDIGO", Composition: "99% Cotton 1% Elastane", Bulk_Consumption_DZ: 14.8, PI_No: "PI-2026-105", Supplier: "NZ Denim Ltd.", Order_Qty: 1872, Booking_Qty_Yards: 2400, Unit_Price_USD: 2.95, Unit: "Yards", Status: "Active" }
+];
+
+const DEFAULT_OPENING = [
+  { Opening_ID: "FO-1001", Opening_Month: "2026-11", Buyer: "JOE'S", Style: "45NS7DTE8220-DTE", Fabric_Code: "NDL-DNM-101", Fabric_Color: "INDIGO", Composition: "98% Cotton 2% Elastane", Unit: "Yards", Opening_Qty: 6000, Remarks: "Nov Opening", Created_By: "admin@ndlunit02.com" },
+  { Opening_ID: "FO-1002", Opening_Month: "2026-11", Buyer: "GUESS", Style: "GUFJC02B", Fabric_Code: "NDL-DNM-204", Fabric_Color: "MID BLUE", Composition: "99% Cotton 1% Spandex", Unit: "Yards", Opening_Qty: 5000, Remarks: "Nov Opening", Created_By: "admin@ndlunit02.com" }
+];
+
+const DEFAULT_RECEIVE = [
+  { Receive_ID: "FR-1001", Receive_Date: "2026-11-05", Challan_No: "CH-501", MRIR_No: "MR-201", MRIR_Date: "2026-11-05", PI_No: "PI-2026-102", Supplier: "Amber Denim Mills", Buyer: "GUESS", Style: "GUFJC02B", Fabric_Code: "NDL-DNM-204", Fabric_Color: "MID BLUE", Composition: "99% Cotton 1% Spandex", Booking_Consumption: 13.15, Booking_Qty_Yards: 10550, Unit: "Yards", Receive_Qty: 5520, Unit_Price_USD: 3.10, Total_Value_USD: 17112, Remarks: "2nd Lot", Created_By: "fabric@ndlunit02.com" },
+  { Receive_ID: "FR-1002", Receive_Date: "2026-11-08", Challan_No: "CH-518", MRIR_No: "MR-214", MRIR_Date: "2026-11-08", PI_No: "PI-2026-103", Supplier: "Ha-Meem Denim", Buyer: "TOMMY HILFIGER", Style: "T35/857000(ACADEMY)", Fabric_Code: "NDL-DNM-309", Fabric_Color: "DARK INDIGO", Composition: "100% Cotton 12.5oz", Booking_Consumption: 16.5, Booking_Qty_Yards: 23750, Unit: "Yards", Receive_Qty: 23700, Unit_Price_USD: 3.25, Total_Value_USD: 77025, Remarks: "Full Lot", Created_By: "fabric@ndlunit02.com" }
+];
+
+const DEFAULT_ISSUE = [
+  { Issue_ID: "FI-1001", Issue_Date: "2026-11-10", SR_No: "SR-881", Department: "Cutting", Issue_To: "Cutting Floor-1", Buyer: "JOE'S", Style: "45NS7DTE8220-DTE", PO: "4500716813", Garment_Color: "DANTE", Fabric_Code: "NDL-DNM-101", Fabric_Color: "INDIGO", Composition: "98% Cotton 2% Elastane", Bulk_Consumption_DZ: 18.2, Order_Qty: 3653, Fabric_Required: 5540.38, Cutting_Excess_1Pct: 55.4, Issue_Qty: 5580, Max_Allowed_Qty: 5595.78, Excess_Approved_By: "", Remarks: "Within 1% limit", Created_By: "fabric@ndlunit02.com" },
+  { Issue_ID: "FI-1002", Issue_Date: "2026-11-12", SR_No: "SR-890", Department: "Cutting", Issue_To: "Cutting Floor-2", Buyer: "GUESS", Style: "GUFJC02B", PO: "4500713441", Garment_Color: "DISSTRESSED LIGHT", Fabric_Code: "NDL-DNM-204", Fabric_Color: "MID BLUE", Composition: "99% Cotton 1% Spandex", Bulk_Consumption_DZ: 13.15, Order_Qty: 9320, Fabric_Required: 10213.17, Cutting_Excess_1Pct: 102.13, Issue_Qty: 9980, Max_Allowed_Qty: 10315.3, Excess_Approved_By: "", Remarks: "Main Batch", Created_By: "fabric@ndlunit02.com" }
+];
+
+const DEFAULT_CUTTING = [
+  { id: "c1", buyer: "JOE'S", style: "45NS7DTE8220-DTE", po: "4500716813", color: "DANTE", orderQty: 3653, cutPlanPct: 1.05, bulkConj: 18.2, fabRecDay: 0, fabRecTotal: 5830, fabUsedTotal: 5810, fabReturn: 20, cutDay: 0, cutTotal: 3834, lineNo: "Line 12", inputDay: 0, inputTotal: 3834, status: "CLOSE", remarks: "Completed" },
+  { id: "c2", buyer: "GUESS", style: "GUFJC02B", po: "4500713441", color: "DISSTRESSED LIGHT", orderQty: 9320, cutPlanPct: 1.03, bulkConj: 13.15, fabRecDay: 450, fabRecTotal: 10520, fabUsedTotal: 9980, fabReturn: 0, cutDay: 620, cutTotal: 9600, lineNo: "Line 20", inputDay: 500, inputTotal: 8901, status: "RUNNING", remarks: "In progress" },
+  { id: "c3", buyer: "TOMMY HILFIGER", style: "T35/857000(ACADEMY)", po: "4500723111", color: "VINTAGE INDIGO", orderQty: 16749, cutPlanPct: 1.03, bulkConj: 16.5, fabRecDay: 1200, fabRecTotal: 23700, fabUsedTotal: 22100, fabReturn: 150, cutDay: 950, cutTotal: 17120, lineNo: "U1-4", inputDay: 880, inputTotal: 15400, status: "RUNNING", remarks: "Main batch" }
+];
+
+const DEFAULT_SEWING = [
+  { id: "s1", floor: "4th Floor", line: "U1-1", buyer: "HUDSON", style: "45NS7SLA7642-SLA", po: "4500715874", color: "SHANGRI LA", orderQty: 2750, totalInput: 1430, totalOutput: 440, smv: 20.5, cm: 1.83, days: 4, target: 427.17, targetAchieved: 440, dayEffi: 68.4, prodManHr: 1.95, manpower: 42 },
+  { id: "s2", floor: "4th Floor", line: "U1-4", buyer: "TOMMY HILFIGER", style: "T35/857000(ACADEMY)", po: "4500723111", color: "VINTAGE INDIGO", orderQty: 16749, totalInput: 7701, totalOutput: 3410, smv: 28.37, cm: 1.83, days: 11, target: 242.69, targetAchieved: 250, dayEffi: 64.2, prodManHr: 1.52, manpower: 48 },
+  { id: "s3", floor: "3rd Floor", line: "Line 2", buyer: "TOMMY HILFIGER", style: "TGSKC11G", po: "4500713249", color: "LIGHT WASH", orderQty: 1872, totalInput: 1200, totalOutput: 470, smv: 22.0, cm: 1.65, days: 3, target: 310.0, targetAchieved: 320, dayEffi: 71.1, prodManHr: 2.04, manpower: 38 }
+];
+
+const DEFAULT_WASH = [
+  { id: "w1", line: "Line 21", buyer: "TOMMY HILFIGER", style: "TGSKH03G", shipDate: "2026-11-28", po: "4500718902", color: "999-ASORTED-DRESS", orderQty: 15906, totalCut: 16090, qcSewDay: 0, qcSewTotal: 16090, washPlant: "NWP", challanNo: "CH-1104", washSendDay: 0, washSendTotal: 16010, sizeSet: 20, shadeSample: 25, labTest: 15, prs: 20, sampleRcv: 76, missing: 0, recChallanNo: "RC-882", washRecDay: 420, washRecTotal: 15998, remarks: "Final lot" },
+  { id: "w2", line: "Line 2", buyer: "TOMMY HILFIGER", style: "TGSKC11G", shipDate: "2026-12-05", po: "4500713249", color: "LIGHT WASH", orderQty: 1872, totalCut: 1928, qcSewDay: 320, qcSewTotal: 470, washPlant: "NWP", challanNo: "CH-1142", washSendDay: 330, washSendTotal: 330, sizeSet: 5, shadeSample: 5, labTest: 2, prs: 3, sampleRcv: 12, missing: 0, recChallanNo: "", washRecDay: 0, washRecTotal: 0, remarks: "First wash batch" }
+];
+
+const DEFAULT_FINISHING = [
+  { id: "f1", line: "FINISHING-04", buyer: "SPRING FIELD", style: "5RE092", po: "5740509", color: "MEDIUM BLUE", orderQty: 23678, washRecDay: 650, washRecTotal: 8727, threadCutDay: 420, threadCutTotal: 3220, buttonDay: 390, buttonTotal: 4100, metalPassDay: 380, metalPassTotal: 4045, packDay: 380, packTotal: 4045, shipDay: 0, shipTotal: 0, remarks: "Packing ongoing" },
+  { id: "f2", line: "FINISHING-02", buyer: "LERROS", style: "2009106", po: "233623", color: "661", orderQty: 4534, washRecDay: 0, washRecTotal: 4664, threadCutDay: 40, threadCutTotal: 4664, buttonDay: 0, buttonTotal: 4600, metalPassDay: 133, metalPassTotal: 4257, packDay: 133, packTotal: 4257, shipDay: 133, shipTotal: 4100, remarks: "Ready for final ship" }
+];
+
+const DEFAULT_SUBMISSIONS = [
+  { id: "SUB-101", dept: "Cutting", submittedBy: "cutting@ndlunit02.com", submittedByName: "Cutting In-Charge", reportDate: "2026-11-21", rowCount: 3, notes: "Updated GUESS GUFJC02B & TOMMY ACADEMY cutting totals.", status: "Approved", adminNote: "Verified against fabric issue.", timestamp: "2026-11-21 17:30" },
+  { id: "SUB-102", dept: "Finishing", submittedBy: "finishing@ndlunit02.com", submittedByName: "Finishing In-Charge", reportDate: "2026-11-21", rowCount: 2, notes: "Metal pass & carton packing updated for SPRING FIELD & LERROS.", status: "Pending Review", adminNote: "", timestamp: "2026-11-21 18:10" }
+];
+
+function loadState() {
+  const raw = safeGet(STORAGE_KEY);
+  if (raw) {
+    try {
+      const p = JSON.parse(raw);
+      if (p && p.users && p.fabricMaster && p.cutting) return p;
+    } catch (e) {}
+  }
+  return {
+    users: JSON.parse(JSON.stringify(DEFAULT_USERS)),
+    fabricMaster: JSON.parse(JSON.stringify(DEFAULT_MASTER)),
+    fabricOpening: JSON.parse(JSON.stringify(DEFAULT_OPENING)),
+    fabricReceive: JSON.parse(JSON.stringify(DEFAULT_RECEIVE)),
+    fabricIssue: JSON.parse(JSON.stringify(DEFAULT_ISSUE)),
+    cutting: JSON.parse(JSON.stringify(DEFAULT_CUTTING)),
+    sewing: JSON.parse(JSON.stringify(DEFAULT_SEWING)),
+    wash: JSON.parse(JSON.stringify(DEFAULT_WASH)),
+    finishing: JSON.parse(JSON.stringify(DEFAULT_FINISHING)),
+    submissions: JSON.parse(JSON.stringify(DEFAULT_SUBMISSIONS)),
+    auditLog: [],
+    currentUserEmail: null,
+    activeTab: "dashboardTab"
+  };
+}
+
+let state = loadState();
+function saveState() { safeSet(STORAGE_KEY, JSON.stringify(state)); }
+function currentUser() { return state.users.find(u => u.email === state.currentUserEmail) || null; }
+
+// =========================================================================
+// 2. HELPERS & FABRIC STOCK ENGINE (PORTED FROM Code.gs)
+// =========================================================================
+function round2(n) { const v = Number(n); return Number.isFinite(v) ? Math.round(v * 100) / 100 : 0; }
+function normStr(v) { return String(v || "").trim().toLowerCase(); }
+function todayValue() {
+  const d = new Date();
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
+function currentMonthValue() { return todayValue().slice(0, 7); }
+function newId(prefix) { return prefix + "-" + Math.random().toString(36).substring(2, 10).toUpperCase(); }
+
+function showMessage(msg, type = "success") {
+  const box = document.getElementById("globalAlert");
+  box.textContent = msg;
+  box.className = "alert " + type;
+  box.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function clearMessage() {
+  const box = document.getElementById("globalAlert");
+  box.style.display = "none";
+}
+
+function openModal(html) {
+  document.getElementById("modalBox").innerHTML = html;
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal() {
+  document.getElementById("modalBackdrop").classList.remove("open");
+}
+
+function stockKey(item) {
+  return [item.Buyer, item.Style, item.Fabric_Code, item.Fabric_Color, item.Composition, item.Unit]
+    .map(v => normStr(v)).join("||");
+}
+
+function getStockByCombo() {
+  const map = {};
+  const add = (item, delta) => {
+    const k = [item.Buyer, item.Style, item.Fabric_Code, item.Fabric_Color, item.Composition].map(normStr).join("||");
+    map[k] = round2((map[k] || 0) + Number(delta || 0));
+  };
+  state.fabricOpening.forEach(x => add(x, x.Opening_Qty));
+  state.fabricReceive.forEach(x => add(x, x.Receive_Qty));
+  state.fabricIssue.forEach(x => add(x, -x.Issue_Qty));
+  return map;
+}
+
+function validateStockTimeline(receiveOverride, issueOverrides) {
+  const events = [];
+  state.fabricOpening.forEach(o => {
+    events.push({ date: o.Opening_Month + "-01", priority: 0, type: "OPENING", key: stockKey(o), qty: Number(o.Opening_Qty) || 0, id: o.Opening_ID });
+  });
+  state.fabricReceive.forEach(r => {
+    const rec = (receiveOverride && normStr(r.Receive_ID) === normStr(receiveOverride.Receive_ID)) ? receiveOverride : r;
+    events.push({ date: rec.Receive_Date, priority: 1, type: "RECEIVE", key: stockKey(rec), qty: Number(rec.Receive_Qty) || 0, id: rec.Receive_ID });
+  });
+  if (receiveOverride && !state.fabricReceive.some(r => normStr(r.Receive_ID) === normStr(receiveOverride.Receive_ID))) {
+    events.push({ date: receiveOverride.Receive_Date, priority: 1, type: "RECEIVE", key: stockKey(receiveOverride), qty: Number(receiveOverride.Receive_Qty) || 0, id: receiveOverride.Receive_ID });
+  }
+  const issList = Array.isArray(issueOverrides) ? issueOverrides : (issueOverrides ? [issueOverrides] : []);
+  const issMap = {};
+  issList.forEach(i => { issMap[normStr(i.Issue_ID)] = i; });
+  state.fabricIssue.forEach(i => {
+    const rec = issMap[normStr(i.Issue_ID)] || i;
+    events.push({ date: rec.Issue_Date, priority: 2, type: "ISSUE", key: stockKey(rec), qty: Number(rec.Issue_Qty) || 0, id: rec.Issue_ID });
+  });
+  issList.forEach(i => {
+    if (!state.fabricIssue.some(old => normStr(old.Issue_ID) === normStr(i.Issue_ID))) {
+      events.push({ date: i.Issue_Date, priority: 2, type: "ISSUE", key: stockKey(i), qty: Number(i.Issue_Qty) || 0, id: i.Issue_ID });
+    }
+  });
+  events.sort((a, b) => a.date !== b.date ? a.date.localeCompare(b.date) : a.priority - b.priority);
+  const bal = {};
+  for (const ev of events) {
+    bal[ev.key] = bal[ev.key] || 0;
+    if (ev.type === "ISSUE") {
+      bal[ev.key] -= ev.qty;
+      if (bal[ev.key] < -0.0001) {
+        throw new Error(`Stock Negative হবে! Issue ID: ${ev.id} | Date: ${ev.date} | Balance: ${round2(bal[ev.key])}`);
+      }
+    } else {
+      bal[ev.key] += ev.qty;
+    }
+  }
+  return true;
+}
+
+function uniqueMaster(field) {
+  const s = new Set();
+  state.fabricMaster.filter(m => !m.Status || normStr(m.Status) === "active").forEach(m => {
+    const v = String(m[field] || "").trim();
+    if (v) s.add(v);
+  });
+  return Array.from(s).sort();
+}
+
+function getFilteredMaster(buyer, style) {
+  const active = state.fabricMaster.filter(m => !m.Status || normStr(m.Status) === "active");
+  const byBuyer = buyer ? active.filter(m => normStr(m.Buyer) === normStr(buyer)) : [];
+  const byStyle = style ? byBuyer.filter(m => normStr(m.Style) === normStr(style)) : byBuyer;
+  const uniq = (arr, f) => Array.from(new Set(arr.map(x => String(x[f] || "").trim()).filter(Boolean))).sort();
+  return {
+    styles: uniq(byBuyer, "Style"),
+    pos: uniq(byStyle, "PO"),
+    garmentColors: uniq(byStyle, "Garment_Color"),
+    fabricCodes: uniq(byStyle, "Fabric_Code"),
+    fabricColors: uniq(byStyle, "Fabric_Color"),
+    compositions: uniq(byStyle, "Composition")
+  };
+}
+
+function lookupMasterOrderQty(buyer, style) {
+  const f = state.fabricMaster.find(m => normStr(m.Buyer) === normStr(buyer) && normStr(m.Style) === normStr(style) && Number(m.Order_Qty) > 0);
+  return f ? Number(f.Order_Qty) : 0;
+}
+
+function lookupMasterBulkDZ(buyer, style, fc) {
+  const f = state.fabricMaster.find(m => normStr(m.Buyer) === normStr(buyer) && normStr(m.Style) === normStr(style) && (!fc || normStr(m.Fabric_Code) === normStr(fc)) && Number(m.Bulk_Consumption_DZ) > 0);
+  return f ? Number(f.Bulk_Consumption_DZ) : 0;
+}
+
+function lookupPIBookingAndPrice(piNo) {
+  let qty = 0, price = 0;
+  state.fabricMaster.forEach(m => {
+    if (normStr(m.PI_No) === normStr(piNo)) {
+      qty += Number(m.Booking_Qty_Yards) || 0;
+      if (Number(m.Unit_Price_USD) > 0) price = Number(m.Unit_Price_USD);
+    }
+  });
+  return { qty: round2(qty), price };
+}
+
+function csvEscape(v) { return `"${String(v ?? "").replace(/"/g, '""')}"`; }
+function downloadCSV(filename, lines) {
+  const blob = new Blob(["\uFEFF" + lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// =========================================================================
+// 3. AUTHENTICATION & TAB ROUTING
+// =========================================================================
+function fillDemo(email, pw) {
+  document.getElementById("loginEmail").value = email;
+  document.getElementById("loginPassword").value = pw;
+  clearMessage();
+}
+
+function handleLogin() {
+  const email = normStr(document.getElementById("loginEmail").value);
+  const pw = document.getElementById("loginPassword").value;
+  if (!email || !pw) { showMessage("Email ও Password দিন।", "error"); return; }
+
+  const user = state.users.find(u => normStr(u.email) === email && u.password === pw);
+  if (!user) { showMessage("ভুল Email অথবা Password।", "error"); return; }
+  if (normStr(user.status) !== "active") { showMessage("User Account Inactive। Admin-এর সাথে যোগাযোগ করুন।", "error"); return; }
+
+  clearMessage();
+  state.currentUserEmail = user.email;
+  const tabs = getAllowedTabs(user);
+  state.activeTab = tabs[0].id;
+  saveState();
+  renderApp();
+}
+
+function handleLogout() {
+  state.currentUserEmail = null;
+  saveState();
+  clearMessage();
+  renderApp();
+}
+
+function getAllowedTabs(user) {
+  if (normStr(user.role) === "admin") {
+    const pending = state.submissions.filter(s => s.status === "Pending Review").length;
+    return [
+      { id: "dashboardTab", label: "Dashboard" },
+      { id: "receiveTab", label: "Fabric Receive" },
+      { id: "issueTab", label: "Fabric Issue" },
+      { id: "openingTab", label: "Opening Stock" },
+      { id: "stockTab", label: "Fabric Stock" },
+      { id: "cuttingTab", label: "Cutting Dept" },
+      { id: "sewingTab", label: "Sewing Dept" },
+      { id: "washTab", label: "Wash Dept" },
+      { id: "finishingTab", label: "Finishing Dept" },
+      { id: "masterTab", label: "Master Unit-02" },
+      { id: "submissionsTab", label: pending > 0 ? `Submissions (${pending})` : "Submissions" },
+      { id: "usersTab", label: "User Management" },
+      { id: "bonusTab", label: "Bonus Policy" }
+    ];
+  }
+  if (user.dept === "Fabric") {
+    return [
+      { id: "receiveTab", label: "Fabric Receive" },
+      { id: "issueTab", label: "Fabric Issue" },
+      { id: "openingTab", label: "Opening Stock" },
+      { id: "stockTab", label: "Fabric Stock" },
+      { id: "mySubTab", label: "My Submissions" }
+    ];
+  }
+  const map = {
+    Cutting: { id: "cuttingTab", label: "Cutting Workspace" },
+    Sewing: { id: "sewingTab", label: "Sewing Workspace" },
+    Wash: { id: "washTab", label: "Wash Workspace" },
+    Finishing: { id: "finishingTab", label: "Finishing Workspace" }
+  };
+  return [map[user.dept], { id: "mySubTab", label: "My Submissions" }];
+}
+
+function switchTab(tabId) {
+  state.activeTab = tabId;
+  saveState();
+  clearMessage();
+  renderTabs();
+  renderWorkspace();
+}
+
+function renderTabs() {
+  const user = currentUser();
+  if (!user) return;
+  const tabs = getAllowedTabs(user);
+  if (!tabs.some(t => t.id === state.activeTab)) state.activeTab = tabs[0].id;
+  document.getElementById("mainTabs").innerHTML = tabs.map(t => `
+    <button type="button" class="tab-button ${state.activeTab === t.id ? "active" : ""}" onclick="switchTab('${t.id}')">${t.label}</button>
+  `).join("");
+}
+
+function renderApp() {
+  const user = currentUser();
+  const loginSec = document.getElementById("loginSection");
+  const appSec = document.getElementById("appSection");
+  const logoutBtn = document.getElementById("logoutButton");
+  const info = document.getElementById("userInfo");
+
+  if (!user) {
+    loginSec.style.display = "block";
+    appSec.style.display = "none";
+    logoutBtn.style.display = "none";
+    info.textContent = "Natural Denims Limited · Ashulia, Savar, Dhaka";
+    return;
+  }
+  loginSec.style.display = "none";
+  appSec.style.display = "block";
+  logoutBtn.style.display = "inline-block";
+  info.textContent = `${user.name} | ${user.email} | ${user.role} (${user.dept})`;
+  renderTabs();
+  renderWorkspace();
+}
+
+function renderWorkspace() {
+  const ws = document.getElementById("tabWorkspace");
+  switch (state.activeTab) {
+    case "dashboardTab": ws.innerHTML = renderDashboard(); break;
+    case "receiveTab": ws.innerHTML = renderReceiveTab(); initReceiveBatch(); break;
+    case "issueTab": ws.innerHTML = renderIssueTab(); initIssueBatch(); break;
+    case "openingTab": ws.innerHTML = renderOpeningTab(); initOpeningBatch(); break;
+    case "stockTab": ws.innerHTML = renderStockTab(); loadMonthlyStock(); break;
+    case "cuttingTab": ws.innerHTML = renderDeptTab("cutting"); break;
+    case "sewingTab": ws.innerHTML = renderDeptTab("sewing"); break;
+    case "washTab": ws.innerHTML = renderDeptTab("wash"); break;
+    case "finishingTab": ws.innerHTML = renderDeptTab("finishing"); break;
+    case "masterTab": ws.innerHTML = renderMasterTab(); break;
+    case "submissionsTab": ws.innerHTML = renderSubmissionsAdminTab(); break;
+    case "mySubTab": ws.innerHTML = renderMySubmissionsTab(); break;
+    case "usersTab": ws.innerHTML = renderUsersTab(); break;
+    case "bonusTab": ws.innerHTML = renderBonusTab(); break;
+  }
+}
+
+// =========================================================================
+// 4. DASHBOARD TAB
+// =========================================================================
+function renderDashboard() {
+  const totalRec = state.fabricReceive.reduce((s, r) => s + (Number(r.Receive_Qty) || 0), 0);
+  const totalIss = state.fabricIssue.reduce((s, r) => s + (Number(r.Issue_Qty) || 0), 0);
+  const totalCut = state.cutting.reduce((s, r) => s + (Number(r.cutTotal) || 0), 0);
+  const totalSew = state.sewing.reduce((s, r) => s + (Number(r.totalOutput) || 0), 0);
+  const totalWash = state.wash.reduce((s, r) => s + (Number(r.washRecTotal) || 0), 0);
+  const totalPack = state.finishing.reduce((s, r) => s + (Number(r.packTotal) || 0), 0);
+  const pending = state.submissions.filter(s => s.status === "Pending Review").length;
+
+  return `
+    <div class="card">
+      <h3>NDL Unit-02 — Fabric &amp; Production Overview</h3>
+      <p class="muted">Stock আপডেট হয় Buyer + Style + Fabric Code + Fabric Color + Composition ধরে। Issue-তে PO ও Garment Color শুধু রেকর্ড রাখার জন্য সংরক্ষিত হয়।</p>
+      <div class="kpi-grid">
+        <div class="kpi-box"><div class="kpi-label">Fabric Receive</div><div class="kpi-val">${totalRec.toLocaleString()}</div><div class="kpi-sub">${state.fabricReceive.length} MRIR Entries</div></div>
+        <div class="kpi-box"><div class="kpi-label">Fabric Issue</div><div class="kpi-val">${totalIss.toLocaleString()}</div><div class="kpi-sub">${state.fabricIssue.length} SR Entries</div></div>
+        <div class="kpi-box"><div class="kpi-label">Total Cutting</div><div class="kpi-val">${totalCut.toLocaleString()}</div><div class="kpi-sub">${state.cutting.length} POs</div></div>
+        <div class="kpi-box"><div class="kpi-label">Sewing Output</div><div class="kpi-val">${totalSew.toLocaleString()}</div><div class="kpi-sub">${state.sewing.length} Lines</div></div>
+        <div class="kpi-box"><div class="kpi-label">Wash Receive</div><div class="kpi-val">${totalWash.toLocaleString()}</div><div class="kpi-sub">${state.wash.length} Lots</div></div>
+        <div class="kpi-box"><div class="kpi-label">Finishing Pack</div><div class="kpi-val">${totalPack.toLocaleString()}</div><div class="kpi-sub">${pending} Pending Reports</div></div>
       </div>
-
-      <div class="flex items-center gap-3">
-        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded-full px-3 py-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-          <span id="header-user-name" class="font-semibold text-slate-800">User</span>
-          <span id="header-user-role" class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-bold uppercase">Role</span>
-        </div>
-        <button id="logout-btn" class="px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 rounded-lg transition">
-          Logout
-        </button>
+      <div class="button-row">
+        <button class="btn-secondary" type="button" onclick="cleanMasterDuplicates()">Clean Duplicate Master Rows</button>
+        <button class="btn-teal" type="button" onclick="exportFullERPBackup()">Download Full ERP JSON Backup</button>
+        <button class="btn-danger" type="button" onclick="resetERPData()">Reset Demo Data</button>
       </div>
-    </header>
-
-    <div class="flex-1 flex min-h-0 relative">
-      <!-- Dark Left Navigation Sidebar (Vyapar Inspired) -->
-      <aside id="sidebar" class="w-60 bg-[#111827] text-slate-300 flex flex-col shrink-0 fixed lg:static inset-y-12 left-0 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
-        <div class="px-4 py-4 border-b border-slate-800 flex items-center justify-between">
-          <div>
-            <div class="text-sm font-bold text-white tracking-wide" id="sidebar-title">Production ERP</div>
-            <div class="text-[11px] text-slate-400" id="sidebar-subtitle">Unit-02 Operations</div>
-          </div>
-        </div>
-        <nav id="sidebar-nav" class="flex-1 py-3 space-y-1 overflow-y-auto custom-scroll"></nav>
-        <div class="p-4 border-t border-slate-800 text-[11px] text-slate-400">
-          <div class="truncate font-medium text-slate-300" id="sidebar-email"></div>
-          <div class="mt-0.5 text-slate-500">Auto-saved locally</div>
-        </div>
-      </aside>
-
-      <!-- Main Workspace Canvas -->
-      <main id="main-content" class="flex-1 bg-[#F8FAFC] p-4 sm:p-6 overflow-y-auto custom-scroll"></main>
     </div>
-  </div>
+  `;
+}
 
-  <script>
-    // =========================================================================
-    // 1. SAFE STORAGE & INITIAL SEED DATA (GROUNDED IN UPLOADED EXCEL FILES)
-    // =========================================================================
-    const STORAGE_KEY = 'ndl_unit02_erp_v2';
+function cleanMasterDuplicates() {
+  const seen = new Set();
+  const before = state.fabricMaster.length;
+  state.fabricMaster = state.fabricMaster.filter(m => {
+    const k = [m.Buyer, m.Style, m.PO, m.Garment_Color, m.Fabric_Code, m.Fabric_Color, m.Composition, m.PI_No, m.Supplier].map(normStr).join("||");
+    if (seen.has(k)) return false;
+    seen.add(k); return true;
+  });
+  saveState();
+  showMessage(`${before - state.fabricMaster.length}টি Duplicate Master Row পরিষ্কার করা হয়েছে।`, "success");
+}
 
-    function safeGetStorage(key) {
-      try { return localStorage.getItem(key); } catch (e) { return null; }
-    }
-    function safeSetStorage(key, val) {
-      try { localStorage.setItem(key, val); } catch (e) {}
-    }
+function exportFullERPBackup() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = `NDL_Unit02_ERP_Backup_${todayValue()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showMessage("Full ERP Backup downloaded.");
+}
 
-    const DEFAULT_USERS = [
-      { id: 'u1', name: 'Ikram Hossian (Admin)', email: 'admin@ndlunit02.com', password: 'Admin@123', role: 'admin', dept: 'all', active: true },
-      { id: 'u2', name: 'Cutting In-Charge', email: 'cutting@ndlunit02.com', password: 'Cut@123', role: 'dept', dept: 'cutting', active: true },
-      { id: 'u3', name: 'Sewing Floor Manager', email: 'sewing@ndlunit02.com', password: 'Sew@123', role: 'dept', dept: 'sewing', active: true },
-      { id: 'u4', name: 'Wash Coordinator', email: 'wash@ndlunit02.com', password: 'Wash@123', role: 'dept', dept: 'wash', active: true },
-      { id: 'u5', name: 'Finishing In-Charge', email: 'finishing@ndlunit02.com', password: 'Fin@123', role: 'dept', dept: 'finishing', active: true }
-    ];
+function resetERPData() {
+  const email = state.currentUserEmail;
+  safeSet(STORAGE_KEY, "");
+  state = loadState();
+  state.currentUserEmail = email;
+  saveState();
+  renderApp();
+  showMessage("Demo data restored.");
+}
 
-    const DEFAULT_CUTTING = [
-      { id: 'c1', buyer: "JOE'S", style: '45NS7DTE8220-DTE', po: '4500716813', color: 'DANTE', orderQty: 3653, cutPlanPct: 1.05, bulkConj: 18.2, fabRecDay: 0, fabRecTotal: 5830, fabUsedTotal: 5810, fabReturn: 20, cutDay: 0, cutTotal: 3834, lineNo: 'Line 12', inputDay: 0, inputTotal: 3834, status: 'CLOSE', remarks: 'Completed' },
-      { id: 'c2', buyer: 'GUESS', style: 'GUFJC02B', po: '4500713441', color: 'DISSTRESSED LIGHT', orderQty: 9320, cutPlanPct: 1.03, bulkConj: 13.15, fabRecDay: 450, fabRecTotal: 10520, fabUsedTotal: 9980, fabReturn: 0, cutDay: 620, cutTotal: 9600, lineNo: 'Line 20', inputDay: 500, inputTotal: 8901, status: 'RUNNING', remarks: 'In progress' },
-      { id: 'c3', buyer: 'TOMMY HILFIGER', style: 'T35/857000(ACADEMY)', po: '4500723111', color: 'VINTAGE INDIGO', orderQty: 16749, cutPlanPct: 1.03, bulkConj: 16.5, fabRecDay: 1200, fabRecTotal: 23700, fabUsedTotal: 22100, fabReturn: 150, cutDay: 950, cutTotal: 17120, lineNo: 'U1-4', inputDay: 880, inputTotal: 15400, status: 'RUNNING', remarks: 'Main batch' }
-    ];
+// =========================================================================
+// 5. FABRIC RECEIVE (BATCH ENTRY + SEARCH/EDIT FR-ID)
+// =========================================================================
+function renderReceiveTab() {
+  const pis = uniqueMaster("PI_No").map(v => `<option value="${v}">`).join("");
+  const sups = uniqueMaster("Supplier").map(v => `<option value="${v}">`).join("");
+  return `
+    <div class="card">
+      <h3>Fabric Receive — Batch Entry (Maximum 8 Rows)</h3>
+      <div class="grid">
+        <div class="field"><label>Receive Date *</label><input type="date" id="recDate" value="${todayValue()}"></div>
+        <div class="field"><label>Challan No *</label><input type="text" id="recChallan" placeholder="CH-XXX"></div>
+        <div class="field"><label>MRIR No *</label><input type="text" id="recMRIR" placeholder="MR-XXX"></div>
+        <div class="field"><label>MRIR Date</label><input type="date" id="recMRIRDate" value="${todayValue()}"></div>
+        <div class="field"><label>PI No (Search &amp; Select)</label><input class="search-select" id="recPI" list="dl_recPI" placeholder="Search PI No..." oninput="onRecPIChange()"><datalist id="dl_recPI">${pis}</datalist></div>
+        <div class="field"><label>Supplier * (Search &amp; Select)</label><input class="search-select" id="recSupplier" list="dl_recSup" placeholder="Search Supplier..."><datalist id="dl_recSup">${sups}</datalist></div>
+      </div>
+      <div id="receiveRows"></div>
+      <div class="button-row">
+        <button class="btn-secondary" type="button" onclick="addReceiveRow()">+ Add Row</button>
+        <button class="btn-success" type="button" onclick="saveReceiveBatch()">Save Receive</button>
+      </div>
+    </div>
 
-    const DEFAULT_SEWING = [
-      { id: 's1', floor: '4th Floor', line: 'U1-1', buyer: 'HUDSON', style: '45NS7SLA7642-SLA', po: '4500715874', color: 'SHANGRI LA', orderQty: 2750, totalInput: 1430, totalOutput: 440, smv: 20.5, cm: 1.83, days: 4, target: 427.17, targetAchieved: 440, dayEffi: 68.4, prodManHr: 1.95, manpower: 42 },
-      { id: 's2', floor: '4th Floor', line: 'U1-4', buyer: 'TOMMY HILFIGER', style: 'T35/857000(ACADEMY)', po: '4500723111', color: 'VINTAGE INDIGO', orderQty: 16749, totalInput: 7701, totalOutput: 3410, smv: 28.37, cm: 1.83, days: 11, target: 242.69, targetAchieved: 250, dayEffi: 64.2, prodManHr: 1.52, manpower: 48 },
-      { id: 's3', floor: '3rd Floor', line: 'Line 2', buyer: 'TOMMY HILFIGER', style: 'TGSKC11G', po: '4500713249', color: 'LIGHT WASH', orderQty: 1872, totalInput: 1200, totalOutput: 470, smv: 22.0, cm: 1.65, days: 3, target: 310.0, targetAchieved: 320, dayEffi: 71.1, prodManHr: 2.04, manpower: 38 }
-    ];
+    <div class="card">
+      <h3>Recent Fabric Receive &amp; Search / Edit (FR-ID)</h3>
+      <div class="grid">
+        <div class="field"><label>Search Receive ID</label><input type="text" id="searchReceiveId" placeholder="FR-1001" oninput="renderReceiveHistory()"></div>
+      </div>
+      <div id="receiveHistoryWrap" class="table-wrap"></div>
+    </div>
+  `;
+}
 
-    const DEFAULT_WASH = [
-      { id: 'w1', line: 'Line 21', buyer: 'TOMMY HILFIGER', style: 'TGSKH03G', shipDate: '2026-11-28', po: '4500718902', color: '999-ASORTED-DRESS', orderQty: 15906, totalCut: 16090, qcSewDay: 0, qcSewTotal: 16090, washPlant: 'NWP', challanNo: 'CH-1104', washSendDay: 0, washSendTotal: 16010, sizeSet: 20, shadeSample: 25, labTest: 15, prs: 20, sampleRcv: 76, missing: 0, recChallanNo: 'RC-882', washRecDay: 420, washRecTotal: 15998, remarks: 'Final lot' },
-      { id: 'w2', line: 'Line 2', buyer: 'TOMMY HILFIGER', style: 'TGSKC11G', shipDate: '2026-12-05', po: '4500713249', color: 'LIGHT WASH', orderQty: 1872, totalCut: 1928, qcSewDay: 320, qcSewTotal: 470, washPlant: 'NWP', challanNo: 'CH-1142', washSendDay: 330, washSendTotal: 330, sizeSet: 5, shadeSample: 5, labTest: 2, prs: 3, sampleRcv: 12, missing: 0, recChallanNo: '', washRecDay: 0, washRecTotal: 0, remarks: 'First wash batch' }
-    ];
+let recRowSeq = 0;
+function initReceiveBatch() {
+  document.getElementById("receiveRows").innerHTML = "";
+  addReceiveRow();
+  renderReceiveHistory();
+}
 
-    const DEFAULT_FINISHING = [
-      { id: 'f1', line: 'FINISHING-04', buyer: 'SPRING FIELD', style: '5RE092', po: '5740509', color: 'MEDIUM BLUE', orderQty: 23678, washRecDay: 650, washRecTotal: 8727, threadCutDay: 420, threadCutTotal: 3220, buttonDay: 390, buttonTotal: 4100, metalPassDay: 380, metalPassTotal: 4045, packDay: 380, packTotal: 4045, shipDay: 0, shipTotal: 0, remarks: 'Packing ongoing' },
-      { id: 'f2', line: 'FINISHING-02', buyer: 'LERROS', style: '2009106', po: '233623', color: '661', orderQty: 4534, washRecDay: 0, washRecTotal: 4664, threadCutDay: 40, threadCutTotal: 4664, buttonDay: 0, buttonTotal: 4600, metalPassDay: 133, metalPassTotal: 4257, packDay: 133, packTotal: 4257, shipDay: 133, shipTotal: 4100, remarks: 'Ready for final ship' }
-    ];
+function addReceiveRow() {
+  const box = document.getElementById("receiveRows");
+  if (box.querySelectorAll(".batch-row").length >= 8) { showMessage("সর্বোচ্চ ৮টি Row দেওয়া যাবে।", "error"); return; }
+  recRowSeq++;
+  const rid = "rec_" + recRowSeq;
+  const buyers = uniqueMaster("Buyer").map(v => `<option value="${v}">`).join("");
+  const div = document.createElement("div");
+  div.className = "batch-row";
+  div.id = rid;
+  div.innerHTML = `
+    <div class="batch-title"><span>RECEIVE Row ${box.querySelectorAll(".batch-row").length + 1}</span><button type="button" class="btn-danger btn-sm" onclick="this.closest('.batch-row').remove()">Remove</button></div>
+    <div class="grid">
+      <div class="field"><label>Buyer *</label><input class="search-select" data-f="buyer" list="dl_${rid}_b" oninput="cascadeRow('${rid}')"><datalist id="dl_${rid}_b">${buyers}</datalist></div>
+      <div class="field"><label>Style *</label><input class="search-select" data-f="style" list="dl_${rid}_s" oninput="cascadeRow('${rid}')"><datalist id="dl_${rid}_s"></datalist></div>
+      <div class="field"><label>Fabric Code *</label><input class="search-select" data-f="fabricCode" list="dl_${rid}_fc"><datalist id="dl_${rid}_fc"></datalist></div>
+      <div class="field"><label>Fabric Color</label><input class="search-select" data-f="fabricColor" list="dl_${rid}_fcol"><datalist id="dl_${rid}_fcol"></datalist></div>
+      <div class="field"><label>Composition</label><input class="search-select" data-f="composition" list="dl_${rid}_comp"><datalist id="dl_${rid}_comp"></datalist></div>
+      <div class="field"><label>Booking Consumption</label><input type="number" step="any" data-f="bookingConsumption"></div>
+      <div class="field"><label>Booking Qty. Yards</label><input type="number" step="any" data-f="bookingQtyYards"></div>
+      <div class="field"><label>Unit *</label><select data-f="unit"><option value="Yards">Yards</option><option value="Kgs">Kgs</option></select></div>
+      <div class="field"><label>Receive Qty *</label><input type="number" step="any" data-f="receiveQty" oninput="recalcRecRow('${rid}')"></div>
+      <div class="field"><label>Unit Price USD</label><input type="number" step="any" data-f="unitPriceUSD" oninput="recalcRecRow('${rid}')"></div>
+      <div class="field"><label>Total Value USD (Auto)</label><input type="number" data-f="totalValueUSD" readonly></div>
+      <div class="field"><label>Remarks</label><input type="text" data-f="remarks"></div>
+    </div>
+  `;
+  box.appendChild(div);
+  onRecPIChange();
+}
 
-    const DEFAULT_SUBMISSIONS = [
-      { id: 'sub1', dept: 'cutting', submittedBy: 'cutting@ndlunit02.com', submittedByName: 'Cutting In-Charge', reportDate: '2026-11-18', rowCount: 3, notes: 'Updated GUESS GUFJC02B & TOMMY ACADEMY cutting totals.', status: 'Approved', adminNote: 'Verified against store issue.', timestamp: '2026-11-18 17:45', snapshot: DEFAULT_CUTTING },
-      { id: 'sub2', dept: 'finishing', submittedBy: 'finishing@ndlunit02.com', submittedByName: 'Finishing In-Charge', reportDate: '2026-11-18', rowCount: 2, notes: 'Metal pass & carton packing updated for SPRING FIELD & LERROS.', status: 'Pending Review', adminNote: '', timestamp: '2026-11-18 18:10', snapshot: DEFAULT_FINISHING }
-    ];
+function cascadeRow(rid) {
+  const row = document.getElementById(rid);
+  const buyer = row.querySelector('[data-f="buyer"]').value;
+  const style = row.querySelector('[data-f="style"]').value;
+  const opts = getFilteredMaster(buyer, style);
+  const setDl = (suffix, list) => {
+    const dl = document.getElementById(`dl_${rid}_${suffix}`);
+    if (dl) dl.innerHTML = list.map(v => `<option value="${v}">`).join("");
+  };
+  setDl("s", opts.styles);
+  setDl("po", opts.pos);
+  setDl("gc", opts.garmentColors);
+  setDl("fc", opts.fabricCodes);
+  setDl("fcol", opts.fabricColors);
+  setDl("comp", opts.compositions);
+}
 
-    const DEFAULT_SETTINGS = {
-      companyName: 'Natural Denims Limited',
-      activeUnit: 'Unit-02 (RMG)',
-      units: ['Unit-02 (RMG)', 'Unit-01 (Main)', 'NWP (Wash Plant)'],
-      enablePasscode: false,
-      autoBackup: true,
-      lastBackup: '2026-11-18 18:15'
+function onRecPIChange() {
+  const pi = document.getElementById("recPI")?.value || "";
+  const info = lookupPIBookingAndPrice(pi);
+  document.querySelectorAll("#receiveRows .batch-row").forEach(row => {
+    if (info.qty > 0) row.querySelector('[data-f="bookingQtyYards"]').value = info.qty;
+    if (info.price > 0) row.querySelector('[data-f="unitPriceUSD"]').value = info.price;
+    recalcRecRow(row.id);
+  });
+}
+
+function recalcRecRow(rid) {
+  const row = document.getElementById(rid);
+  const q = Number(row.querySelector('[data-f="receiveQty"]').value || 0);
+  const p = Number(row.querySelector('[data-f="unitPriceUSD"]').value || 0);
+  row.querySelector('[data-f="totalValueUSD"]').value = (q > 0 || p > 0) ? round2(q * p) : "";
+}
+
+function saveReceiveBatch() {
+  const date = document.getElementById("recDate").value;
+  const challan = document.getElementById("recChallan").value.trim();
+  const mrir = document.getElementById("recMRIR").value.trim();
+  const mrirDate = document.getElementById("recMRIRDate").value;
+  const pi = document.getElementById("recPI").value.trim();
+  const sup = document.getElementById("recSupplier").value.trim();
+  if (!date || !challan || !mrir || !sup) { showMessage("Receive Date, Challan No, MRIR No ও Supplier দিতে হবে।", "error"); return; }
+
+  const rows = Array.from(document.querySelectorAll("#receiveRows .batch-row")).map(row => {
+    const g = f => (row.querySelector(`[data-f="${f}"]`)?.value || "").trim();
+    return {
+      Receive_ID: newId("FR"),
+      Receive_Date: date, Challan_No: challan, MRIR_No: mrir, MRIR_Date: mrirDate, PI_No: pi, Supplier: sup,
+      Buyer: g("buyer"), Style: g("style"), Fabric_Code: g("fabricCode"), Fabric_Color: g("fabricColor"),
+      Composition: g("composition"), Booking_Consumption: Number(g("bookingConsumption")) || 0,
+      Booking_Qty_Yards: Number(g("bookingQtyYards")) || 0, Unit: g("unit") || "Yards",
+      Receive_Qty: Number(g("receiveQty")) || 0, Unit_Price_USD: Number(g("unitPriceUSD")) || 0,
+      Total_Value_USD: round2((Number(g("receiveQty")) || 0) * (Number(g("unitPriceUSD")) || 0)),
+      Remarks: g("remarks"), Created_By: currentUser().email
     };
+  });
 
-    function getInitialState() {
-      const saved = safeGetStorage(STORAGE_KEY);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.users && parsed.cutting && parsed.sewing && parsed.wash && parsed.finishing) {
-            return parsed;
-          }
-        } catch (e) {}
-      }
-      return {
-        users: JSON.parse(JSON.stringify(DEFAULT_USERS)),
-        cutting: JSON.parse(JSON.stringify(DEFAULT_CUTTING)),
-        sewing: JSON.parse(JSON.stringify(DEFAULT_SEWING)),
-        wash: JSON.parse(JSON.stringify(DEFAULT_WASH)),
-        finishing: JSON.parse(JSON.stringify(DEFAULT_FINISHING)),
-        submissions: JSON.parse(JSON.stringify(DEFAULT_SUBMISSIONS)),
-        settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
-        currentUserEmail: null,
-        activeTab: 'dashboard'
-      };
-    }
+  if (rows.some(r => !r.Buyer || !r.Style || !r.Fabric_Code || r.Receive_Qty <= 0)) {
+    showMessage("প্রতিটি Row-তে Buyer, Style, Fabric Code ও Receive Qty (>0) দিতে হবে।", "error");
+    return;
+  }
+  state.fabricReceive = [...rows, ...state.fabricReceive];
+  saveState();
+  initReceiveBatch();
+  showMessage(`${rows.length}টি Fabric Receive Row Save হয়েছে। (${rows.map(r => r.Receive_ID).join(", ")})`, "success");
+}
 
-    let state = getInitialState();
-    let charts = {};
+function renderReceiveHistory() {
+  const q = normStr(document.getElementById("searchReceiveId")?.value);
+  const list = state.fabricReceive.filter(r => !q || normStr(r.Receive_ID).includes(q) || normStr(r.Buyer).includes(q) || normStr(r.Style).includes(q));
+  document.getElementById("receiveHistoryWrap").innerHTML = `
+    <table>
+      <thead><tr><th>Receive ID</th><th>Date</th><th>Challan</th><th>MRIR</th><th>PI No</th><th>Supplier</th><th>Buyer</th><th>Style</th><th>Fabric Code</th><th>Qty</th><th>Unit</th><th>Value USD</th></tr></thead>
+      <tbody>${list.map(r => `<tr>
+        <td><strong>${r.Receive_ID}</strong></td><td>${r.Receive_Date}</td><td>${r.Challan_No}</td><td>${r.MRIR_No}</td>
+        <td>${r.PI_No}</td><td>${r.Supplier}</td><td>${r.Buyer}</td><td>${r.Style}</td><td>${r.Fabric_Code}</td>
+        <td style="text-align:right;font-weight:bold;">${Number(r.Receive_Qty).toLocaleString()}</td><td>${r.Unit}</td>
+        <td style="text-align:right;">$${Number(r.Total_Value_USD || 0).toLocaleString()}</td>
+      </tr>`).join("")}</tbody>
+    </table>
+  `;
+}
 
-    function saveState() {
-      safeSetStorage(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    function currentUser() {
-      return state.users.find(u => u.email === state.currentUserEmail) || null;
-    }
-
-    // =========================================================================
-    // 2. FORMULA CALCULATIONS (EXACT EXCEL LOGIC)
-    // =========================================================================
-    function calcCutting(r) {
-      const cutPlanQty = Math.round((Number(r.orderQty) || 0) * (Number(r.cutPlanPct) || 0));
-      const fabReq = Math.round((cutPlanQty / 12) * (Number(r.bulkConj) || 0));
-      const fabBalance = (Number(r.fabRecTotal) || 0) - (Number(r.fabUsedTotal) || 0) - (Number(r.fabReturn) || 0);
-      const cutBalance = (Number(r.cutTotal) || 0) - cutPlanQty;
-      const wip = (Number(r.inputTotal) || 0) - (Number(r.cutTotal) || 0);
-      return { cutPlanQty, fabReq, fabBalance, cutBalance, wip };
-    }
-
-    function calcSewing(r) {
-      const wip = (Number(r.totalInput) || 0) - (Number(r.totalOutput) || 0);
-      const target = Number(r.target) || 0;
-      const achieved = Number(r.targetAchieved) || 0;
-      const achPct = target > 0 ? ((achieved / target) * 100) : 0;
-      const totalShort = achieved - target;
-      return { wip, achPct, totalShort };
-    }
-
-    function calcWash(r) {
-      const sewBal = (Number(r.totalCut) || 0) - (Number(r.qcSewTotal) || 0);
-      const sampleSend = (Number(r.sizeSet) || 0) + (Number(r.shadeSample) || 0) + (Number(r.labTest) || 0) + (Number(r.prs) || 0);
-      const washSendWip = (Number(r.washSendTotal) || 0) + sampleSend + (Number(r.missing) || 0) - (Number(r.qcSewTotal) || 0);
-      const washRecWip = (Number(r.washRecTotal) || 0) - (Number(r.washSendTotal) || 0);
-      return { sewBal, sampleSend, washSendWip, washRecWip };
-    }
-
-    function calcFinishing(r) {
-      const threadWip = (Number(r.threadCutTotal) || 0) - (Number(r.washRecTotal) || 0);
-      const buttonWip = (Number(r.buttonTotal) || 0) - (Number(r.threadCutTotal) || 0);
-      const metalWip = (Number(r.metalPassTotal) || 0) - (Number(r.buttonTotal) || 0);
-      const packWip = (Number(r.packTotal) || 0) - (Number(r.metalPassTotal) || 0);
-      const floorWip = (Number(r.packTotal) || 0) - (Number(r.washRecTotal) || 0);
-      const shortExcess = (Number(r.shipTotal) || 0) - (Number(r.orderQty) || 0);
-      return { threadWip, buttonWip, metalWip, packWip, floorWip, shortExcess };
-    }
-
-    // =========================================================================
-    // 3. UI HELPERS (TOASTS & MODALS — ZERO NATIVE DIALOGS)
-    // =========================================================================
-    function showToast(msg, type = 'success') {
-      const container = document.getElementById('toast-container');
-      const colors = {
-        success: 'bg-emerald-600 text-white',
-        error: 'bg-rose-600 text-white',
-        info: 'bg-slate-900 text-white'
-      };
-      const el = document.createElement('div');
-      el.className = `pointer-events-auto px-4 py-2.5 rounded-lg shadow-lg text-xs font-semibold flex items-center gap-2 transition-all ${colors[type] || colors.info}`;
-      el.textContent = msg;
-      container.appendChild(el);
-      setTimeout(() => { el.classList.add('opacity-0'); setTimeout(() => el.remove(), 300); }, 3000);
-    }
-
-    function openModal(html) {
-      const backdrop = document.getElementById('modal-backdrop');
-      const content = document.getElementById('modal-content');
-      content.innerHTML = html;
-      backdrop.classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('modal-backdrop').classList.add('hidden');
-    }
-
-    document.getElementById('modal-backdrop').addEventListener('click', (e) => {
-      if (e.target.id === 'modal-backdrop') closeModal();
-    });
-
-    // =========================================================================
-    // 4. AUTHENTICATION & NAVIGATION
-    // =========================================================================
-    function fillDemoLogin(email, pw) {
-      document.getElementById('login-email').value = email;
-      document.getElementById('login-password').value = pw;
-      document.getElementById('login-error').classList.add('hidden');
-    }
-
-    document.getElementById('toggle-pw-btn').addEventListener('click', () => {
-      const inp = document.getElementById('login-password');
-      const btn = document.getElementById('toggle-pw-btn');
-      if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
-      else { inp.type = 'password'; btn.textContent = 'Show'; }
-    });
-
-    document.getElementById('login-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value.trim().toLowerCase();
-      const pw = document.getElementById('login-password').value;
-      const errBox = document.getElementById('login-error');
-      const user = state.users.find(u => u.email.toLowerCase() === email && u.password === pw);
-      if (!user) {
-        errBox.textContent = 'Invalid email address or password.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-      if (!user.active) {
-        errBox.textContent = 'This user account is disabled. Contact the Administrator.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-      errBox.classList.add('hidden');
-      state.currentUserEmail = user.email;
-      state.activeTab = user.role === 'admin' ? 'dashboard' : user.dept;
-      saveState();
-      renderApp();
-      showToast(`Welcome, ${user.name}`);
-    });
-
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      state.currentUserEmail = null;
-      saveState();
-      renderApp();
-      showToast('Signed out', 'info');
-    });
-
-    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-      document.getElementById('sidebar').classList.toggle('-translate-x-full');
-    });
-
-    function getNavItems(user) {
-      if (user.role === 'admin') {
-        const pendingCount = state.submissions.filter(s => s.status === 'Pending Review').length;
-        return [
-          { id: 'dashboard', label: 'DASHBOARD & ANALYTICS' },
-          { id: 'master', label: 'MASTER UNIT-02 REPORT' },
-          { id: 'cutting', label: 'CUTTING DEPT' },
-          { id: 'sewing', label: 'SEWING DEPT' },
-          { id: 'wash', label: 'WASH DEPT' },
-          { id: 'finishing', label: 'FINISHING DEPT' },
-          { id: 'submissions', label: 'SUBMISSIONS REVIEW', badge: pendingCount > 0 ? pendingCount : null },
-          { id: 'bonus', label: 'BONUS POLICY' },
-          { id: 'settings', label: 'USER MANAGEMENT & SETTINGS' },
-          { id: 'github', label: 'GITHUB DEPLOY' }
-        ];
-      }
-      const deptLabels = {
-        cutting: 'CUTTING WORKSPACE',
-        sewing: 'SEWING WORKSPACE',
-        wash: 'WASH WORKSPACE',
-        finishing: 'FINISHING WORKSPACE'
-      };
-      return [
-        { id: user.dept, label: deptLabels[user.dept] || 'DEPARTMENT WORKSPACE' },
-        { id: 'my_submissions', label: 'MY SUBMISSIONS' }
-      ];
-    }
-
-    function setTab(tabId) {
-      state.activeTab = tabId;
-      saveState();
-      document.getElementById('sidebar').classList.add('-translate-x-full');
-      renderWorkspace();
-      renderSidebar();
-    }
-
-    function renderSidebar() {
-      const user = currentUser();
-      if (!user) return;
-      const items = getNavItems(user);
-      const nav = document.getElementById('sidebar-nav');
-      nav.innerHTML = items.map(item => {
-        const active = state.activeTab === item.id;
-        return `
-          <button onclick="setTab('${item.id}')"
-            class="w-full text-left px-4 py-2.5 text-xs tracking-wide flex items-center justify-between transition ${
-              active
-                ? 'bg-white text-slate-900 font-bold shadow-sm'
-                : 'text-slate-300 hover:bg-slate-800 hover:text-white font-medium'
-            }">
-            <span class="truncate">${item.label}</span>
-            ${item.badge ? `<span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold ${active ? 'bg-rose-600 text-white' : 'bg-rose-500 text-white'}">${item.badge}</span>` : ''}
-          </button>
-        `;
-      }).join('');
-    }
-
-    function renderApp() {
-      const user = currentUser();
-      const loginView = document.getElementById('login-view');
-      const appShell = document.getElementById('app-shell');
-      if (!user) {
-        loginView.classList.remove('hidden');
-        appShell.classList.add('hidden');
-        return;
-      }
-      loginView.classList.add('hidden');
-      appShell.classList.remove('hidden');
-
-      document.getElementById('header-unit-badge').textContent = state.settings.activeUnit;
-      document.getElementById('header-user-name').textContent = user.name;
-      document.getElementById('header-user-role').textContent = user.role === 'admin' ? 'ADMINISTRATOR' : `${user.dept.toUpperCase()} USER`;
-      document.getElementById('sidebar-title').textContent = user.role === 'admin' ? 'Admin Console' : `${user.dept.toUpperCase()} Portal`;
-      document.getElementById('sidebar-subtitle').textContent = state.settings.activeUnit;
-      document.getElementById('sidebar-email').textContent = user.email;
-
-      const allowed = getNavItems(user).map(i => i.id);
-      if (!allowed.includes(state.activeTab)) {
-        state.activeTab = allowed[0];
-        saveState();
-      }
-      renderSidebar();
-      renderWorkspace();
-    }
-
-    // =========================================================================
-    // 5. WORKSPACE VIEWS
-    // =========================================================================
-    function renderWorkspace() {
-      const user = currentUser();
-      if (!user) return;
-      const main = document.getElementById('main-content');
-      Object.values(charts).forEach(c => { try { c.destroy(); } catch(e){} });
-      charts = {};
-
-      switch (state.activeTab) {
-        case 'dashboard': main.innerHTML = renderDashboard(); initDashboardCharts(); break;
-        case 'master': main.innerHTML = renderMasterReport(); break;
-        case 'cutting': main.innerHTML = renderDeptWorkspace('cutting'); break;
-        case 'sewing': main.innerHTML = renderDeptWorkspace('sewing'); break;
-        case 'wash': main.innerHTML = renderDeptWorkspace('wash'); break;
-        case 'finishing': main.innerHTML = renderDeptWorkspace('finishing'); break;
-        case 'submissions': main.innerHTML = renderSubmissionsAdmin(); break;
-        case 'my_submissions': main.innerHTML = renderMySubmissions(); break;
-        case 'bonus': main.innerHTML = renderBonusPolicy(); break;
-        case 'settings': main.innerHTML = renderSettingsAndUsers(); break;
-        case 'github': main.innerHTML = renderGithubDeploy(); break;
-        default: main.innerHTML = renderDeptWorkspace(user.dept);
-      }
-    }
-
-    // --- DASHBOARD (ADMIN) ---
-    function renderDashboard() {
-      const cutTotal = state.cutting.reduce((s, r) => s + (Number(r.cutTotal) || 0), 0);
-      const sewTotal = state.sewing.reduce((s, r) => s + (Number(r.totalOutput) || 0), 0);
-      const washRecTotal = state.wash.reduce((s, r) => s + (Number(r.washRecTotal) || 0), 0);
-      const packTotal = state.finishing.reduce((s, r) => s + (Number(r.packTotal) || 0), 0);
-      const shipTotal = state.finishing.reduce((s, r) => s + (Number(r.shipTotal) || 0), 0);
-      const pending = state.submissions.filter(s => s.status === 'Pending Review').length;
-
-      return `
-        <div class="space-y-6">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h1 class="text-xl font-bold text-slate-900">Unit-02 Executive Production Dashboard</h1>
-              <p class="text-xs text-slate-500">Live consolidated metrics across Cutting, Sewing, Wash, and Finishing.</p>
-            </div>
-            ${pending > 0 ? `
-              <button onclick="setTab('submissions')" class="px-3.5 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold hover:bg-amber-100 transition">
-                ${pending} Department Report${pending > 1 ? 's' : ''} Pending Review →
-              </button>
-            ` : ''}
-          </div>
-
-          <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <div class="text-[11px] font-semibold text-slate-500 uppercase">Total Cutting</div>
-              <div class="text-2xl font-bold text-emerald-700 tabular-nums mt-1">${cutTotal.toLocaleString()}</div>
-              <div class="text-[11px] text-slate-400 mt-1">${state.cutting.length} active POs</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <div class="text-[11px] font-semibold text-slate-500 uppercase">Sewing Output</div>
-              <div class="text-2xl font-bold text-blue-700 tabular-nums mt-1">${sewTotal.toLocaleString()}</div>
-              <div class="text-[11px] text-slate-400 mt-1">${state.sewing.length} active lines</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <div class="text-[11px] font-semibold text-slate-500 uppercase">Wash Receive</div>
-              <div class="text-2xl font-bold text-amber-700 tabular-nums mt-1">${washRecTotal.toLocaleString()}</div>
-              <div class="text-[11px] text-slate-400 mt-1">${state.wash.length} wash batches</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
-              <div class="text-[11px] font-semibold text-slate-500 uppercase">Finishing Pack</div>
-              <div class="text-2xl font-bold text-violet-700 tabular-nums mt-1">${packTotal.toLocaleString()}</div>
-              <div class="text-[11px] text-slate-400 mt-1">${state.finishing.length} finishing lots</div>
-            </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs col-span-2 lg:col-span-1">
-              <div class="text-[11px] font-semibold text-slate-500 uppercase">Total Shipment</div>
-              <div class="text-2xl font-bold text-slate-900 tabular-nums mt-1">${shipTotal.toLocaleString()}</div>
-              <div class="text-[11px] text-slate-400 mt-1">Exported pcs</div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-              <h3 class="text-sm font-bold text-slate-800 mb-3">Department Pipeline Volume (Pcs)</h3>
-              <div class="relative h-72"><canvas id="chart-pipeline"></canvas></div>
-            </div>
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-              <h3 class="text-sm font-bold text-slate-800 mb-3">Sewing Line Efficiency (%)</h3>
-              <div class="relative h-72"><canvas id="chart-efficiency"></canvas></div>
-            </div>
-          </div>
+// =========================================================================
+// 6. FABRIC ISSUE (1% CUTTING EXCESS + ADMIN PASSWORD APPROVAL)
+// =========================================================================
+function renderIssueTab() {
+  return `
+    <div class="card">
+      <h3>Fabric Issue — Batch Entry (Maximum 8 Rows)</h3>
+      <p class="muted">রেকর্ডের জন্য Buyer, Style, PO, Garment Color রাখা হবে; তবে স্টক ও Available Fabric হিসাব হবে Buyer + Style + Fabric Code + Fabric Color + Composition ধরে।</p>
+      <div class="grid">
+        <div class="field"><label>Issue Date *</label><input type="date" id="issDate" value="${todayValue()}"></div>
+        <div class="field"><label>SR No *</label><input type="text" id="issSR" placeholder="SR-XXX"></div>
+        <div class="field"><label>Department</label><input type="text" id="issDept" value="Cutting"></div>
+        <div class="field"><label>Issue To *</label><input type="text" id="issTo" placeholder="Cutting Floor-1"></div>
+      </div>
+      <div id="issueRows"></div>
+      <div class="excess-box" id="issueExcessBox" style="display:none;">
+        <label style="color:#92400e;">Admin Permission Required (Issue Qty exceeds Fabric Required + 1% Excess)</label>
+        <div class="grid" style="margin-top:8px;">
+          <div class="field"><label>Admin Password *</label><input type="password" id="issAdminPassword" placeholder="Enter Admin Password"></div>
         </div>
-      `;
-    }
+      </div>
+      <div class="button-row">
+        <button class="btn-secondary" type="button" onclick="addIssueRow()">+ Add Row</button>
+        <button class="btn-success" type="button" onclick="saveIssueBatch()">Save Issue</button>
+      </div>
+    </div>
 
-    function initDashboardCharts() {
-      const cutTotal = state.cutting.reduce((s, r) => s + (Number(r.cutTotal) || 0), 0);
-      const sewTotal = state.sewing.reduce((s, r) => s + (Number(r.totalOutput) || 0), 0);
-      const washTotal = state.wash.reduce((s, r) => s + (Number(r.washRecTotal) || 0), 0);
-      const packTotal = state.finishing.reduce((s, r) => s + (Number(r.packTotal) || 0), 0);
-      const shipTotal = state.finishing.reduce((s, r) => s + (Number(r.shipTotal) || 0), 0);
+    <div class="card">
+      <h3>Recent Fabric Issue Records</h3>
+      <div class="grid"><div class="field"><label>Search Issue ID / Style</label><input type="text" id="searchIssueId" placeholder="FI-1001" oninput="renderIssueHistory()"></div></div>
+      <div id="issueHistoryWrap" class="table-wrap"></div>
+    </div>
+  `;
+}
 
-      const ctx1 = document.getElementById('chart-pipeline');
-      if (ctx1) {
-        charts.pipeline = new Chart(ctx1, {
-          type: 'bar',
-          data: {
-            labels: ['Cutting', 'Sewing', 'Wash Rec', 'Pack', 'Shipment'],
-            datasets: [{
-              label: 'Pieces',
-              data: [cutTotal, sewTotal, washTotal, packTotal, shipTotal],
-              backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#0f172a'],
-              borderRadius: 6
-            }]
-          },
-          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-        });
-      }
+let issRowSeq = 0;
+function initIssueBatch() {
+  document.getElementById("issueRows").innerHTML = "";
+  addIssueRow();
+  renderIssueHistory();
+}
 
-      const ctx2 = document.getElementById('chart-efficiency');
-      if (ctx2) {
-        charts.effi = new Chart(ctx2, {
-          type: 'bar',
-          data: {
-            labels: state.sewing.map(r => `${r.line} (${r.buyer})`),
-            datasets: [{
-              label: 'Day Effi %',
-              data: state.sewing.map(r => Number(r.dayEffi) || 0),
-              backgroundColor: '#2563eb',
-              borderRadius: 6
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true, max: 100 } },
-            plugins: { legend: { display: false } }
-          }
-        });
-      }
-    }
+function addIssueRow() {
+  const box = document.getElementById("issueRows");
+  if (box.querySelectorAll(".batch-row").length >= 8) { showMessage("সর্বোচ্চ ৮টি Row দেওয়া যাবে।", "error"); return; }
+  issRowSeq++;
+  const rid = "iss_" + issRowSeq;
+  const buyers = uniqueMaster("Buyer").map(v => `<option value="${v}">`).join("");
+  const div = document.createElement("div");
+  div.className = "batch-row";
+  div.id = rid;
+  div.innerHTML = `
+    <div class="batch-title"><span>ISSUE Row ${box.querySelectorAll(".batch-row").length + 1}</span><button type="button" class="btn-danger btn-sm" onclick="this.closest('.batch-row').remove(); checkIssueExcess();">Remove</button></div>
+    <div class="grid">
+      <div class="field"><label>Buyer *</label><input class="search-select" data-f="buyer" list="dl_${rid}_b" oninput="onIssueRowChange('${rid}',true)"><datalist id="dl_${rid}_b">${buyers}</datalist></div>
+      <div class="field"><label>Style *</label><input class="search-select" data-f="style" list="dl_${rid}_s" oninput="onIssueRowChange('${rid}',true)"><datalist id="dl_${rid}_s"></datalist></div>
+      <div class="field"><label>PO (Record Only)</label><input class="search-select" data-f="po" list="dl_${rid}_po"><datalist id="dl_${rid}_po"></datalist></div>
+      <div class="field"><label>Garment Color (Record Only)</label><input class="search-select" data-f="garmentColor" list="dl_${rid}_gc"><datalist id="dl_${rid}_gc"></datalist></div>
+      <div class="field"><label>Fabric Code *</label><input class="search-select" data-f="fabricCode" list="dl_${rid}_fc" oninput="onIssueRowChange('${rid}',true)"><datalist id="dl_${rid}_fc"></datalist></div>
+      <div class="field"><label>Fabric Color</label><input class="search-select" data-f="fabricColor" list="dl_${rid}_fcol" oninput="onIssueRowChange('${rid}',false)"><datalist id="dl_${rid}_fcol"></datalist></div>
+      <div class="field"><label>Composition</label><input class="search-select" data-f="composition" list="dl_${rid}_comp" oninput="onIssueRowChange('${rid}',false)"><datalist id="dl_${rid}_comp"></datalist></div>
+      <div class="field"><label>Bulk Cons/DZ (Auto)</label><input type="number" step="any" data-f="bulkConsumptionDZ" oninput="onIssueRowChange('${rid}',false)"></div>
+      <div class="field"><label>Order Qty (Auto)</label><input type="number" data-f="orderQty" readonly></div>
+      <div class="field"><label>Fabric Required (Auto)</label><input type="number" data-f="fabricRequired" readonly></div>
+      <div class="field"><label>1% Cutting Excess (Auto)</label><input type="number" data-f="cuttingExcess1Pct" readonly></div>
+      <div class="field"><label>Unit *</label><select data-f="unit"><option value="Yards">Yards</option><option value="Kgs">Kgs</option></select></div>
+      <div class="field"><label>Issue Qty *</label><input type="number" step="any" data-f="issueQty" oninput="onIssueRowChange('${rid}',false)"></div>
+      <div class="field"><label>Available Fabric (Auto)</label><input type="text" data-f="availableFabric" readonly></div>
+      <div class="field"><label>Remarks</label><input type="text" data-f="remarks"></div>
+    </div>
+  `;
+  box.appendChild(div);
+}
 
-    // --- MASTER CONSOLIDATED REPORT (ADMIN) ---
-    function renderMasterReport() {
-      const poMap = {};
-      const ensure = (po, buyer, style, color, orderQty) => {
-        const key = `${po}__${style}`;
-        if (!poMap[key]) poMap[key] = { po, buyer, style, color, orderQty: Number(orderQty) || 0, cut: 0, sew: 0, washSend: 0, washRec: 0, pack: 0, ship: 0 };
-        return poMap[key];
-      };
-      state.cutting.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.cut += Number(r.cutTotal) || 0; });
-      state.sewing.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.sew += Number(r.totalOutput) || 0; });
-      state.wash.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.washSend += Number(r.washSendTotal) || 0; m.washRec += Number(r.washRecTotal) || 0; });
-      state.finishing.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.pack += Number(r.packTotal) || 0; m.ship += Number(r.shipTotal) || 0; });
+function onIssueRowChange(rid, autoBulk) {
+  cascadeRow(rid);
+  const row = document.getElementById(rid);
+  const g = f => (row.querySelector(`[data-f="${f}"]`)?.value || "").trim();
+  const buyer = g("buyer"), style = g("style"), fc = g("fabricCode"), fcol = g("fabricColor"), comp = g("composition");
+  if (autoBulk) {
+    const b = lookupMasterBulkDZ(buyer, style, fc);
+    if (b > 0) row.querySelector('[data-f="bulkConsumptionDZ"]').value = b;
+  }
+  const orderQty = lookupMasterOrderQty(buyer, style);
+  row.querySelector('[data-f="orderQty"]').value = orderQty > 0 ? orderQty : "";
+  const bulkDz = Number(row.querySelector('[data-f="bulkConsumptionDZ"]').value || 0);
+  const req = (orderQty > 0 && bulkDz > 0) ? round2((orderQty / 12) * bulkDz) : 0;
+  const ex1 = round2(req * 0.01);
+  row.querySelector('[data-f="fabricRequired"]').value = req > 0 ? req : "";
+  row.querySelector('[data-f="cuttingExcess1Pct"]').value = ex1 > 0 ? ex1 : "";
 
-      const rows = Object.values(poMap);
-      return `
-        <div class="space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h1 class="text-xl font-bold text-slate-900">Master Unit-02 Cut-to-Ship Consolidated Report</h1>
-              <p class="text-xs text-slate-500">Auto-aggregated by PO &amp; Style from all 4 department workspaces.</p>
-            </div>
-            <button onclick="exportMasterCSV()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition">
-              Export Master CSV
-            </button>
-          </div>
-
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div class="overflow-x-auto custom-scroll">
-              <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase">
-                  <tr>
-                    <th class="p-3 border-b border-slate-200">Buyer</th>
-                    <th class="p-3 border-b border-slate-200">Style</th>
-                    <th class="p-3 border-b border-slate-200">PO No</th>
-                    <th class="p-3 border-b border-slate-200">Color</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Order Qty</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Cutting</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Sewing Out</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Wash Send</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Wash Rec</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Packed</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Shipped</th>
-                    <th class="p-3 border-b border-slate-200 text-right">Short/Excess</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs tabular-nums">
-                  ${rows.map(r => {
-                    const se = r.ship - r.orderQty;
-                    return `
-                      <tr class="hover:bg-slate-50">
-                        <td class="p-3 font-semibold text-slate-800">${r.buyer}</td>
-                        <td class="p-3 text-slate-700">${r.style}</td>
-                        <td class="p-3 font-mono text-slate-600">${r.po}</td>
-                        <td class="p-3 text-slate-600">${r.color}</td>
-                        <td class="p-3 text-right font-semibold">${r.orderQty.toLocaleString()}</td>
-                        <td class="p-3 text-right text-emerald-700 font-semibold">${r.cut.toLocaleString()}</td>
-                        <td class="p-3 text-right text-blue-700 font-semibold">${r.sew.toLocaleString()}</td>
-                        <td class="p-3 text-right text-amber-700">${r.washSend.toLocaleString()}</td>
-                        <td class="p-3 text-right text-amber-700 font-semibold">${r.washRec.toLocaleString()}</td>
-                        <td class="p-3 text-right text-violet-700 font-semibold">${r.pack.toLocaleString()}</td>
-                        <td class="p-3 text-right font-bold text-slate-900">${r.ship.toLocaleString()}</td>
-                        <td class="p-3 text-right font-bold ${se >= 0 ? 'text-emerald-600' : 'text-rose-600'}">${se.toLocaleString()}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function exportMasterCSV() {
-      const headers = ['Buyer','Style','PO','Color','Order Qty','Cutting','Sewing','Wash Send','Wash Rec','Packed','Shipped'];
-      const poMap = {};
-      const ensure = (po, buyer, style, color, orderQty) => {
-        const key = `${po}__${style}`;
-        if (!poMap[key]) poMap[key] = { po, buyer, style, color, orderQty: Number(orderQty) || 0, cut: 0, sew: 0, washSend: 0, washRec: 0, pack: 0, ship: 0 };
-        return poMap[key];
-      };
-      state.cutting.forEach(r => { ensure(r.po, r.buyer, r.style, r.color, r.orderQty).cut += Number(r.cutTotal) || 0; });
-      state.sewing.forEach(r => { ensure(r.po, r.buyer, r.style, r.color, r.orderQty).sew += Number(r.totalOutput) || 0; });
-      state.wash.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.washSend += Number(r.washSendTotal) || 0; m.washRec += Number(r.washRecTotal) || 0; });
-      state.finishing.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.pack += Number(r.packTotal) || 0; m.ship += Number(r.shipTotal) || 0; });
-
-      const csvRows = [headers.join(',')];
-      Object.values(poMap).forEach(r => {
-        csvRows.push([r.buyer, r.style, r.po, r.color, r.orderQty, r.cut, r.sew, r.washSend, r.washRec, r.pack, r.ship].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const availBox = row.querySelector('[data-f="availableFabric"]');
+  const issQty = Number(row.querySelector('[data-f="issueQty"]').value || 0);
+  if (buyer && style && fc) {
+    const stockMap = getStockByCombo();
+    const exactKey = [buyer, style, fc, fcol, comp].map(normStr).join("||");
+    let avail = stockMap[exactKey];
+    if (avail === undefined) {
+      avail = 0;
+      Object.keys(stockMap).forEach(k => {
+        const p = k.split("||");
+        if (p[0] === normStr(buyer) && p[1] === normStr(style) && p[2] === normStr(fc)) avail += stockMap[k];
       });
-      downloadFile('NDL_Unit02_Master_Report.csv', csvRows.join('\n'), 'text/csv');
-      showToast('Master CSV exported');
     }
+    const rem = round2(avail - issQty);
+    availBox.value = `${round2(avail)} (Rem: ${rem})`;
+    availBox.classList.toggle("avail-low", rem < 0);
+    availBox.classList.toggle("avail-ok", rem >= 0);
+  } else {
+    availBox.value = "";
+    availBox.classList.remove("avail-low", "avail-ok");
+  }
+  checkIssueExcess();
+}
 
-    // --- DEPARTMENT WORKSPACES (CUTTING, SEWING, WASH, FINISHING) ---
-    const DEPT_META = {
-      cutting: { title: 'Cutting Department — Daily Production Tracking', subtitle: 'Fabric consumption, cutting plan %, daily cut & line input tracking.' },
-      sewing: { title: 'Sewing Department — Daily Efficiency Report', subtitle: 'Floor/line output, SMV, target achieved %, and manpower efficiency.' },
-      wash: { title: 'Wash Department — Challan & Sample WIP Report', subtitle: 'QC pass sewing receive, wash plant challans, sample tracking & WIP.' },
-      finishing: { title: 'Finishing Department — WIP & Shipment Report', subtitle: 'Thread cutting, button, metal pass, carton packing & final shipment.' }
+function checkIssueExcess() {
+  const box = document.getElementById("issueExcessBox");
+  if (!box) return;
+  if (normStr(currentUser().role) === "admin") { box.style.display = "none"; return; }
+  let needs = false;
+  document.querySelectorAll("#issueRows .batch-row").forEach(row => {
+    const req = Number(row.querySelector('[data-f="fabricRequired"]').value || 0);
+    const ex = Number(row.querySelector('[data-f="cuttingExcess1Pct"]').value || 0);
+    const iss = Number(row.querySelector('[data-f="issueQty"]').value || 0);
+    if (req + ex > 0 && iss > req + ex + 0.0001) needs = true;
+  });
+  box.style.display = needs ? "block" : "none";
+}
+
+function saveIssueBatch() {
+  const date = document.getElementById("issDate").value;
+  const sr = document.getElementById("issSR").value.trim();
+  const dept = document.getElementById("issDept").value.trim();
+  const to = document.getElementById("issTo").value.trim();
+  if (!date || !sr || !to) { showMessage("Issue Date, SR No ও Issue To দিতে হবে।", "error"); return; }
+
+  const adminPw = document.getElementById("issAdminPassword")?.value || "";
+  let approvedBy = "";
+  const needsBox = document.getElementById("issueExcessBox").style.display === "block";
+  if (needsBox) {
+    const adm = state.users.find(u => normStr(u.role) === "admin" && u.password === adminPw && normStr(u.status) === "active");
+    if (!adm) { showMessage("1% Excess-এর বেশি Issue করতে সঠিক Admin Password দিন।", "error"); return; }
+    approvedBy = adm.email;
+  }
+
+  const rows = Array.from(document.querySelectorAll("#issueRows .batch-row")).map(row => {
+    const g = f => (row.querySelector(`[data-f="${f}"]`)?.value || "").trim();
+    const req = Number(g("fabricRequired")) || 0;
+    const ex = Number(g("cuttingExcess1Pct")) || 0;
+    return {
+      Issue_ID: newId("FI"),
+      Issue_Date: date, SR_No: sr, Department: dept, Issue_To: to,
+      Buyer: g("buyer"), Style: g("style"), PO: g("po"), Garment_Color: g("garmentColor"),
+      Fabric_Code: g("fabricCode"), Fabric_Color: g("fabricColor"), Composition: g("composition"),
+      Bulk_Consumption_DZ: Number(g("bulkConsumptionDZ")) || 0, Order_Qty: Number(g("orderQty")) || 0,
+      Fabric_Required: req, Cutting_Excess_1Pct: ex, Issue_Qty: Number(g("issueQty")) || 0,
+      Max_Allowed_Qty: round2(req + ex), Excess_Approved_By: approvedBy,
+      Remarks: g("remarks"), Created_By: currentUser().email
     };
+  });
 
-    function renderDeptWorkspace(dept) {
-      const meta = DEPT_META[dept];
-      const rows = state[dept];
-      return `
-        <div class="space-y-4">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-            <div>
-              <h1 class="text-xl font-bold text-slate-900">${meta.title}</h1>
-              <p class="text-xs text-slate-500">${meta.subtitle}</p>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-              <button onclick="openAddRowModal('${dept}')" class="px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg transition">
-                + Add Row
-              </button>
-              <button onclick="openImportModal('${dept}')" class="px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg transition">
-                Upload CSV / JSON
-              </button>
-              <button onclick="exportDeptCSV('${dept}')" class="px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-lg transition">
-                Export CSV
-              </button>
-              <button onclick="openSubmitModal('${dept}')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-xs transition">
-                Submit Daily Report
-              </button>
-            </div>
-          </div>
+  if (rows.some(r => !r.Buyer || !r.Style || !r.Fabric_Code || r.Issue_Qty <= 0)) {
+    showMessage("প্রতিটি Row-তে Buyer, Style, Fabric Code ও Issue Qty (>0) দিতে হবে।", "error");
+    return;
+  }
 
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div class="overflow-x-auto custom-scroll">
-              ${dept === 'cutting' ? renderCuttingTable(rows) : ''}
-              ${dept === 'sewing' ? renderSewingTable(rows) : ''}
-              ${dept === 'wash' ? renderWashTable(rows) : ''}
-              ${dept === 'finishing' ? renderFinishingTable(rows) : ''}
-            </div>
-          </div>
-          <div class="text-[11px] text-slate-500">Tip: Click any white cell to edit inline — formula columns (shaded) recalculate automatically.</div>
-        </div>
-      `;
-    }
+  try {
+    validateStockTimeline(null, rows);
+  } catch (err) {
+    showMessage(err.message, "error");
+    return;
+  }
 
-    function updateField(dept, id, field, value, isNum = false) {
-      const row = state[dept].find(r => r.id === id);
-      if (!row) return;
-      row[field] = isNum ? (parseFloat(value) || 0) : value;
-      saveState();
-      renderWorkspace();
-    }
+  state.fabricIssue = [...rows, ...state.fabricIssue];
+  saveState();
+  initIssueBatch();
+  showMessage(`${rows.length}টি Fabric Issue Row Save হয়েছে।`, "success");
+}
 
-    function deleteRow(dept, id) {
-      state[dept] = state[dept].filter(r => r.id !== id);
-      saveState();
-      renderWorkspace();
-      showToast('Row removed', 'info');
-    }
+function renderIssueHistory() {
+  const q = normStr(document.getElementById("searchIssueId")?.value);
+  const list = state.fabricIssue.filter(r => !q || normStr(r.Issue_ID).includes(q) || normStr(r.Style).includes(q) || normStr(r.Buyer).includes(q));
+  document.getElementById("issueHistoryWrap").innerHTML = `
+    <table>
+      <thead><tr><th>Issue ID</th><th>Date</th><th>SR No</th><th>Issue To</th><th>Buyer</th><th>Style</th><th>PO</th><th>Fabric Code</th><th>Req</th><th>Issue Qty</th><th>Unit</th><th>Approved By</th></tr></thead>
+      <tbody>${list.map(r => `<tr>
+        <td><strong>${r.Issue_ID}</strong></td><td>${r.Issue_Date}</td><td>${r.SR_No}</td><td>${r.Issue_To}</td>
+        <td>${r.Buyer}</td><td>${r.Style}</td><td>${r.PO}</td><td>${r.Fabric_Code}</td>
+        <td style="text-align:right;">${Number(r.Fabric_Required || 0).toLocaleString()}</td>
+        <td style="text-align:right;font-weight:bold;">${Number(r.Issue_Qty).toLocaleString()}</td><td>${r.Unit}</td>
+        <td>${r.Excess_Approved_By || "—"}</td>
+      </tr>`).join("")}</tbody>
+    </table>
+  `;
+}
 
-    function renderCuttingTable(rows) {
-      return `
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
-            <tr>
-              <th class="p-2.5 border-b">Buyer</th><th class="p-2.5 border-b">Style</th><th class="p-2.5 border-b">PO</th><th class="p-2.5 border-b">Color</th>
-              <th class="p-2.5 border-b">Order Qty</th><th class="p-2.5 border-b">Plan %</th><th class="p-2.5 border-b">Plan Qty</th>
-              <th class="p-2.5 border-b">Conj/DZN</th><th class="p-2.5 border-b">Fab Req</th><th class="p-2.5 border-b">Fab Rec Tot</th>
-              <th class="p-2.5 border-b">Fab Used</th><th class="p-2.5 border-b">Fab Bal</th>
-              <th class="p-2.5 border-b">Cut Day</th><th class="p-2.5 border-b">Cut Total</th><th class="p-2.5 border-b">Cut Bal</th>
-              <th class="p-2.5 border-b">Line</th><th class="p-2.5 border-b">Input Tot</th><th class="p-2.5 border-b">WIP</th><th class="p-2.5 border-b">Status</th><th class="p-2.5 border-b"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-xs tabular-nums">
-            ${rows.map(r => {
-              const c = calcCutting(r);
-              return `
-                <tr class="hover:bg-slate-50/70">
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.buyer}" onchange="updateField('cutting','${r.id}','buyer',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.style}" onchange="updateField('cutting','${r.id}','style',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-mono" value="${r.po}" onchange="updateField('cutting','${r.id}','po',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.color}" onchange="updateField('cutting','${r.id}','color',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.orderQty}" onchange="updateField('cutting','${r.id}','orderQty',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" step="0.01" class="cell-input text-right" value="${r.cutPlanPct}" onchange="updateField('cutting','${r.id}','cutPlanPct',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.cutPlanQty.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" step="0.01" class="cell-input text-right" value="${r.bulkConj}" onchange="updateField('cutting','${r.id}','bulkConj',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.fabReq.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.fabRecTotal}" onchange="updateField('cutting','${r.id}','fabRecTotal',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.fabUsedTotal}" onchange="updateField('cutting','${r.id}','fabUsedTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.fabBalance.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.cutDay}" onchange="updateField('cutting','${r.id}','cutDay',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.cutTotal}" onchange="updateField('cutting','${r.id}','cutTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right ${c.cutBalance >= 0 ? 'text-emerald-700' : 'text-rose-600'}">${c.cutBalance.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.lineNo}" onchange="updateField('cutting','${r.id}','lineNo',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.inputTotal}" onchange="updateField('cutting','${r.id}','inputTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.wip.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.status}" onchange="updateField('cutting','${r.id}','status',this.value)"></td>
-                  <td class="p-1.5"><button onclick="deleteRow('cutting','${r.id}')" class="text-slate-400 hover:text-rose-600 px-1.5">✕</button></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
+// =========================================================================
+// 7. OPENING STOCK & MONTHLY FABRIC STOCK LEDGER
+// =========================================================================
+function renderOpeningTab() {
+  return `
+    <div class="card">
+      <h3>Manual Opening Stock Entry</h3>
+      <p class="muted">প্রথম মাসের Opening Stock এখানে দিতে হবে। পরবর্তী মাসের Opening আগের মাসের Closing থেকে স্বয়ংক্রিয়ভাবে হিসাব হবে।</p>
+      <div class="grid"><div class="field"><label>Opening Month *</label><input type="month" id="openingMonth" value="${currentMonthValue()}"></div></div>
+      <div id="openingRows"></div>
+      <div class="button-row">
+        <button class="btn-secondary" type="button" onclick="addOpeningRow()">+ Add Row</button>
+        <button class="btn-success" type="button" onclick="saveOpeningStock()">Save Opening Stock</button>
+      </div>
+    </div>
+  `;
+}
+
+let openSeq = 0;
+function initOpeningBatch() {
+  document.getElementById("openingRows").innerHTML = "";
+  addOpeningRow();
+}
+
+function addOpeningRow() {
+  const box = document.getElementById("openingRows");
+  if (box.querySelectorAll(".batch-row").length >= 8) { showMessage("সর্বোচ্চ ৮টি Row দেওয়া যাবে।", "error"); return; }
+  openSeq++;
+  const rid = "opn_" + openSeq;
+  const buyers = uniqueMaster("Buyer").map(v => `<option value="${v}">`).join("");
+  const div = document.createElement("div");
+  div.className = "batch-row";
+  div.id = rid;
+  div.innerHTML = `
+    <div class="batch-title"><span>OPENING Row ${box.querySelectorAll(".batch-row").length + 1}</span><button type="button" class="btn-danger btn-sm" onclick="this.closest('.batch-row').remove()">Remove</button></div>
+    <div class="grid">
+      <div class="field"><label>Buyer *</label><input class="search-select" data-f="buyer" list="dl_${rid}_b" oninput="cascadeRow('${rid}')"><datalist id="dl_${rid}_b">${buyers}</datalist></div>
+      <div class="field"><label>Style *</label><input class="search-select" data-f="style" list="dl_${rid}_s" oninput="cascadeRow('${rid}')"><datalist id="dl_${rid}_s"></datalist></div>
+      <div class="field"><label>Fabric Code *</label><input class="search-select" data-f="fabricCode" list="dl_${rid}_fc"><datalist id="dl_${rid}_fc"></datalist></div>
+      <div class="field"><label>Fabric Color</label><input class="search-select" data-f="fabricColor" list="dl_${rid}_fcol"><datalist id="dl_${rid}_fcol"></datalist></div>
+      <div class="field"><label>Composition</label><input class="search-select" data-f="composition" list="dl_${rid}_comp"><datalist id="dl_${rid}_comp"></datalist></div>
+      <div class="field"><label>Unit *</label><select data-f="unit"><option value="Yards">Yards</option><option value="Kgs">Kgs</option></select></div>
+      <div class="field"><label>Opening Qty *</label><input type="number" step="any" data-f="openingQty"></div>
+      <div class="field"><label>Remarks</label><input type="text" data-f="remarks"></div>
+    </div>
+  `;
+  box.appendChild(div);
+}
+
+function saveOpeningStock() {
+  const m = document.getElementById("openingMonth").value;
+  if (!m) { showMessage("Opening Month নির্বাচন করুন।", "error"); return; }
+  const rows = Array.from(document.querySelectorAll("#openingRows .batch-row")).map(row => {
+    const g = f => (row.querySelector(`[data-f="${f}"]`)?.value || "").trim();
+    return {
+      Opening_ID: newId("FO"), Opening_Month: m, Buyer: g("buyer"), Style: g("style"),
+      Fabric_Code: g("fabricCode"), Fabric_Color: g("fabricColor"), Composition: g("composition"),
+      Unit: g("unit") || "Yards", Opening_Qty: Number(g("openingQty")) || 0, Remarks: g("remarks"), Created_By: currentUser().email
+    };
+  });
+  if (rows.some(r => !r.Buyer || !r.Style || !r.Fabric_Code || r.Opening_Qty < 0)) {
+    showMessage("সঠিক Buyer, Style, Fabric Code ও Opening Qty দিন।", "error"); return;
+  }
+  state.fabricOpening = [...rows, ...state.fabricOpening];
+  saveState();
+  initOpeningBatch();
+  showMessage(`${rows.length}টি Opening Stock Row Save হয়েছে।`, "success");
+}
+
+function renderStockTab() {
+  return `
+    <div class="card">
+      <h3>Monthly Fabric Stock Ledger</h3>
+      <div class="grid"><div class="field"><label>Select Month *</label><input type="month" id="stockMonth" value="${currentMonthValue()}"></div></div>
+      <div class="button-row">
+        <button type="button" onclick="loadMonthlyStock()">View Stock</button>
+        <button class="btn-teal" type="button" onclick="downloadStockCSV()">Download CSV / Excel</button>
+      </div>
+      <div id="stockSummary" class="summary" style="display:none;"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>SL</th><th>Buyer</th><th>Style</th><th>Fabric Code</th><th>Fabric Color</th><th>Composition</th><th>Unit</th><th>Opening</th><th>Receive</th><th>Issue</th><th>Closing</th><th>Remarks</th></tr></thead>
+          <tbody id="stockTableBody"></tbody>
         </table>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderSewingTable(rows) {
-      return `
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
-            <tr>
-              <th class="p-2.5 border-b">Floor</th><th class="p-2.5 border-b">Line</th><th class="p-2.5 border-b">Buyer</th>
-              <th class="p-2.5 border-b">Style</th><th class="p-2.5 border-b">PO No</th><th class="p-2.5 border-b">Color</th>
-              <th class="p-2.5 border-b">Order Qty</th><th class="p-2.5 border-b">Total Input</th><th class="p-2.5 border-b">Total Output</th>
-              <th class="p-2.5 border-b">WIP</th><th class="p-2.5 border-b">SMV</th><th class="p-2.5 border-b">Target</th>
-              <th class="p-2.5 border-b">Achieved</th><th class="p-2.5 border-b">Ach %</th><th class="p-2.5 border-b">Short/Ex</th>
-              <th class="p-2.5 border-b">Day Effi%</th><th class="p-2.5 border-b">Manpower</th><th class="p-2.5 border-b"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-xs tabular-nums">
-            ${rows.map(r => {
-              const c = calcSewing(r);
-              return `
-                <tr class="hover:bg-slate-50/70">
-                  <td class="p-1.5"><input class="cell-input" value="${r.floor}" onchange="updateField('sewing','${r.id}','floor',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.line}" onchange="updateField('sewing','${r.id}','line',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.buyer}" onchange="updateField('sewing','${r.id}','buyer',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.style}" onchange="updateField('sewing','${r.id}','style',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-mono" value="${r.po}" onchange="updateField('sewing','${r.id}','po',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.color}" onchange="updateField('sewing','${r.id}','color',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.orderQty}" onchange="updateField('sewing','${r.id}','orderQty',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.totalInput}" onchange="updateField('sewing','${r.id}','totalInput',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.totalOutput}" onchange="updateField('sewing','${r.id}','totalOutput',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.wip.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" step="0.01" class="cell-input text-right" value="${r.smv}" onchange="updateField('sewing','${r.id}','smv',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" step="0.01" class="cell-input text-right" value="${r.target}" onchange="updateField('sewing','${r.id}','target',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.targetAchieved}" onchange="updateField('sewing','${r.id}','targetAchieved',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right ${c.achPct >= 100 ? 'text-emerald-700' : 'text-amber-700'}">${c.achPct.toFixed(1)}%</div></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.totalShort.toFixed(1)}</div></td>
-                  <td class="p-1.5"><input type="number" step="0.1" class="cell-input text-right font-semibold" value="${r.dayEffi}" onchange="updateField('sewing','${r.id}','dayEffi',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.manpower}" onchange="updateField('sewing','${r.id}','manpower',this.value,true)"></td>
-                  <td class="p-1.5"><button onclick="deleteRow('sewing','${r.id}')" class="text-slate-400 hover:text-rose-600 px-1.5">✕</button></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
+let lastStockRows = [];
+function loadMonthlyStock() {
+  const month = document.getElementById("stockMonth")?.value || currentMonthValue();
+  const firstDay = month + "-01";
+  const lastDay = month + "-31";
+  const items = {};
+  const addMeta = it => {
+    const k = stockKey(it);
+    if (!items[k]) items[k] = { ...it, opening: 0, receive: 0, issue: 0 };
+  };
+  state.fabricOpening.forEach(o => {
+    addMeta(o);
+    if (o.Opening_Month <= month) items[stockKey(o)].opening += Number(o.Opening_Qty) || 0;
+  });
+  state.fabricReceive.forEach(r => {
+    addMeta(r);
+    const k = stockKey(r);
+    if (r.Receive_Date < firstDay) items[k].opening += Number(r.Receive_Qty) || 0;
+    else if (r.Receive_Date <= lastDay) items[k].receive += Number(r.Receive_Qty) || 0;
+  });
+  state.fabricIssue.forEach(i => {
+    addMeta(i);
+    const k = stockKey(i);
+    if (i.Issue_Date < firstDay) items[k].opening -= Number(i.Issue_Qty) || 0;
+    else if (i.Issue_Date <= lastDay) items[k].issue += Number(i.Issue_Qty) || 0;
+  });
+
+  lastStockRows = Object.values(items).map(x => ({
+    ...x,
+    closing: round2(x.opening + x.receive - x.issue)
+  })).sort((a, b) => (a.Buyer + a.Style).localeCompare(b.Buyer + b.Style));
+
+  document.getElementById("stockTableBody").innerHTML = lastStockRows.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td><td>${r.Buyer}</td><td>${r.Style}</td><td>${r.Fabric_Code}</td><td>${r.Fabric_Color}</td>
+      <td>${r.Composition}</td><td>${r.Unit}</td>
+      <td style="text-align:right;">${round2(r.opening).toLocaleString()}</td>
+      <td style="text-align:right;">${round2(r.receive).toLocaleString()}</td>
+      <td style="text-align:right;">${round2(r.issue).toLocaleString()}</td>
+      <td style="text-align:right;font-weight:bold;">${r.closing.toLocaleString()}</td>
+      <td>${r.Remarks || ""}</td>
+    </tr>
+  `).join("");
+
+  const yds = { o: 0, r: 0, i: 0, c: 0 }, kgs = { o: 0, r: 0, i: 0, c: 0 };
+  lastStockRows.forEach(x => {
+    const t = x.Unit === "Kgs" ? kgs : yds;
+    t.o += x.opening; t.r += x.receive; t.i += x.issue; t.c += x.closing;
+  });
+  const sum = document.getElementById("stockSummary");
+  sum.style.display = "block";
+  sum.innerHTML = `
+    <div><strong>Month:</strong> ${month}</div>
+    <div><strong>Yards</strong> → Opening: ${round2(yds.o).toLocaleString()} | Receive: ${round2(yds.r).toLocaleString()} | Issue: ${round2(yds.i).toLocaleString()} | Closing: ${round2(yds.c).toLocaleString()}</div>
+    <div><strong>Kgs</strong> → Opening: ${round2(kgs.o).toLocaleString()} | Receive: ${round2(kgs.r).toLocaleString()} | Issue: ${round2(kgs.i).toLocaleString()} | Closing: ${round2(kgs.c).toLocaleString()}</div>
+  `;
+}
+
+function downloadStockCSV() {
+  const headers = ["SL","Buyer","Style","Fabric Code","Fabric Color","Composition","Unit","Opening","Receive","Issue","Closing","Remarks"];
+  const lines = [headers.map(csvEscape).join(",")].concat(
+    lastStockRows.map((r, i) => [i+1, r.Buyer, r.Style, r.Fabric_Code, r.Fabric_Color, r.Composition, r.Unit, round2(r.opening), round2(r.receive), round2(r.issue), r.closing, r.Remarks||""].map(csvEscape).join(","))
+  );
+  downloadCSV(`Fabric_Stock_${document.getElementById("stockMonth").value}.csv`, lines);
+}
+
+// =========================================================================
+// 8. PRODUCTION DEPARTMENTS (CUTTING, SEWING, WASH, FINISHING)
+// =========================================================================
+function updDept(dept, id, f, val, isNum = false) {
+  const row = state[dept].find(r => r.id === id);
+  if (!row) return;
+  row[f] = isNum ? (parseFloat(val) || 0) : val;
+  saveState();
+  renderWorkspace();
+}
+function delDeptRow(dept, id) {
+  state[dept] = state[dept].filter(r => r.id !== id);
+  saveState();
+  renderWorkspace();
+  showMessage("Row removed.", "success");
+}
+
+function renderDeptTab(dept) {
+  const titles = {
+    cutting: "Cutting Department — Daily Production Tracking",
+    sewing: "Sewing Department — Daily Efficiency Report",
+    wash: "Wash Department — Challan & Sample WIP Report",
+    finishing: "Finishing Department — WIP & Shipment Report"
+  };
+  return `
+    <div class="card">
+      <h3>${titles[dept]}</h3>
+      <div class="button-row" style="margin-top:0;margin-bottom:12px;">
+        <button class="btn-secondary" type="button" onclick="openAddDeptModal('${dept}')">+ Add Row</button>
+        <button class="btn-teal" type="button" onclick="exportDeptCSV('${dept}')">Download CSV</button>
+        <button class="btn-success" type="button" onclick="openSubmitDeptModal('${dept}')">Submit Daily Report to Admin</button>
+      </div>
+      <div class="table-wrap">${buildDeptTable(dept)}</div>
+      <p class="muted" style="margin-top:10px;">Tip: White cells are editable inline; shaded cells auto-calculate Excel formulas.</p>
+    </div>
+  `;
+}
+
+function buildDeptTable(dept) {
+  const rows = state[dept];
+  if (dept === "cutting") {
+    return `<table><thead><tr><th>Buyer</th><th>Style</th><th>PO</th><th>Color</th><th>Order Qty</th><th>Plan %</th><th>Plan Qty</th><th>Conj/DZ</th><th>Fab Req</th><th>Fab Rec</th><th>Fab Used</th><th>Fab Bal</th><th>Cut Day</th><th>Cut Total</th><th>Cut Bal</th><th>Line</th><th>Input Tot</th><th>WIP</th><th>Status</th><th></th></tr></thead><tbody>
+      ${rows.map(r => {
+        const plan = Math.round(r.orderQty * r.cutPlanPct);
+        const req = Math.round((plan / 12) * r.bulkConj);
+        const fbal = r.fabRecTotal - r.fabUsedTotal - (r.fabReturn || 0);
+        const cbal = r.cutTotal - plan;
+        const wip = r.inputTotal - r.cutTotal;
+        return `<tr>
+          <td><input class="tbl-inp" value="${r.buyer}" onchange="updDept('cutting','${r.id}','buyer',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.style}" onchange="updDept('cutting','${r.id}','style',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.po}" onchange="updDept('cutting','${r.id}','po',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.color}" onchange="updDept('cutting','${r.id}','color',this.value)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.orderQty}" onchange="updDept('cutting','${r.id}','orderQty',this.value,true)"></td>
+          <td><input type="number" step="0.01" class="tbl-inp" value="${r.cutPlanPct}" onchange="updDept('cutting','${r.id}','cutPlanPct',this.value,true)"></td>
+          <td class="calc-cell">${plan.toLocaleString()}</td>
+          <td><input type="number" step="0.01" class="tbl-inp" value="${r.bulkConj}" onchange="updDept('cutting','${r.id}','bulkConj',this.value,true)"></td>
+          <td class="calc-cell">${req.toLocaleString()}</td>
+          <td><input type="number" class="tbl-inp" value="${r.fabRecTotal}" onchange="updDept('cutting','${r.id}','fabRecTotal',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.fabUsedTotal}" onchange="updDept('cutting','${r.id}','fabUsedTotal',this.value,true)"></td>
+          <td class="calc-cell">${fbal.toLocaleString()}</td>
+          <td><input type="number" class="tbl-inp" value="${r.cutDay}" onchange="updDept('cutting','${r.id}','cutDay',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.cutTotal}" onchange="updDept('cutting','${r.id}','cutTotal',this.value,true)"></td>
+          <td class="calc-cell">${cbal.toLocaleString()}</td>
+          <td><input class="tbl-inp" value="${r.lineNo}" onchange="updDept('cutting','${r.id}','lineNo',this.value)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.inputTotal}" onchange="updDept('cutting','${r.id}','inputTotal',this.value,true)"></td>
+          <td class="calc-cell">${wip.toLocaleString()}</td>
+          <td><input class="tbl-inp" value="${r.status}" onchange="updDept('cutting','${r.id}','status',this.value)"></td>
+          <td><button class="btn-danger btn-sm" onclick="delDeptRow('cutting','${r.id}')">✕</button></td>
+        </tr>`;
+      }).join("")}
+    </tbody></table>`;
+  }
+  if (dept === "sewing") {
+    return `<table><thead><tr><th>Floor</th><th>Line</th><th>Buyer</th><th>Style</th><th>PO</th><th>Color</th><th>Order Qty</th><th>Input</th><th>Output</th><th>WIP</th><th>SMV</th><th>Target</th><th>Achieved</th><th>Ach %</th><th>Effi %</th><th>Manpower</th><th></th></tr></thead><tbody>
+      ${rows.map(r => {
+        const wip = r.totalInput - r.totalOutput;
+        const ach = r.target > 0 ? ((r.targetAchieved / r.target) * 100).toFixed(1) : "0.0";
+        return `<tr>
+          <td><input class="tbl-inp" value="${r.floor}" onchange="updDept('sewing','${r.id}','floor',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.line}" onchange="updDept('sewing','${r.id}','line',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.buyer}" onchange="updDept('sewing','${r.id}','buyer',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.style}" onchange="updDept('sewing','${r.id}','style',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.po}" onchange="updDept('sewing','${r.id}','po',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.color}" onchange="updDept('sewing','${r.id}','color',this.value)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.orderQty}" onchange="updDept('sewing','${r.id}','orderQty',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.totalInput}" onchange="updDept('sewing','${r.id}','totalInput',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.totalOutput}" onchange="updDept('sewing','${r.id}','totalOutput',this.value,true)"></td>
+          <td class="calc-cell">${wip.toLocaleString()}</td>
+          <td><input type="number" step="0.1" class="tbl-inp" value="${r.smv}" onchange="updDept('sewing','${r.id}','smv',this.value,true)"></td>
+          <td><input type="number" step="0.1" class="tbl-inp" value="${r.target}" onchange="updDept('sewing','${r.id}','target',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.targetAchieved}" onchange="updDept('sewing','${r.id}','targetAchieved',this.value,true)"></td>
+          <td class="calc-cell">${ach}%</td>
+          <td><input type="number" step="0.1" class="tbl-inp" value="${r.dayEffi}" onchange="updDept('sewing','${r.id}','dayEffi',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.manpower}" onchange="updDept('sewing','${r.id}','manpower',this.value,true)"></td>
+          <td><button class="btn-danger btn-sm" onclick="delDeptRow('sewing','${r.id}')">✕</button></td>
+        </tr>`;
+      }).join("")}
+    </tbody></table>`;
+  }
+  if (dept === "wash") {
+    return `<table><thead><tr><th>Line</th><th>Buyer</th><th>Style</th><th>PO</th><th>Color</th><th>Order Qty</th><th>Total Cut</th><th>QC Sew</th><th>Sew Bal</th><th>Plant</th><th>Challan</th><th>Wash Send</th><th>Sample Send</th><th>Send WIP</th><th>Wash Rec</th><th>Rec WIP</th><th></th></tr></thead><tbody>
+      ${rows.map(r => {
+        const sbal = r.totalCut - r.qcSewTotal;
+        const samp = (r.sizeSet||0)+(r.shadeSample||0)+(r.labTest||0)+(r.prs||0);
+        const swip = r.washSendTotal + samp + (r.missing||0) - r.qcSewTotal;
+        const rwip = r.washRecTotal - r.washSendTotal;
+        return `<tr>
+          <td><input class="tbl-inp" value="${r.line}" onchange="updDept('wash','${r.id}','line',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.buyer}" onchange="updDept('wash','${r.id}','buyer',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.style}" onchange="updDept('wash','${r.id}','style',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.po}" onchange="updDept('wash','${r.id}','po',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.color}" onchange="updDept('wash','${r.id}','color',this.value)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.orderQty}" onchange="updDept('wash','${r.id}','orderQty',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.totalCut}" onchange="updDept('wash','${r.id}','totalCut',this.value,true)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.qcSewTotal}" onchange="updDept('wash','${r.id}','qcSewTotal',this.value,true)"></td>
+          <td class="calc-cell">${sbal.toLocaleString()}</td>
+          <td><input class="tbl-inp" value="${r.washPlant}" onchange="updDept('wash','${r.id}','washPlant',this.value)"></td>
+          <td><input class="tbl-inp" value="${r.challanNo}" onchange="updDept('wash','${r.id}','challanNo',this.value)"></td>
+          <td><input type="number" class="tbl-inp" value="${r.washSendTotal}" onchange="updDept('wash','${r.id}','washSendTotal',this.value,true)"></td>
+          <td class="calc-cell">${samp.toLocaleString()}</td>
+          <td class="calc-cell">${swip.toLocaleString()}</td>
+          <td><input type="number" class="tbl-inp" value="${r.washRecTotal}" onchange="updDept('wash','${r.id}','washRecTotal',this.value,true)"></td>
+          <td class="calc-cell">${rwip.toLocaleString()}</td>
+          <td><button class="btn-danger btn-sm" onclick="delDeptRow('wash','${r.id}')">✕</button></td>
+        </tr>`;
+      }).join("")}
+    </tbody></table>`;
+  }
+  return `<table><thead><tr><th>Line</th><th>Buyer</th><th>Style</th><th>PO</th><th>Color</th><th>Order Qty</th><th>Wash Rec</th><th>Thread Cut</th><th>Button</th><th>Metal Pass</th><th>Pack Day</th><th>Pack Total</th><th>Floor WIP</th><th>Ship Total</th><th>Short/Ex</th><th></th></tr></thead><tbody>
+    ${rows.map(r => {
+      const fwip = r.packTotal - r.washRecTotal;
+      const se = r.shipTotal - r.orderQty;
+      return `<tr>
+        <td><input class="tbl-inp" value="${r.line}" onchange="updDept('finishing','${r.id}','line',this.value)"></td>
+        <td><input class="tbl-inp" value="${r.buyer}" onchange="updDept('finishing','${r.id}','buyer',this.value)"></td>
+        <td><input class="tbl-inp" value="${r.style}" onchange="updDept('finishing','${r.id}','style',this.value)"></td>
+        <td><input class="tbl-inp" value="${r.po}" onchange="updDept('finishing','${r.id}','po',this.value)"></td>
+        <td><input class="tbl-inp" value="${r.color}" onchange="updDept('finishing','${r.id}','color',this.value)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.orderQty}" onchange="updDept('finishing','${r.id}','orderQty',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.washRecTotal}" onchange="updDept('finishing','${r.id}','washRecTotal',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.threadCutTotal}" onchange="updDept('finishing','${r.id}','threadCutTotal',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.buttonTotal}" onchange="updDept('finishing','${r.id}','buttonTotal',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.metalPassTotal}" onchange="updDept('finishing','${r.id}','metalPassTotal',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.packDay}" onchange="updDept('finishing','${r.id}','packDay',this.value,true)"></td>
+        <td><input type="number" class="tbl-inp" value="${r.packTotal}" onchange="updDept('finishing','${r.id}','packTotal',this.value,true)"></td>
+        <td class="calc-cell">${fwip.toLocaleString()}</td>
+        <td><input type="number" class="tbl-inp" value="${r.shipTotal}" onchange="updDept('finishing','${r.id}','shipTotal',this.value,true)"></td>
+        <td class="calc-cell">${se.toLocaleString()}</td>
+        <td><button class="btn-danger btn-sm" onclick="delDeptRow('finishing','${r.id}')">✕</button></td>
+      </tr>`;
+    }).join("")}
+  </tbody></table>`;
+}
+
+function openAddDeptModal(dept) {
+  openModal(`
+    <h3 style="margin-top:0;color:#17365d;">Add New ${dept.toUpperCase()} Row</h3>
+    <form onsubmit="saveAddDeptRow(event,'${dept}')">
+      <div class="grid">
+        <div class="field"><label>Buyer *</label><input id="m-buyer" required></div>
+        <div class="field"><label>Style *</label><input id="m-style" required></div>
+        <div class="field"><label>PO *</label><input id="m-po" required></div>
+        <div class="field"><label>Color *</label><input id="m-color" required></div>
+        <div class="field"><label>Order Qty *</label><input id="m-order" type="number" required value="1000"></div>
+        <div class="field"><label>Line *</label><input id="m-line" required value="Line 01"></div>
+      </div>
+      <div class="button-row">
+        <button type="submit" class="btn-success">Add Record</button>
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
+  `);
+}
+
+function saveAddDeptRow(e, dept) {
+  e.preventDefault();
+  const base = {
+    id: newId(dept[0].toUpperCase()),
+    buyer: document.getElementById("m-buyer").value.trim(),
+    style: document.getElementById("m-style").value.trim(),
+    po: document.getElementById("m-po").value.trim(),
+    color: document.getElementById("m-color").value.trim(),
+    orderQty: Number(document.getElementById("m-order").value) || 0
+  };
+  const line = document.getElementById("m-line").value.trim();
+  if (dept === "cutting") state.cutting.unshift({ ...base, cutPlanPct: 1.03, bulkConj: 15, fabRecDay: 0, fabRecTotal: 0, fabUsedTotal: 0, fabReturn: 0, cutDay: 0, cutTotal: 0, lineNo: line, inputDay: 0, inputTotal: 0, status: "RUNNING", remarks: "" });
+  if (dept === "sewing") state.sewing.unshift({ ...base, floor: "4th Floor", line, totalInput: 0, totalOutput: 0, smv: 20, cm: 1.75, days: 1, target: 300, targetAchieved: 0, dayEffi: 0, prodManHr: 0, manpower: 40 });
+  if (dept === "wash") state.wash.unshift({ ...base, line, shipDate: todayValue(), totalCut: 0, qcSewDay: 0, qcSewTotal: 0, washPlant: "NWP", challanNo: "", washSendDay: 0, washSendTotal: 0, sizeSet: 0, shadeSample: 0, labTest: 0, prs: 0, sampleRcv: 0, missing: 0, recChallanNo: "", washRecDay: 0, washRecTotal: 0, remarks: "" });
+  if (dept === "finishing") state.finishing.unshift({ ...base, line, washRecDay: 0, washRecTotal: 0, threadCutDay: 0, threadCutTotal: 0, buttonDay: 0, buttonTotal: 0, metalPassDay: 0, metalPassTotal: 0, packDay: 0, packTotal: 0, shipDay: 0, shipTotal: 0, remarks: "" });
+  saveState(); closeModal(); renderWorkspace(); showMessage("New row added.");
+}
+
+function exportDeptCSV(dept) {
+  const rows = state[dept];
+  if (!rows.length) return;
+  const headers = Object.keys(rows[0]).filter(k => k !== "id");
+  const lines = [headers.map(csvEscape).join(",")].concat(rows.map(r => headers.map(h => csvEscape(r[h])).join(",")));
+  downloadCSV(`NDL_Unit02_${dept}.csv`, lines);
+}
+
+function openSubmitDeptModal(dept) {
+  openModal(`
+    <h3 style="margin-top:0;color:#17365d;">Submit ${dept.toUpperCase()} Daily Report to Admin</h3>
+    <form onsubmit="submitDeptReport(event,'${dept}')">
+      <div class="field"><label>Report Date</label><input id="sub-date" type="date" value="${todayValue()}" required></div>
+      <div class="field" style="margin-top:10px;"><label>Submission Notes</label><textarea id="sub-notes" rows="3" required placeholder="Summary of today's output & WIP..."></textarea></div>
+      <div class="button-row">
+        <button type="submit" class="btn-success">Submit Report</button>
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+      </div>
+    </form>
+  `);
+}
+
+function submitDeptReport(e, dept) {
+  e.preventDefault();
+  const u = currentUser();
+  state.submissions.unshift({
+    id: newId("SUB"),
+    dept: dept[0].toUpperCase() + dept.slice(1),
+    submittedBy: u.email,
+    submittedByName: u.name,
+    reportDate: document.getElementById("sub-date").value,
+    rowCount: state[dept].length,
+    notes: document.getElementById("sub-notes").value.trim(),
+    status: "Pending Review",
+    adminNote: "",
+    timestamp: new Date().toISOString().slice(0, 16).replace("T", " ")
+  });
+  saveState(); closeModal(); renderTabs(); renderWorkspace(); showMessage("Report submitted to Administrator.");
+}
+
+// =========================================================================
+// 9. MASTER UNIT-02, SUBMISSIONS, USER MANAGEMENT & BONUS POLICY
+// =========================================================================
+function renderMasterTab() {
+  const map = {};
+  const ensure = (po, buyer, style, color, orderQty) => {
+    const k = `${po}__${style}`;
+    if (!map[k]) map[k] = { po, buyer, style, color, orderQty: Number(orderQty) || 0, cut: 0, sew: 0, washSend: 0, washRec: 0, pack: 0, ship: 0 };
+    return map[k];
+  };
+  state.cutting.forEach(r => { ensure(r.po, r.buyer, r.style, r.color, r.orderQty).cut += Number(r.cutTotal) || 0; });
+  state.sewing.forEach(r => { ensure(r.po, r.buyer, r.style, r.color, r.orderQty).sew += Number(r.totalOutput) || 0; });
+  state.wash.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.washSend += Number(r.washSendTotal) || 0; m.washRec += Number(r.washRecTotal) || 0; });
+  state.finishing.forEach(r => { const m = ensure(r.po, r.buyer, r.style, r.color, r.orderQty); m.pack += Number(r.packTotal) || 0; m.ship += Number(r.shipTotal) || 0; });
+
+  return `
+    <div class="card">
+      <h3>Master Unit-02 Cut-to-Ship Consolidated Report</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Buyer</th><th>Style</th><th>PO</th><th>Color</th><th>Order Qty</th><th>Cutting</th><th>Sewing Out</th><th>Wash Send</th><th>Wash Rec</th><th>Packed</th><th>Shipped</th><th>Short/Excess</th></tr></thead>
+          <tbody>${Object.values(map).map(r => `<tr>
+            <td><strong>${r.buyer}</strong></td><td>${r.style}</td><td>${r.po}</td><td>${r.color}</td>
+            <td style="text-align:right;">${r.orderQty.toLocaleString()}</td>
+            <td style="text-align:right;">${r.cut.toLocaleString()}</td>
+            <td style="text-align:right;">${r.sew.toLocaleString()}</td>
+            <td style="text-align:right;">${r.washSend.toLocaleString()}</td>
+            <td style="text-align:right;">${r.washRec.toLocaleString()}</td>
+            <td style="text-align:right;">${r.pack.toLocaleString()}</td>
+            <td style="text-align:right;font-weight:bold;">${r.ship.toLocaleString()}</td>
+            <td style="text-align:right;font-weight:bold;">${(r.ship - r.orderQty).toLocaleString()}</td>
+          </tr>`).join("")}</tbody>
         </table>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderWashTable(rows) {
-      return `
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
-            <tr>
-              <th class="p-2.5 border-b">Line</th><th class="p-2.5 border-b">Buyer</th><th class="p-2.5 border-b">Style</th>
-              <th class="p-2.5 border-b">PO</th><th class="p-2.5 border-b">Color</th><th class="p-2.5 border-b">Order Qty</th>
-              <th class="p-2.5 border-b">Total Cut</th><th class="p-2.5 border-b">QC Sew Tot</th><th class="p-2.5 border-b">Sew Bal</th>
-              <th class="p-2.5 border-b">Plant</th><th class="p-2.5 border-b">Challan</th><th class="p-2.5 border-b">Wash Send Day</th>
-              <th class="p-2.5 border-b">Wash Send Tot</th><th class="p-2.5 border-b">Sample Send</th><th class="p-2.5 border-b">Send WIP</th>
-              <th class="p-2.5 border-b">Wash Rec Day</th><th class="p-2.5 border-b">Wash Rec Tot</th><th class="p-2.5 border-b">Rec WIP</th><th class="p-2.5 border-b"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-xs tabular-nums">
-            ${rows.map(r => {
-              const c = calcWash(r);
-              return `
-                <tr class="hover:bg-slate-50/70">
-                  <td class="p-1.5"><input class="cell-input" value="${r.line}" onchange="updateField('wash','${r.id}','line',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.buyer}" onchange="updateField('wash','${r.id}','buyer',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.style}" onchange="updateField('wash','${r.id}','style',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-mono" value="${r.po}" onchange="updateField('wash','${r.id}','po',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.color}" onchange="updateField('wash','${r.id}','color',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.orderQty}" onchange="updateField('wash','${r.id}','orderQty',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.totalCut}" onchange="updateField('wash','${r.id}','totalCut',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.qcSewTotal}" onchange="updateField('wash','${r.id}','qcSewTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.sewBal.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.washPlant}" onchange="updateField('wash','${r.id}','washPlant',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.challanNo}" onchange="updateField('wash','${r.id}','challanNo',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.washSendDay}" onchange="updateField('wash','${r.id}','washSendDay',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.washSendTotal}" onchange="updateField('wash','${r.id}','washSendTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.sampleSend.toLocaleString()}</div></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.washSendWip.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.washRecDay}" onchange="updateField('wash','${r.id}','washRecDay',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.washRecTotal}" onchange="updateField('wash','${r.id}','washRecTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.washRecWip.toLocaleString()}</div></td>
-                  <td class="p-1.5"><button onclick="deleteRow('wash','${r.id}')" class="text-slate-400 hover:text-rose-600 px-1.5">✕</button></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
+function renderSubmissionsAdminTab() {
+  return `
+    <div class="card">
+      <h3>Department Submissions Review</h3>
+      ${state.submissions.map(s => `
+        <div class="batch-row">
+          <div class="batch-title">
+            <span><span class="badge badge-navy">${s.dept}</span> ${s.submittedByName} (${s.submittedBy})</span>
+            <span class="badge ${s.status === "Approved" ? "badge-ok" : s.status === "Needs Revision" ? "badge-err" : "badge-warn"}">${s.status}</span>
+          </div>
+          <div>${s.notes}</div>
+          <div class="muted">Report Date: ${s.reportDate} · Rows: ${s.rowCount} · Submitted: ${s.timestamp}</div>
+          ${s.adminNote ? `<div class="excess-box">Admin Note: ${s.adminNote}</div>` : ""}
+          <div class="button-row">
+            <button class="btn-secondary btn-sm" onclick="switchTab('${s.dept.toLowerCase()}Tab')">Open ${s.dept} Sheet</button>
+            ${s.status !== "Approved" ? `<button class="btn-success btn-sm" onclick="approveSub('${s.id}')">Approve</button>` : ""}
+            <button class="btn-danger btn-sm" onclick="returnSubModal('${s.id}')">Return</button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderMySubmissionsTab() {
+  const u = currentUser();
+  const mine = state.submissions.filter(s => normStr(s.dept) === normStr(u.dept));
+  return `
+    <div class="card">
+      <h3>My ${u.dept} Submissions</h3>
+      ${mine.length === 0 ? `<p class="muted">No submissions yet.</p>` : mine.map(s => `
+        <div class="batch-row">
+          <div class="batch-title"><span>Report Date: ${s.reportDate} (${s.rowCount} rows)</span><span class="badge ${s.status === "Approved" ? "badge-ok" : s.status === "Needs Revision" ? "badge-err" : "badge-warn"}">${s.status}</span></div>
+          <div>${s.notes}</div>
+          ${s.adminNote ? `<div class="excess-box">Admin Feedback: ${s.adminNote}</div>` : ""}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function approveSub(id) {
+  const s = state.submissions.find(x => x.id === id);
+  if (s) { s.status = "Approved"; if (!s.adminNote) s.adminNote = "Approved by Administrator."; saveState(); renderTabs(); renderWorkspace(); showMessage("Submission approved."); }
+}
+function returnSubModal(id) {
+  openModal(`
+    <h3 style="margin-top:0;color:#17365d;">Return for Revision</h3>
+    <form onsubmit="saveReturnSub(event,'${id}')">
+      <div class="field"><label>Feedback *</label><textarea id="ret-fb" rows="3" required></textarea></div>
+      <div class="button-row"><button type="submit" class="btn-danger">Return</button><button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button></div>
+    </form>
+  `);
+}
+function saveReturnSub(e, id) {
+  e.preventDefault();
+  const s = state.submissions.find(x => x.id === id);
+  if (s) { s.status = "Needs Revision"; s.adminNote = document.getElementById("ret-fb").value.trim(); saveState(); }
+  closeModal(); renderTabs(); renderWorkspace(); showMessage("Returned for revision.");
+}
+
+function renderUsersTab() {
+  return `
+    <div class="card">
+      <h3>User Management &amp; Access Control</h3>
+      <div class="button-row" style="margin-top:0;margin-bottom:12px;">
+        <button class="btn-success" type="button" onclick="openUserModal()">+ Create User</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>User ID</th><th>Name</th><th>Email</th><th>Password</th><th>Role</th><th>Department</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>${state.users.map(u => `<tr>
+            <td>${u.id}</td><td><strong>${u.name}</strong></td><td>${u.email}</td><td><code>${u.password}</code></td>
+            <td>${u.role}</td><td>${u.dept}</td>
+            <td><span class="badge ${u.status === "Active" ? "badge-ok" : "badge-err"}">${u.status}</span></td>
+            <td>
+              <button class="btn-sm" onclick="openUserModal('${u.id}')">Edit</button>
+              ${u.email !== state.currentUserEmail ? `<button class="btn-secondary btn-sm" onclick="toggleUser('${u.id}')">${u.status === "Active" ? "Disable" : "Enable"}</button>` : ""}
+            </td>
+          </tr>`).join("")}</tbody>
         </table>
-      `;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderFinishingTable(rows) {
-      return `
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-100 text-[11px] font-bold text-slate-600 uppercase whitespace-nowrap">
-            <tr>
-              <th class="p-2.5 border-b">Line</th><th class="p-2.5 border-b">Buyer</th><th class="p-2.5 border-b">Style</th>
-              <th class="p-2.5 border-b">PO</th><th class="p-2.5 border-b">Color</th><th class="p-2.5 border-b">Order Qty</th>
-              <th class="p-2.5 border-b">Wash Rec Tot</th><th class="p-2.5 border-b">Thread Cut Tot</th><th class="p-2.5 border-b">Button Tot</th>
-              <th class="p-2.5 border-b">Metal Pass Tot</th><th class="p-2.5 border-b">Pack Day</th><th class="p-2.5 border-b">Pack Total</th>
-              <th class="p-2.5 border-b">Floor WIP</th><th class="p-2.5 border-b">Ship Day</th><th class="p-2.5 border-b">Ship Total</th>
-              <th class="p-2.5 border-b">Short/Excess</th><th class="p-2.5 border-b"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-xs tabular-nums">
-            ${rows.map(r => {
-              const c = calcFinishing(r);
-              return `
-                <tr class="hover:bg-slate-50/70">
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.line}" onchange="updateField('finishing','${r.id}','line',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-semibold" value="${r.buyer}" onchange="updateField('finishing','${r.id}','buyer',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.style}" onchange="updateField('finishing','${r.id}','style',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input font-mono" value="${r.po}" onchange="updateField('finishing','${r.id}','po',this.value)"></td>
-                  <td class="p-1.5"><input class="cell-input" value="${r.color}" onchange="updateField('finishing','${r.id}','color',this.value)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.orderQty}" onchange="updateField('finishing','${r.id}','orderQty',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.washRecTotal}" onchange="updateField('finishing','${r.id}','washRecTotal',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.threadCutTotal}" onchange="updateField('finishing','${r.id}','threadCutTotal',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.buttonTotal}" onchange="updateField('finishing','${r.id}','buttonTotal',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.metalPassTotal}" onchange="updateField('finishing','${r.id}','metalPassTotal',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.packDay}" onchange="updateField('finishing','${r.id}','packDay',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.packTotal}" onchange="updateField('finishing','${r.id}','packTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right">${c.floorWip.toLocaleString()}</div></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right" value="${r.shipDay}" onchange="updateField('finishing','${r.id}','shipDay',this.value,true)"></td>
-                  <td class="p-1.5"><input type="number" class="cell-input text-right font-semibold" value="${r.shipTotal}" onchange="updateField('finishing','${r.id}','shipTotal',this.value,true)"></td>
-                  <td class="p-1.5"><div class="cell-calc text-right ${c.shortExcess >= 0 ? 'text-emerald-700' : 'text-rose-600'}">${c.shortExcess.toLocaleString()}</div></td>
-                  <td class="p-1.5"><button onclick="deleteRow('finishing','${r.id}')" class="text-slate-400 hover:text-rose-600 px-1.5">✕</button></td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    // --- ADD ROW / IMPORT / SUBMIT MODALS ---
-    function openAddRowModal(dept) {
-      const commonFields = `
-        <div class="grid grid-cols-2 gap-3">
-          <div><label class="block text-xs font-semibold mb-1">Buyer</label><input id="add-buyer" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. TOMMY HILFIGER"></div>
-          <div><label class="block text-xs font-semibold mb-1">Style</label><input id="add-style" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. TGSKC11G"></div>
-          <div><label class="block text-xs font-semibold mb-1">PO Number</label><input id="add-po" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. 4500713249"></div>
-          <div><label class="block text-xs font-semibold mb-1">GMT Color</label><input id="add-color" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. LIGHT WASH"></div>
-          <div><label class="block text-xs font-semibold mb-1">Order Qty</label><input id="add-order" type="number" required class="w-full px-3 py-2 text-xs border rounded-lg" value="1000"></div>
-          <div><label class="block text-xs font-semibold mb-1">Line / Floor</label><input id="add-line" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. Line 04"></div>
+function openUserModal(uid = "") {
+  const u = uid ? state.users.find(x => x.id === uid) : null;
+  openModal(`
+    <h3 style="margin-top:0;color:#17365d;">${u ? "Edit User" : "Create User"}</h3>
+    <form onsubmit="saveUser(event,'${uid}')">
+      <div class="grid">
+        <div class="field"><label>Name *</label><input id="u-name" required value="${u ? u.name : ""}"></div>
+        <div class="field"><label>Email *</label><input id="u-email" type="email" required value="${u ? u.email : ""}"></div>
+        <div class="field"><label>Password *</label><input id="u-pw" required value="${u ? u.password : ""}"></div>
+        <div class="field"><label>Department *</label>
+          <select id="u-dept">
+            <option value="All" ${u?.role === "Admin" ? "selected" : ""}>All (Administrator)</option>
+            <option value="Fabric" ${u?.dept === "Fabric" ? "selected" : ""}>Fabric Store</option>
+            <option value="Cutting" ${u?.dept === "Cutting" ? "selected" : ""}>Cutting</option>
+            <option value="Sewing" ${u?.dept === "Sewing" ? "selected" : ""}>Sewing</option>
+            <option value="Wash" ${u?.dept === "Wash" ? "selected" : ""}>Wash</option>
+            <option value="Finishing" ${u?.dept === "Finishing" ? "selected" : ""}>Finishing</option>
+          </select>
         </div>
-      `;
-      openModal(`
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Add New ${dept.toUpperCase()} Record</h3>
-          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-        <form onsubmit="submitAddRow(event, '${dept}')" class="p-5 space-y-4">
-          ${commonFields}
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Add Record</button>
-          </div>
-        </form>
-      `);
-    }
+      </div>
+      <div class="button-row"><button type="submit" class="btn-success">Save User</button><button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button></div>
+    </form>
+  `);
+}
 
-    function submitAddRow(e, dept) {
-      e.preventDefault();
-      const id = dept[0] + Date.now();
-      const base = {
-        id,
-        buyer: document.getElementById('add-buyer').value.trim(),
-        style: document.getElementById('add-style').value.trim(),
-        po: document.getElementById('add-po').value.trim(),
-        color: document.getElementById('add-color').value.trim(),
-        orderQty: Number(document.getElementById('add-order').value) || 0
-      };
-      const line = document.getElementById('add-line').value.trim();
-      if (dept === 'cutting') {
-        state.cutting.unshift({ ...base, cutPlanPct: 1.03, bulkConj: 15.0, fabRecDay: 0, fabRecTotal: 0, fabUsedTotal: 0, fabReturn: 0, cutDay: 0, cutTotal: 0, lineNo: line, inputDay: 0, inputTotal: 0, status: 'RUNNING', remarks: '' });
-      } else if (dept === 'sewing') {
-        state.sewing.unshift({ ...base, floor: '4th Floor', line, totalInput: 0, totalOutput: 0, smv: 20, cm: 1.75, days: 1, target: 300, targetAchieved: 0, dayEffi: 0, prodManHr: 0, manpower: 40 });
-      } else if (dept === 'wash') {
-        state.wash.unshift({ ...base, line, shipDate: '2026-12-10', totalCut: 0, qcSewDay: 0, qcSewTotal: 0, washPlant: 'NWP', challanNo: '', washSendDay: 0, washSendTotal: 0, sizeSet: 0, shadeSample: 0, labTest: 0, prs: 0, sampleRcv: 0, missing: 0, recChallanNo: '', washRecDay: 0, washRecTotal: 0, remarks: '' });
-      } else if (dept === 'finishing') {
-        state.finishing.unshift({ ...base, line, washRecDay: 0, washRecTotal: 0, threadCutDay: 0, threadCutTotal: 0, buttonDay: 0, buttonTotal: 0, metalPassDay: 0, metalPassTotal: 0, packDay: 0, packTotal: 0, shipDay: 0, shipTotal: 0, remarks: '' });
-      }
-      saveState();
-      closeModal();
-      renderWorkspace();
-      showToast('New row added');
-    }
+function saveUser(e, uid) {
+  e.preventDefault();
+  const name = document.getElementById("u-name").value.trim();
+  const email = normStr(document.getElementById("u-email").value);
+  const password = document.getElementById("u-pw").value;
+  const dept = document.getElementById("u-dept").value;
+  const role = dept === "All" ? "Admin" : "Dept";
+  if (uid) {
+    const u = state.users.find(x => x.id === uid);
+    if (u) { u.name = name; u.email = email; u.password = password; u.role = role; u.dept = dept; }
+  } else {
+    state.users.push({ id: newId("USR"), name, email, password, role, dept, desktopWrite: true, status: "Active" });
+  }
+  saveState(); closeModal(); renderWorkspace(); showMessage("User saved.");
+}
 
-    function openImportModal(dept) {
-      openModal(`
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Upload ${dept.toUpperCase()} CSV or JSON</h3>
-          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-        <div class="p-5 space-y-4">
-          <p class="text-xs text-slate-600">Select a <code>.json</code> array or <code>.csv</code> file exported from this module to append or replace records.</p>
-          <input id="import-file-input" type="file" accept=".csv,.json" class="block w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold hover:file:bg-blue-100" />
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button type="button" onclick="processImport('${dept}')" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Import File</button>
-          </div>
-        </div>
-      `);
-    }
+function toggleUser(uid) {
+  const u = state.users.find(x => x.id === uid);
+  if (u) { u.status = u.status === "Active" ? "Inactive" : "Active"; saveState(); renderWorkspace(); }
+}
 
-    function processImport(dept) {
-      const fileInput = document.getElementById('import-file-input');
-      const file = fileInput.files[0];
-      if (!file) { showToast('Please choose a file first', 'error'); return; }
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        try {
-          const text = ev.target.result;
-          let imported = [];
-          if (file.name.endsWith('.json')) {
-            imported = JSON.parse(text);
-          } else {
-            const lines = text.trim().split(/\r?\n/);
-            const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
-            imported = lines.slice(1).map((line, idx) => {
-              const vals = line.split(',').map(v => v.replace(/^"|"$/g, '').trim());
-              const obj = { id: dept[0] + Date.now() + idx };
-              headers.forEach((h, i) => {
-                const v = vals[i] ?? '';
-                obj[h] = isNaN(Number(v)) || v === '' ? v : Number(v);
-              });
-              return obj;
-            });
-          }
-          if (!Array.isArray(imported) || imported.length === 0) throw new Error('Empty dataset');
-          state[dept] = [...imported, ...state[dept]];
-          saveState();
-          closeModal();
-          renderWorkspace();
-          showToast(`Imported ${imported.length} rows into ${dept}`);
-        } catch (err) {
-          showToast('Invalid CSV/JSON format', 'error');
-        }
-      };
-      reader.readAsText(file);
-    }
+function renderBonusTab() {
+  return `
+    <div class="card">
+      <h3>NDL Bonus Policy Calculator (Sheet3)</h3>
+      <div class="grid">
+        <div class="field"><label>Category</label><select id="b-cat" onchange="calcBonus()"><option value="worker">Worker</option><option value="staff">Staff</option></select></div>
+        <div class="field"><label>Service Days</label><input id="b-days" type="number" value="200" oninput="calcBonus()"></div>
+        <div class="field"><label>Basic Salary (BDT)</label><input id="b-sal" type="number" value="12500" oninput="calcBonus()"></div>
+      </div>
+      <div id="b-out" class="summary">Bonus Tier: 75% | Payable: 9,375 BDT</div>
+    </div>
+  `;
+}
 
-    function exportDeptCSV(dept) {
-      const rows = state[dept];
-      if (!rows.length) { showToast('No rows to export', 'error'); return; }
-      const headers = Object.keys(rows[0]).filter(k => k !== 'id');
-      const csv = [headers.join(',')].concat(rows.map(r => headers.map(h => `"${String(r[h] ?? '').replace(/"/g,'""')}"`).join(','))).join('\n');
-      downloadFile(`NDL_Unit02_${dept}.csv`, csv, 'text/csv');
-      showToast(`${dept.toUpperCase()} CSV exported`);
-    }
+function calcBonus() {
+  const cat = document.getElementById("b-cat").value;
+  const days = Number(document.getElementById("b-days").value) || 0;
+  const sal = Number(document.getElementById("b-sal").value) || 0;
+  let pct = 0;
+  if (cat === "worker") { if (days >= 365) pct = 100; else if (days >= 180) pct = 75; else if (days >= 88) pct = 40; }
+  else { if (days >= 365) pct = 80; else if (days >= 180) pct = 40; }
+  document.getElementById("b-out").textContent = `Bonus Tier: ${pct}% | Payable: ${Math.round(sal * pct / 100).toLocaleString()} BDT`;
+}
 
-    function downloadFile(filename, content, mime) {
-      const blob = new Blob([content], { type: mime });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function openSubmitModal(dept) {
-      const today = new Date().toISOString().slice(0, 10);
-      openModal(`
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Submit ${dept.toUpperCase()} Daily Report to Admin</h3>
-          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-        <form onsubmit="confirmSubmitReport(event, '${dept}')" class="p-5 space-y-4">
-          <div class="p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800">
-            Submitting <strong>${state[dept].length} active rows</strong> from <strong>${dept.toUpperCase()}</strong> for Administrator review &amp; Master Unit-02 consolidation.
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">Report Date</label>
-            <input id="sub-date" type="date" required value="${today}" class="w-full px-3 py-2 text-xs border rounded-lg" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold mb-1">Submission Notes / Shift Summary</label>
-            <textarea id="sub-notes" rows="3" required placeholder="e.g. Updated today's output and WIP balances..." class="w-full px-3 py-2 text-xs border rounded-lg"></textarea>
-          </div>
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
-            <button type="submit" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Submit Report</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function confirmSubmitReport(e, dept) {
-      e.preventDefault();
-      const user = currentUser();
-      const sub = {
-        id: 'sub_' + Date.now(),
-        dept,
-        submittedBy: user.email,
-        submittedByName: user.name,
-        reportDate: document.getElementById('sub-date').value,
-        rowCount: state[dept].length,
-        notes: document.getElementById('sub-notes').value.trim(),
-        status: 'Pending Review',
-        adminNote: '',
-        timestamp: new Date().toISOString().slice(0, 16).replace('T', ' '),
-        snapshot: JSON.parse(JSON.stringify(state[dept]))
-      };
-      state.submissions.unshift(sub);
-      saveState();
-      closeModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast('Report submitted to Administrator');
-    }
-
-    // --- SUBMISSIONS REVIEW (ADMIN) & MY SUBMISSIONS (DEPT USER) ---
-    function renderSubmissionsAdmin() {
-      return `
-        <div class="space-y-4">
-          <div>
-            <h1 class="text-xl font-bold text-slate-900">Department Submissions Review</h1>
-            <p class="text-xs text-slate-500">Approve, inspect, edit, or return daily reports submitted by department users.</p>
-          </div>
-          <div class="space-y-3">
-            ${state.submissions.map(s => `
-              <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="space-y-1">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="px-2 py-0.5 rounded bg-slate-900 text-white text-[10px] font-bold uppercase">${s.dept}</span>
-                    <span class="text-sm font-bold text-slate-900">${s.submittedByName}</span>
-                    <span class="text-xs text-slate-400">(${s.submittedBy})</span>
-                    ${statusBadge(s.status)}
-                  </div>
-                  <div class="text-xs text-slate-700">${s.notes}</div>
-                  <div class="text-[11px] text-slate-400">Report Date: ${s.reportDate} · Rows: ${s.rowCount} · Submitted: ${s.timestamp}</div>
-                  ${s.adminNote ? `<div class="text-xs text-amber-700 bg-amber-50 px-2.5 py-1 rounded border border-amber-200 mt-1">Admin Feedback: ${s.adminNote}</div>` : ''}
-                </div>
-                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                  <button onclick="setTab('${s.dept}')" class="px-3 py-1.5 text-xs font-semibold border border-slate-200 hover:bg-slate-50 rounded-lg">Open ${s.dept} Sheet</button>
-                  ${s.status !== 'Approved' ? `<button onclick="reviewSubmission('${s.id}','Approved')" class="px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">Approve</button>` : ''}
-                  <button onclick="openReturnModal('${s.id}')" class="px-3 py-1.5 text-xs font-semibold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg">Return</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function renderMySubmissions() {
-      const user = currentUser();
-      const mine = state.submissions.filter(s => s.dept === user.dept);
-      return `
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-xl font-bold text-slate-900">My ${user.dept.toUpperCase()} Submissions</h1>
-              <p class="text-xs text-slate-500">Track Administrator approval status and feedback.</p>
-            </div>
-            <button onclick="openSubmitModal('${user.dept}')" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg">+ New Submission</button>
-          </div>
-          <div class="space-y-3">
-            ${mine.length === 0 ? `<div class="bg-white p-6 rounded-xl border border-slate-200 text-xs text-slate-500">No submissions yet.</div>` : mine.map(s => `
-              <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs space-y-1.5">
-                <div class="flex items-center justify-between">
-                  <div class="text-sm font-bold text-slate-900">Report Date: ${s.reportDate} (${s.rowCount} rows)</div>
-                  ${statusBadge(s.status)}
-                </div>
-                <div class="text-xs text-slate-700">${s.notes}</div>
-                <div class="text-[11px] text-slate-400">Submitted at ${s.timestamp} by ${s.submittedBy}</div>
-                ${s.adminNote ? `<div class="text-xs text-amber-800 bg-amber-50 px-3 py-1.5 rounded border border-amber-200">Admin Note: ${s.adminNote}</div>` : ''}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-
-    function statusBadge(status) {
-      if (status === 'Approved') return `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Approved</span>`;
-      if (status === 'Needs Revision') return `<span class="px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold">Needs Revision</span>`;
-      return `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold">Pending Review</span>`;
-    }
-
-    function reviewSubmission(id, status) {
-      const sub = state.submissions.find(s => s.id === id);
-      if (!sub) return;
-      sub.status = status;
-      if (status === 'Approved' && !sub.adminNote) sub.adminNote = 'Approved by Administrator.';
-      saveState();
-      renderSidebar();
-      renderWorkspace();
-      showToast(`Submission marked ${status}`);
-    }
-
-    function openReturnModal(id) {
-      openModal(`
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">Return Submission for Revision</h3>
-          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-        <form onsubmit="submitReturnFeedback(event,'${id}')" class="p-5 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold mb-1">Revision Note for Department</label>
-            <textarea id="ret-note" rows="3" required class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="Specify what needs to be corrected..."></textarea>
-          </div>
-          <div class="flex justify-end gap-2">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 rounded-lg">Cancel</button>
-            <button type="submit" class="px-4 py-2 text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white rounded-lg">Return Report</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function submitReturnFeedback(e, id) {
-      e.preventDefault();
-      const sub = state.submissions.find(s => s.id === id);
-      if (sub) {
-        sub.status = 'Needs Revision';
-        sub.adminNote = document.getElementById('ret-note').value.trim();
-        saveState();
-      }
-      closeModal();
-      renderSidebar();
-      renderWorkspace();
-      showToast('Returned for revision', 'info');
-    }
-
-    // --- SETTINGS & USER MANAGEMENT (VYAPAR 3-COLUMN LAYOUT + USER TABLE) ---
-    function renderSettingsAndUsers() {
-      const s = state.settings;
-      return `
-        <div class="space-y-6">
-          <div>
-            <h1 class="text-xl font-bold text-slate-900">User Management &amp; ERP Settings</h1>
-            <p class="text-xs text-slate-500">Manage department login credentials, unit configuration, and backups.</p>
-          </div>
-
-          <!-- Vyapar-Style 3-Column Settings Grid -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">Application</div>
-              <label class="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" ${s.enablePasscode ? 'checked' : ''} onchange="toggleSetting('enablePasscode', this.checked)" class="rounded border-slate-300 text-blue-600" />
-                <span>Require Passcode on Switch User</span>
-              </label>
-              <div>
-                <div class="text-[11px] font-semibold text-slate-500 mb-1">Company Name</div>
-                <input value="${s.companyName}" onchange="updateCompanyName(this.value)" class="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg" />
-              </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
-              <div class="flex items-center justify-between border-b border-slate-100 pb-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Multi-Unit</span>
-              </div>
-              <div class="space-y-2">
-                ${s.units.map(u => `
-                  <label class="flex items-center justify-between p-2.5 rounded-lg border ${s.activeUnit === u ? 'border-blue-500 bg-blue-50/40' : 'border-slate-200'} cursor-pointer text-xs">
-                    <span class="flex items-center gap-2">
-                      <input type="radio" name="activeUnit" ${s.activeUnit === u ? 'checked' : ''} onchange="setActiveUnit('${u}')" class="text-blue-600" />
-                      <span class="font-medium text-slate-800">${u}</span>
-                    </span>
-                    ${s.activeUnit === u ? '<span class="text-[10px] font-bold text-blue-600 uppercase">DEFAULT</span>' : ''}
-                  </label>
-                `).join('')}
-              </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
-              <div class="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">Backup &amp; Reset</div>
-              <label class="flex items-center gap-2.5 text-xs text-slate-700 cursor-pointer">
-                <input type="checkbox" ${s.autoBackup ? 'checked' : ''} onchange="toggleSetting('autoBackup', this.checked)" class="rounded border-slate-300 text-blue-600" />
-                <span>Auto Backup to LocalStorage</span>
-              </label>
-              <div class="text-[11px] text-slate-400">Last Backup: ${s.lastBackup}</div>
-              <div class="flex gap-2">
-                <button onclick="exportFullBackup()" class="px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white rounded-lg hover:bg-slate-800">Download JSON Backup</button>
-                <button onclick="resetDemoData()" class="px-3 py-1.5 text-xs font-semibold border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-lg">Reset Demo</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- User Management Table -->
-          <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-              <div>
-                <h2 class="text-sm font-bold text-slate-900">Department User Accounts &amp; Access Control</h2>
-                <p class="text-[11px] text-slate-500">Create, edit, reset passwords, or disable department access.</p>
-              </div>
-              <button onclick="openUserModal()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg">+ Create User</button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead class="bg-slate-50 text-[11px] font-bold text-slate-500 uppercase">
-                  <tr>
-                    <th class="p-3 border-b">Name</th>
-                    <th class="p-3 border-b">Email Address</th>
-                    <th class="p-3 border-b">Password</th>
-                    <th class="p-3 border-b">Role / Scope</th>
-                    <th class="p-3 border-b">Status</th>
-                    <th class="p-3 border-b text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 text-xs">
-                  ${state.users.map(u => `
-                    <tr class="hover:bg-slate-50">
-                      <td class="p-3 font-semibold text-slate-900">${u.name}</td>
-                      <td class="p-3 font-mono text-slate-600">${u.email}</td>
-                      <td class="p-3 font-mono text-slate-500">${u.password}</td>
-                      <td class="p-3">
-                        <span class="px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-slate-900 text-white' : 'bg-blue-50 text-blue-700'} text-[10px] font-bold uppercase">
-                          ${u.role === 'admin' ? 'Administrator (All)' : `${u.dept} Dept`}
-                        </span>
-                      </td>
-                      <td class="p-3">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${u.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">
-                          ${u.active ? 'Active' : 'Disabled'}
-                        </span>
-                      </td>
-                      <td class="p-3 text-right space-x-2">
-                        <button onclick="openUserModal('${u.id}')" class="text-blue-600 hover:underline font-semibold">Edit</button>
-                        ${u.email !== state.currentUserEmail ? `<button onclick="toggleUserActive('${u.id}')" class="text-slate-600 hover:underline font-semibold">${u.active ? 'Disable' : 'Enable'}</button>` : ''}
-                      </td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function toggleSetting(k, v) { state.settings[k] = v; saveState(); showToast('Setting updated'); }
-    function updateCompanyName(v) { state.settings.companyName = v; saveState(); showToast('Company name saved'); }
-    function setActiveUnit(u) { state.settings.activeUnit = u; saveState(); renderApp(); showToast(`Switched to ${u}`); }
-    function exportFullBackup() { downloadFile(`NDL_ERP_Backup_${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(state, null, 2), 'application/json'); showToast('Backup downloaded'); }
-    function resetDemoData() {
-      const email = state.currentUserEmail;
-      safeSetStorage(STORAGE_KEY, '');
-      state = getInitialState();
-      state.currentUserEmail = email;
-      saveState();
-      renderApp();
-      showToast('Demo data restored', 'info');
-    }
-
-    function openUserModal(userId = null) {
-      const u = userId ? state.users.find(x => x.id === userId) : null;
-      openModal(`
-        <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-slate-900">${u ? 'Edit User Account' : 'Create Department User'}</h3>
-          <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700">✕</button>
-        </div>
-        <form onsubmit="saveUserAccount(event, '${userId || ''}')" class="p-5 space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div><label class="block text-xs font-semibold mb-1">Full Name</label><input id="u-name" required value="${u ? u.name : ''}" class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="e.g. Wash Supervisor"></div>
-            <div><label class="block text-xs font-semibold mb-1">Email Address</label><input id="u-email" type="email" required value="${u ? u.email : ''}" class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="user@ndlunit02.com"></div>
-            <div><label class="block text-xs font-semibold mb-1">Password</label><input id="u-pw" required value="${u ? u.password : ''}" class="w-full px-3 py-2 text-xs border rounded-lg" placeholder="Min 6 chars"></div>
-            <div>
-              <label class="block text-xs font-semibold mb-1">Assigned Department / Role</label>
-              <select id="u-dept" class="w-full px-3 py-2 text-xs border rounded-lg">
-                <option value="cutting" ${u?.dept === 'cutting' ? 'selected' : ''}>Cutting Department</option>
-                <option value="sewing" ${u?.dept === 'sewing' ? 'selected' : ''}>Sewing Department</option>
-                <option value="wash" ${u?.dept === 'wash' ? 'selected' : ''}>Wash Department</option>
-                <option value="finishing" ${u?.dept === 'finishing' ? 'selected' : ''}>Finishing Department</option>
-                <option value="all" ${u?.role === 'admin' ? 'selected' : ''}>Administrator (Full Access)</option>
-              </select>
-            </div>
-          </div>
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="closeModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 rounded-lg">Cancel</button>
-            <button type="submit" class="px-4 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg">Save User</button>
-          </div>
-        </form>
-      `);
-    }
-
-    function saveUserAccount(e, userId) {
-      e.preventDefault();
-      const name = document.getElementById('u-name').value.trim();
-      const email = document.getElementById('u-email').value.trim().toLowerCase();
-      const password = document.getElementById('u-pw').value;
-      const deptVal = document.getElementById('u-dept').value;
-      const role = deptVal === 'all' ? 'admin' : 'dept';
-
-      if (userId) {
-        const u = state.users.find(x => x.id === userId);
-        if (u) { u.name = name; u.email = email; u.password = password; u.role = role; u.dept = deptVal; }
-      } else {
-        if (state.users.some(x => x.email.toLowerCase() === email)) {
-          showToast('Email already exists', 'error');
-          return;
-        }
-        state.users.push({ id: 'u_' + Date.now(), name, email, password, role, dept: deptVal, active: true });
-      }
-      saveState();
-      closeModal();
-      renderWorkspace();
-      showToast('User account saved');
-    }
-
-    function toggleUserActive(id) {
-      const u = state.users.find(x => x.id === id);
-      if (u) { u.active = !u.active; saveState(); renderWorkspace(); showToast(`User ${u.active ? 'enabled' : 'disabled'}`, 'info'); }
-    }
-
-    // --- BONUS POLICY (SHEET3) ---
-    function renderBonusPolicy() {
-      return `
-        <div class="space-y-6 max-w-3xl">
-          <div>
-            <h1 class="text-xl font-bold text-slate-900">NDL Bonus Policy Calculator</h1>
-            <p class="text-xs text-slate-500">Grounded in Workbook Sheet3 service-tenure tiers.</p>
-          </div>
-          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-semibold mb-1">Employee Category</label>
-                <select id="b-cat" onchange="calcBonusPreview()" class="w-full px-3 py-2 text-xs border rounded-lg">
-                  <option value="worker">Worker</option>
-                  <option value="staff">Staff</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1">Service Days</label>
-                <input id="b-days" type="number" value="200" oninput="calcBonusPreview()" class="w-full px-3 py-2 text-xs border rounded-lg" />
-              </div>
-              <div>
-                <label class="block text-xs font-semibold mb-1">Basic Salary (BDT)</label>
-                <input id="b-sal" type="number" value="12500" oninput="calcBonusPreview()" class="w-full px-3 py-2 text-xs border rounded-lg" />
-              </div>
-            </div>
-            <div id="b-result" class="p-4 rounded-lg bg-slate-50 border border-slate-200 text-sm font-bold text-slate-900">
-              Bonus Tier: 75% · Payable: 9,375 BDT
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function calcBonusPreview() {
-      const cat = document.getElementById('b-cat').value;
-      const days = Number(document.getElementById('b-days').value) || 0;
-      const sal = Number(document.getElementById('b-sal').value) || 0;
-      let pct = 0;
-      if (cat === 'worker') {
-        if (days >= 365) pct = 100;
-        else if (days >= 180) pct = 75;
-        else if (days >= 88) pct = 40;
-      } else {
-        if (days >= 365) pct = 80;
-        else if (days >= 180) pct = 40;
-      }
-      const amt = Math.round(sal * (pct / 100));
-      document.getElementById('b-result').textContent = `Bonus Tier: ${pct}% · Payable: ${amt.toLocaleString()} BDT`;
-    }
-
-    // --- GITHUB DEPLOY ---
-    function renderGithubDeploy() {
-      return `
-        <div class="space-y-4 max-w-3xl">
-          <div>
-            <h1 class="text-xl font-bold text-slate-900">Deploy to GitHub Pages</h1>
-            <p class="text-xs text-slate-500">Push updates to <code>https://github.com/mazharulmd/Production-Report.git</code> (<code>main</code> branch).</p>
-          </div>
-          <div class="bg-slate-900 text-slate-100 p-5 rounded-xl font-mono text-xs space-y-1.5 overflow-x-auto">
-            <div>git add index.html README.md</div>
-            <div>git commit -m "Upgrade NDL Unit-02 ERP with Multi-Department RBAC &amp; Login"</div>
-            <div>git branch -M main</div>
-            <div>git push -u origin main</div>
-          </div>
-        </div>
-      `;
-    }
-
-    // Boot
-    renderApp();
-  </script>
+renderApp();
+</script>
 </body>
 </html>
